@@ -1,0 +1,17 @@
+{
+    "items": [
+       { "value": "w", "label": "Week" },
+              { "value": "2w", "label": "2 Weeks" },
+              { "value": "3w", "label": "3 Weeks" },
+              { "value": "4w", "label": "4 Weeks" },
+              { "value": "m", "label": "Month" },
+              { "value": "2m", "label": "2 Months" },
+              { "value": "3m", "label": "3 Months" },
+              { "value": "6m", "label": "6 Months" },
+              { "value": "y", "label": "Year" },
+              { "value": "2y", "label": "2 Years" },
+              { "value": "3y", "label": "3 Years" },
+              { "value": "4y", "label": "4 Years" },
+              { "value": "5y", "label": "5 Years" },
+              { "value": "10y", "label": "10 Years" }]
+  }

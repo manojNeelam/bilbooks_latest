@@ -1,0 +1,12 @@
+{
+    "items": [
+      {
+        "value": "0",
+        "label": "Send invoices automatically"
+      },
+      {
+        "value": "1",
+        "label": "Create Draft invoices and send manually"
+      }
+    ]
+  }

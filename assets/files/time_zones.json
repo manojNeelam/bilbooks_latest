@@ -1,0 +1,815 @@
+{
+        "timezone": [
+            {
+                "timezone_id": "1",
+                "code": "Etc/GMT+12",
+                "gmt": "GMT-12:00",
+                "name": "International Date Line West"
+            },
+            {
+                "timezone_id": "2",
+                "code": "Pacific/Midway",
+                "gmt": "GMT-11:00",
+                "name": "Midway Island"
+            },
+            {
+                "timezone_id": "3",
+                "code": "US/Samoa",
+                "gmt": "GMT-11:00",
+                "name": "Samoa"
+            },
+            {
+                "timezone_id": "4",
+                "code": "America/Adak",
+                "gmt": "GMT-10:00",
+                "name": "Hawaii-Aleutian"
+            },
+            {
+                "timezone_id": "5",
+                "code": "Etc/GMT+10",
+                "gmt": "GMT-10:00",
+                "name": "Hawaii"
+            },
+            {
+                "timezone_id": "6",
+                "code": "Pacific/Marquesas",
+                "gmt": "GMT-09:30",
+                "name": "Marquesas Islands"
+            },
+            {
+                "timezone_id": "7",
+                "code": "Pacific/Gambier",
+                "gmt": "GMT-09:00",
+                "name": "Gambier Islands"
+            },
+            {
+                "timezone_id": "8",
+                "code": "America/Anchorage",
+                "gmt": "GMT-09:00",
+                "name": "Alaska"
+            },
+            {
+                "timezone_id": "9",
+                "code": "America/Tijuana",
+                "gmt": "GMT-08:00",
+                "name": "Tijuana"
+            },
+            {
+                "timezone_id": "10",
+                "code": "America/Ensenada",
+                "gmt": "GMT-08:00",
+                "name": "Baja California"
+            },
+            {
+                "timezone_id": "11",
+                "code": "Etc/GMT+8",
+                "gmt": "GMT-08:00",
+                "name": "Pitcairn Islands"
+            },
+            {
+                "timezone_id": "12",
+                "code": "America/Los_Angeles",
+                "gmt": "GMT-08:00",
+                "name": "Pacific Time (US &amp; Canada)"
+            },
+            {
+                "timezone_id": "13",
+                "code": "America/Denver",
+                "gmt": "GMT-07:00",
+                "name": "Mountain Time (US &amp; Canada)"
+            },
+            {
+                "timezone_id": "14",
+                "code": "America/Chihuahua",
+                "gmt": "GMT-07:00",
+                "name": "Chihuahua"
+            },
+            {
+                "timezone_id": "15",
+                "code": "America/Mazatlan",
+                "gmt": "GMT-07:00",
+                "name": "Mazatlan"
+            },
+            {
+                "timezone_id": "16",
+                "code": "America/Dawson_Creek",
+                "gmt": "GMT-07:00",
+                "name": "Arizona"
+            },
+            {
+                "timezone_id": "17",
+                "code": "America/Belize",
+                "gmt": "GMT-06:00",
+                "name": "Saskatchewan"
+            },
+            {
+                "timezone_id": "18",
+                "code": "America/Belize",
+                "gmt": "GMT-06:00",
+                "name": "Central America"
+            },
+            {
+                "timezone_id": "19",
+                "code": "America/Cancun",
+                "gmt": "GMT-06:00",
+                "name": "Guadalajara"
+            },
+            {
+                "timezone_id": "20",
+                "code": "America/Mexico_City",
+                "gmt": "GMT-06:00",
+                "name": "Mexico City"
+            },
+            {
+                "timezone_id": "21",
+                "code": "America/Monterrey",
+                "gmt": "GMT-06:00",
+                "name": "Monterrey"
+            },
+            {
+                "timezone_id": "22",
+                "code": "Chile/EasterIsland",
+                "gmt": "GMT-06:00",
+                "name": "Easter Island"
+            },
+            {
+                "timezone_id": "23",
+                "code": "America/Chicago",
+                "gmt": "GMT-06:00",
+                "name": "Central Time (US &amp; Canada)"
+            },
+            {
+                "timezone_id": "24",
+                "code": "America/New_York",
+                "gmt": "GMT-05:00",
+                "name": "Eastern Time (US &amp; Canada)"
+            },
+            {
+                "timezone_id": "25",
+                "code": "America/Havana",
+                "gmt": "GMT-05:00",
+                "name": "Cuba"
+            },
+            {
+                "timezone_id": "26",
+                "code": "America/Bogota",
+                "gmt": "GMT-05:00",
+                "name": "Bogota"
+            },
+            {
+                "timezone_id": "27",
+                "code": "America/Lima",
+                "gmt": "GMT-05:00",
+                "name": "Lima"
+            },
+            {
+                "timezone_id": "28",
+                "code": "America/Bogota",
+                "gmt": "GMT-05:00",
+                "name": "Quito"
+            },
+            {
+                "timezone_id": "29",
+                "code": "America/Bogota",
+                "gmt": "GMT-05:00",
+                "name": "Rio Branco"
+            },
+            {
+                "timezone_id": "30",
+                "code": "America/Caracas",
+                "gmt": "GMT-04:30",
+                "name": "Caracas"
+            },
+            {
+                "timezone_id": "31",
+                "code": "America/Santiago",
+                "gmt": "GMT-04:00",
+                "name": "Santiago"
+            },
+            {
+                "timezone_id": "32",
+                "code": "America/La_Paz",
+                "gmt": "GMT-04:00",
+                "name": "La Paz"
+            },
+            {
+                "timezone_id": "33",
+                "code": "Atlantic/Stanley",
+                "gmt": "GMT-04:00",
+                "name": "Faukland Islands"
+            },
+            {
+                "timezone_id": "34",
+                "code": "America/Campo_Grande",
+                "gmt": "GMT-04:00",
+                "name": "Brazil"
+            },
+            {
+                "timezone_id": "35",
+                "code": "America/Goose_Bay",
+                "gmt": "GMT-04:00",
+                "name": "Atlantic Time (Goose Bay)"
+            },
+            {
+                "timezone_id": "36",
+                "code": "America/Glace_Bay",
+                "gmt": "GMT-04:00",
+                "name": "Atlantic Time (Canada)"
+            },
+            {
+                "timezone_id": "37",
+                "code": "America/St_Johns",
+                "gmt": "GMT-03:30",
+                "name": "Newfoundland"
+            },
+            {
+                "timezone_id": "38",
+                "code": "America/Montevideo",
+                "gmt": "GMT-03:00",
+                "name": "Montevideo"
+            },
+            {
+                "timezone_id": "39",
+                "code": "America/Miquelon",
+                "gmt": "GMT-03:00",
+                "name": "Miquelon"
+            },
+            {
+                "timezone_id": "40",
+                "code": "America/Miquelon",
+                "gmt": "GMT-03:00",
+                "name": "St. Pierre"
+            },
+            {
+                "timezone_id": "41",
+                "code": "America/Godthab",
+                "gmt": "GMT-03:00",
+                "name": "Greenland"
+            },
+            {
+                "timezone_id": "42",
+                "code": "America/Argentina/Buenos_Aires",
+                "gmt": "GMT-03:00",
+                "name": "Buenos Aires"
+            },
+            {
+                "timezone_id": "43",
+                "code": "America/Sao_Paulo",
+                "gmt": "GMT-03:00",
+                "name": "Brasilia"
+            },
+            {
+                "timezone_id": "44",
+                "code": "America/Noronha",
+                "gmt": "GMT-02:00",
+                "name": "Mid-Atlantic"
+            },
+            {
+                "timezone_id": "45",
+                "code": "Atlantic/Cape_Verde",
+                "gmt": "GMT-01:00",
+                "name": "Cape Verde Is."
+            },
+            {
+                "timezone_id": "46",
+                "code": "Atlantic/Azores",
+                "gmt": "GMT-01:00",
+                "name": "Azores"
+            },
+            {
+                "timezone_id": "47",
+                "code": "Europe/Belfast",
+                "gmt": "GMT+00:00",
+                "name": "Belfast"
+            },
+            {
+                "timezone_id": "48",
+                "code": "Europe/Dublin",
+                "gmt": "GMT+00:00",
+                "name": "Dublin"
+            },
+            {
+                "timezone_id": "49",
+                "code": "Europe/Lisbon",
+                "gmt": "GMT+00:00",
+                "name": "Lisbon"
+            },
+            {
+                "timezone_id": "50",
+                "code": "Europe/London",
+                "gmt": "GMT+00:00",
+                "name": "London"
+            },
+            {
+                "timezone_id": "51",
+                "code": "Africa/Monrovia",
+                "gmt": "GMT+00:00",
+                "name": "Monrovia"
+            },
+            {
+                "timezone_id": "52",
+                "code": "Africa/Abidjan",
+                "gmt": "GMT+00:00",
+                "name": "Reykjavik"
+            },
+            {
+                "timezone_id": "53",
+                "code": "UTC",
+                "gmt": "GMT+00:00",
+                "name": "UTC"
+            },
+            {
+                "timezone_id": "54",
+                "code": "Europe/Amsterdam",
+                "gmt": "GMT+01:00",
+                "name": "Amsterdam"
+            },
+            {
+                "timezone_id": "55",
+                "code": "Europe/Berlin",
+                "gmt": "GMT+01:00",
+                "name": "Berlin"
+            },
+            {
+                "timezone_id": "56",
+                "code": "Europe/Amsterdam",
+                "gmt": "GMT+01:00",
+                "name": "Bern"
+            },
+            {
+                "timezone_id": "57",
+                "code": "Europe/Rome",
+                "gmt": "GMT+01:00",
+                "name": "Rome"
+            },
+            {
+                "timezone_id": "58",
+                "code": "Europe/Stockholm",
+                "gmt": "GMT+01:00",
+                "name": "Stockholm"
+            },
+            {
+                "timezone_id": "59",
+                "code": "Europe/Vienna",
+                "gmt": "GMT+01:00",
+                "name": "Vienna"
+            },
+            {
+                "timezone_id": "60",
+                "code": "Europe/Belgrade",
+                "gmt": "GMT+01:00",
+                "name": "Belgrade"
+            },
+            {
+                "timezone_id": "61",
+                "code": "Europe/Bratislava",
+                "gmt": "GMT+01:00",
+                "name": "Bratislava"
+            },
+            {
+                "timezone_id": "62",
+                "code": "Europe/Budapest",
+                "gmt": "GMT+01:00",
+                "name": "Budapest"
+            },
+            {
+                "timezone_id": "63",
+                "code": "Europe/Ljubljana",
+                "gmt": "GMT+01:00",
+                "name": "Ljubljana"
+            },
+            {
+                "timezone_id": "64",
+                "code": "Europe/Prague",
+                "gmt": "GMT+01:00",
+                "name": "Prague"
+            },
+            {
+                "timezone_id": "65",
+                "code": "Europe/Brussels",
+                "gmt": "GMT+01:00",
+                "name": "Brussels"
+            },
+            {
+                "timezone_id": "66",
+                "code": "Europe/Copenhagen",
+                "gmt": "GMT+01:00",
+                "name": "Copenhagen"
+            },
+            {
+                "timezone_id": "67",
+                "code": "Europe/Madrid",
+                "gmt": "GMT+01:00",
+                "name": "Madrid"
+            },
+            {
+                "timezone_id": "68",
+                "code": "Europe/Paris",
+                "gmt": "GMT+01:00",
+                "name": "Paris"
+            },
+            {
+                "timezone_id": "69",
+                "code": "Africa/Algiers",
+                "gmt": "GMT+01:00",
+                "name": "West Central Africa"
+            },
+            {
+                "timezone_id": "70",
+                "code": "Africa/Windhoek",
+                "gmt": "GMT+01:00",
+                "name": "Windhoek"
+            },
+            {
+                "timezone_id": "71",
+                "code": "Asia/Beirut",
+                "gmt": "GMT+02:00",
+                "name": "Beirut"
+            },
+            {
+                "timezone_id": "72",
+                "code": "Africa/Cairo",
+                "gmt": "GMT+02:00",
+                "name": "Cairo"
+            },
+            {
+                "timezone_id": "73",
+                "code": "Asia/Gaza",
+                "gmt": "GMT+02:00",
+                "name": "Gaza"
+            },
+            {
+                "timezone_id": "74",
+                "code": "Africa/Harare",
+                "gmt": "GMT+02:00",
+                "name": "Harare"
+            },
+            {
+                "timezone_id": "75",
+                "code": "Africa/Blantyre",
+                "gmt": "GMT+02:00",
+                "name": "Pretoria"
+            },
+            {
+                "timezone_id": "76",
+                "code": "Asia/Jerusalem",
+                "gmt": "GMT+02:00",
+                "name": "Jerusalem"
+            },
+            {
+                "timezone_id": "77",
+                "code": "Europe/Minsk",
+                "gmt": "GMT+02:00",
+                "name": "Minsk"
+            },
+            {
+                "timezone_id": "78",
+                "code": "Asia/Damascus",
+                "gmt": "GMT+02:00",
+                "name": "Syria"
+            },
+            {
+                "timezone_id": "79",
+                "code": "Europe/Moscow",
+                "gmt": "GMT+03:00",
+                "name": "Moscow"
+            },
+            {
+                "timezone_id": "80",
+                "code": "Europe/Moscow",
+                "gmt": "GMT+03:00",
+                "name": "St. Petersburg"
+            },
+            {
+                "timezone_id": "81",
+                "code": "Europe/Moscow",
+                "gmt": "GMT+03:00",
+                "name": "Volgograd"
+            },
+            {
+                "timezone_id": "82",
+                "code": "Africa/Addis_Ababa",
+                "gmt": "GMT+03:00",
+                "name": "Nairobi"
+            },
+            {
+                "timezone_id": "83",
+                "code": "Asia/Tehran",
+                "gmt": "GMT+03:30",
+                "name": "Tehran"
+            },
+            {
+                "timezone_id": "84",
+                "code": "Asia/Dubai",
+                "gmt": "GMT+04:00",
+                "name": "Abu Dhabi"
+            },
+            {
+                "timezone_id": "85",
+                "code": "Asia/Muscat",
+                "gmt": "GMT+04:00",
+                "name": "Muscat"
+            },
+            {
+                "timezone_id": "86",
+                "code": "Asia/Yerevan",
+                "gmt": "GMT+04:00",
+                "name": "Yerevan"
+            },
+            {
+                "timezone_id": "87",
+                "code": "Asia/Kabul",
+                "gmt": "GMT+04:30",
+                "name": "Kabul"
+            },
+            {
+                "timezone_id": "88",
+                "code": "Asia/Yekaterinburg",
+                "gmt": "GMT+05:00",
+                "name": "Ekaterinburg"
+            },
+            {
+                "timezone_id": "89",
+                "code": "Asia/Tashkent",
+                "gmt": "GMT+05:00",
+                "name": "Tashkent"
+            },
+            {
+                "timezone_id": "90",
+                "code": "Asia/Kolkata",
+                "gmt": "GMT+05:30",
+                "name": "Chennai"
+            },
+            {
+                "timezone_id": "91",
+                "code": "Asia/Kolkata",
+                "gmt": "GMT+05:30",
+                "name": "Kolkata"
+            },
+            {
+                "timezone_id": "92",
+                "code": "Asia/Kolkata",
+                "gmt": "GMT+05:30",
+                "name": "Mumbai"
+            },
+            {
+                "timezone_id": "93",
+                "code": "Asia/Kolkata",
+                "gmt": "GMT+05:30",
+                "name": "New Delhi"
+            },
+            {
+                "timezone_id": "94",
+                "code": "Asia/Katmandu",
+                "gmt": "GMT+05:45",
+                "name": "Kathmandu"
+            },
+            {
+                "timezone_id": "95",
+                "code": "Asia/Dhaka",
+                "gmt": "GMT+06:00",
+                "name": "Astana"
+            },
+            {
+                "timezone_id": "96",
+                "code": "Asia/Dhaka",
+                "gmt": "GMT+06:00",
+                "name": "Dhaka"
+            },
+            {
+                "timezone_id": "97",
+                "code": "Asia/Novosibirsk",
+                "gmt": "GMT+06:00",
+                "name": "Novosibirsk"
+            },
+            {
+                "timezone_id": "98",
+                "code": "Asia/Rangoon",
+                "gmt": "GMT+06:30",
+                "name": "Yangon (Rangoon)"
+            },
+            {
+                "timezone_id": "99",
+                "code": "Asia/Bangkok",
+                "gmt": "GMT+07:00",
+                "name": "Bangkok"
+            },
+            {
+                "timezone_id": "100",
+                "code": "Asia/Bangkok",
+                "gmt": "GMT+07:00",
+                "name": "Hanoi"
+            },
+            {
+                "timezone_id": "101",
+                "code": "Asia/Jakarta",
+                "gmt": "GMT+07:00",
+                "name": "Jakarta"
+            },
+            {
+                "timezone_id": "102",
+                "code": "Asia/Krasnoyarsk",
+                "gmt": "GMT+07:00",
+                "name": "Krasnoyarsk"
+            },
+            {
+                "timezone_id": "103",
+                "code": "Asia/Hong_Kong",
+                "gmt": "GMT+08:00",
+                "name": "Beijing"
+            },
+            {
+                "timezone_id": "104",
+                "code": "Asia/Chongqing",
+                "gmt": "GMT+08:00",
+                "name": "Chongqing"
+            },
+            {
+                "timezone_id": "105",
+                "code": "Asia/Hong_Kong",
+                "gmt": "GMT+08:00",
+                "name": "Hong Kong"
+            },
+            {
+                "timezone_id": "106",
+                "code": "Asia/Hong_Kong",
+                "gmt": "GMT+08:00",
+                "name": "Urumqi"
+            },
+            {
+                "timezone_id": "107",
+                "code": "Asia/Irkutsk",
+                "gmt": "GMT+08:00",
+                "name": "Irkutsk"
+            },
+            {
+                "timezone_id": "108",
+                "code": "Asia/Irkutsk",
+                "gmt": "GMT+08:00",
+                "name": "Ulaan Bataar"
+            },
+            {
+                "timezone_id": "109",
+                "code": "Australia/Perth",
+                "gmt": "GMT+08:00",
+                "name": "Perth"
+            },
+            {
+                "timezone_id": "110",
+                "code": "Australia/Eucla",
+                "gmt": "GMT+08:45",
+                "name": "Eucla"
+            },
+            {
+                "timezone_id": "111",
+                "code": "Asia/Tokyo",
+                "gmt": "GMT+09:00",
+                "name": "Osaka"
+            },
+            {
+                "timezone_id": "112",
+                "code": "Asia/Tokyo",
+                "gmt": "GMT+09:00",
+                "name": "Sapporo"
+            },
+            {
+                "timezone_id": "113",
+                "code": "Asia/Tokyo",
+                "gmt": "GMT+09:00",
+                "name": "Tokyo"
+            },
+            {
+                "timezone_id": "114",
+                "code": "Asia/Seoul",
+                "gmt": "GMT+09:00",
+                "name": "Seoul"
+            },
+            {
+                "timezone_id": "115",
+                "code": "Asia/Yakutsk",
+                "gmt": "GMT+09:00",
+                "name": "Yakutsk"
+            },
+            {
+                "timezone_id": "116",
+                "code": "Australia/Adelaide",
+                "gmt": "GMT+09:30",
+                "name": "Adelaide"
+            },
+            {
+                "timezone_id": "117",
+                "code": "Australia/Darwin",
+                "gmt": "GMT+09:30",
+                "name": "Darwin"
+            },
+            {
+                "timezone_id": "118",
+                "code": "Australia/Brisbane",
+                "gmt": "GMT+10:00",
+                "name": "Brisbane"
+            },
+            {
+                "timezone_id": "119",
+                "code": "Australia/Hobart",
+                "gmt": "GMT+10:00",
+                "name": "Hobart"
+            },
+            {
+                "timezone_id": "120",
+                "code": "Asia/Vladivostok",
+                "gmt": "GMT+10:00",
+                "name": "Vladivostok"
+            },
+            {
+                "timezone_id": "121",
+                "code": "Australia/Lord_Howe",
+                "gmt": "GMT+10:30",
+                "name": "Lord Howe Island"
+            },
+            {
+                "timezone_id": "122",
+                "code": "Etc/GMT-11",
+                "gmt": "GMT+11:00",
+                "name": "Solomon Is."
+            },
+            {
+                "timezone_id": "123",
+                "code": "Etc/GMT-11",
+                "gmt": "GMT+11:00",
+                "name": "New Caledonia"
+            },
+            {
+                "timezone_id": "124",
+                "code": "Asia/Magadan",
+                "gmt": "GMT+11:00",
+                "name": "Magadan"
+            },
+            {
+                "timezone_id": "125",
+                "code": "Pacific/Norfolk",
+                "gmt": "GMT+11:30",
+                "name": "Norfolk Island"
+            },
+            {
+                "timezone_id": "126",
+                "code": "Asia/Anadyr",
+                "gmt": "GMT+12:00",
+                "name": "Anadyr"
+            },
+            {
+                "timezone_id": "127",
+                "code": "Asia/Anadyr",
+                "gmt": "GMT+12:00",
+                "name": "Kamchatka"
+            },
+            {
+                "timezone_id": "128",
+                "code": "Pacific/Auckland",
+                "gmt": "GMT+12:00",
+                "name": "Auckland"
+            },
+            {
+                "timezone_id": "129",
+                "code": "Pacific/Auckland",
+                "gmt": "GMT+12:00",
+                "name": "Wellington"
+            },
+            {
+                "timezone_id": "130",
+                "code": "Pacific/Fiji",
+                "gmt": "GMT+12:00",
+                "name": "Fiji"
+            },
+            {
+                "timezone_id": "131",
+                "code": "Etc/GMT-12",
+                "gmt": "GMT+12:00",
+                "name": "Kamchatka"
+            },
+            {
+                "timezone_id": "132",
+                "code": "Etc/GMT-12",
+                "gmt": "GMT+12:00",
+                "name": "Marshall Is."
+            },
+            {
+                "timezone_id": "133",
+                "code": "Pacific/Chatham",
+                "gmt": "GMT+12:45",
+                "name": "Chatham Islands"
+            },
+            {
+                "timezone_id": "134",
+                "code": "Pacific/Tongatapu",
+                "gmt": "GMT+13:00",
+                "name": "Nuku&#039;alofa"
+            },
+            {
+                "timezone_id": "135",
+                "code": "Pacific/Kiritimati",
+                "gmt": "GMT+14:00",
+                "name": "Kiritimati"
+            }
+        ]
+    
+}

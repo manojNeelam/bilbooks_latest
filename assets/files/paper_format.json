@@ -1,0 +1,18 @@
+{
+    "success": 200,
+    "data": {
+        "success": true,
+        "message": "Paper Format Array",
+        "paper_format": [
+            {
+                "format": "letter"
+            },
+            {
+                "format": "a4"
+            },
+            {
+                "format": "legal"
+            }
+        ]
+    }
+}

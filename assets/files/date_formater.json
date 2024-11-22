@@ -1,0 +1,24 @@
+{
+    "success": 200,
+    "data": {
+        "success": true,
+        "message": "Date Format Array",
+        "date_format": [
+            {
+                "format": "d M Y"
+            },
+            {
+                "format": "Y-m-d"
+            },
+            {
+                "format": "M d Y"
+            },
+            {
+                "format": "d-m-Y"
+            },
+            {
+                "format": "m-d-Y"
+            }
+        ]
+    }
+}

@@ -1,0 +1,45 @@
+{
+    "list": [
+      {
+        "method_id": "1",
+        "name": "Bank payment"
+      },
+      {
+        "method_id": "2",
+        "name": "Cash"
+      },
+      {
+        "method_id": "3",
+        "name": "Check"
+      },
+      {
+        "method_id": "4",
+        "name": "Credit card"
+      },
+      {
+        "method_id": "5",
+        "name": "Paypal"
+      },
+      {
+        "method_id": "6",
+        "name": "Authorize.Net"
+      },
+      {
+        "method_id": "7",
+        "name": "2Checkout"
+      },
+      {
+        "method_id": "8",
+        "name": "Braintree"
+      },
+      {
+        "method_id": "9",
+        "name": "Stripe"
+      },
+      {
+        "method_id": "10",
+        "name": "Other"
+      }
+    ]
+  }
+  

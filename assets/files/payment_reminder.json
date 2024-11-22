@@ -1,0 +1,8 @@
+{
+    "items": [
+      { "value": "0", "label": "None" },
+              { "value": "7", "label": "Every 7 Days" },
+              { "value": "15", "label": "Every 15 Days" },
+              { "value": "30", "label": "Every 30 Days" },
+              { "value": "45", "label": "Every 45 Days" }]
+  }

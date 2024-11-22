@@ -1,0 +1,44 @@
+{
+    "success": 200,
+    "data": {
+        "success": true,
+        "message": "language Array",
+        "language": [
+            {
+                "language_id": "1",
+                "code": "en",
+                "name": "English",
+                "status": "1",
+                "indexno": "1"
+            },
+            {
+                "language_id": "2",
+                "code": "es",
+                "name": "Español",
+                "status": "1",
+                "indexno": "2"
+            },
+            {
+                "language_id": "3",
+                "code": "fr",
+                "name": "Français",
+                "status": "1",
+                "indexno": "3"
+            },
+            {
+                "language_id": "4",
+                "code": "de",
+                "name": "Deutsch",
+                "status": "1",
+                "indexno": "4"
+            },
+            {
+                "language_id": "5",
+                "code": "nl",
+                "name": "Nederlands",
+                "status": "1",
+                "indexno": "5"
+            }
+        ]
+    }
+}

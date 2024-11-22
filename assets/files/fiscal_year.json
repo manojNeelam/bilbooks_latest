@@ -1,0 +1,57 @@
+{
+    "success": 200,
+    "data": {
+        "success": true,
+        "message": "Fiscal Year Array",
+        "fiscal_year": [
+            {
+                "id": "1",
+                "from_to": "January - December"
+            },
+            {
+                "id": "2",
+                "from_to": "February - January"
+            },
+            {
+                "id": "3",
+                "from_to": "March - February"
+            },
+            {
+                "id": "4",
+                "from_to": "April - March"
+            },
+            {
+                "id": "5",
+                "from_to": "May - April"
+            },
+            {
+                "id": "6",
+                "from_to": "June - May"
+            },
+            {
+                "id": "7",
+                "from_to": "July - June"
+            },
+            {
+                "id": "8",
+                "from_to": "August - July"
+            },
+            {
+                "id": "9",
+                "from_to": "September - August"
+            },
+            {
+                "id": "10",
+                "from_to": "October - September"
+            },
+            {
+                "id": "11",
+                "from_to": "November - October"
+            },
+            {
+                "id": "12",
+                "from_to": "December - November"
+            }
+        ]
+    }
+}
