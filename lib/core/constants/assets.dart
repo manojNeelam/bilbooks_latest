@@ -14,6 +14,10 @@ class Assets {
   /// assets/images/edit_ic.png
   static const String assetsImagesEditIc = "assets/images/edit_ic.png";
 
+  /// Assets for assetsImagesExpired
+  /// assets/images/expired.svg
+  static const String assetsImagesExpired = "assets/images/expired.svg";
+
   /// Assets for assetsImagesIcCall
   /// assets/images/ic_call.png
   static const String assetsImagesIcCall = "assets/images/ic_call.png";

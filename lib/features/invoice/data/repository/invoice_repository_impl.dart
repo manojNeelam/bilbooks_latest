@@ -30,6 +30,8 @@ import 'package:fpdart/fpdart.dart';
 
 import '../../domain/entities/add_payment_entity.dart';
 import '../../domain/entities/delete_payment_entity.dart';
+import '../../domain/entities/invoice_details_entity.dart';
+import '../../domain/entities/invoice_list_entity.dart';
 import '../../domain/usecase/client_staff_usecase.dart';
 import '../../domain/usecase/invoice_list_usecase.dart';
 import '../models/invoice_details_model.dart';
@@ -39,7 +41,7 @@ class InvoiceRepositoryImpl implements InvoiceRepository {
   final InvoiceRemoteDatasource invoiceRemoteDatasource;
   InvoiceRepositoryImpl({required this.invoiceRemoteDatasource});
   @override
-  Future<Either<Failure, InvoiceDetailsResponseModel>> getInvoiceDetails(
+  Future<Either<Failure, InvoiceDetailsResponseEntity>> getInvoiceDetails(
       InvoiceDetailRequest params) async {
     try {
       final invoiceDetailResData =
@@ -53,7 +55,7 @@ class InvoiceRepositoryImpl implements InvoiceRepository {
   }
 
   @override
-  Future<Either<Failure, InvoiceListMainResModel>> getInvoices(
+  Future<Either<Failure, InvoiceListMainResEntity>> getInvoices(
       InvoiceListReqParams params) async {
     try {
       final invoiceDetailResData =

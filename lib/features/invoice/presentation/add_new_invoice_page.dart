@@ -7,12 +7,14 @@ import 'package:billbooks_app/core/widgets/item_separator.dart';
 import 'package:billbooks_app/core/widgets/loading_page.dart';
 import 'package:billbooks_app/core/widgets/section_header_widget.dart';
 import 'package:billbooks_app/features/clients/domain/entities/client_list_entity.dart';
+import 'package:billbooks_app/features/invoice/data/models/invoice_details_model.dart';
 import 'package:billbooks_app/features/invoice/domain/entities/delivery_options_model.dart';
 import 'package:billbooks_app/features/invoice/domain/entities/invoice_list_entity.dart';
 import 'package:billbooks_app/features/invoice/domain/usecase/client_staff_usecase.dart';
 import 'package:billbooks_app/features/invoice/domain/usecase/invoice_usecase.dart';
 import 'package:billbooks_app/features/invoice/presentation/bloc/invoice_bloc.dart';
 import 'package:billbooks_app/features/invoice/presentation/line_item_total_selection.dart';
+import 'package:billbooks_app/features/item/domain/entities/item_list_entity.dart';
 import 'package:billbooks_app/features/project/domain/entity/project_list_entity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -335,7 +337,49 @@ class _AddNewInvoiceEstimatePageState extends State<AddNewInvoiceEstimatePage>
     terms = widget.invoiceEntity?.terms ?? "";
     myStaffList = widget.invoiceEntity?.emailtoMystaff ?? [];
     //clientStaff = widget.invoiceEntity?.emailtoClientstaff ?? [];
-    selectedLineItems = widget.invoiceEntity?.items ?? [];
+    var itemListss = widget.invoiceEntity?.items ?? [];
+    List<InvoiceItemEntity> convertedListt = [];
+    for (final item in itemListss) {
+      convertedListt.add(InvoiceItemEntity(
+        itemId: item.itemId,
+        type: item.type,
+        itemName: item.itemName,
+        description: item.description,
+        date: item.date,
+        time: item.time,
+        custom: item.custom,
+        qty: item.qty,
+        unit: item.unit,
+        rate: item.rate,
+        discountType: item.discountType,
+        discountValue: item.discountValue,
+        isTaxable: item.isTaxable,
+        taxes: item.taxes,
+      ));
+    }
+
+    // var convertedItemlISTS = itemListss.map((item) => {
+    //       InvoiceItemEntity(
+    //         itemId: item.itemId,
+    //         type: item.type,
+    //         itemName: item.itemName,
+    //         description: item.description,
+    //         date: item.date,
+    //         time: item.time,
+    //         custom: item.custom,
+    //         qty: item.qty,
+    //         unit: item.unit,
+    //         rate: item.rate,
+    //         discountType: item.discountType,
+    //         discountValue: item.discountValue,
+    //         isTaxable: item.isTaxable,
+    //         taxes: item.taxes,
+    //       )
+    //     });
+    //selectedLineItems = convertedItemlISTS;
+
+    selectedLineItems = convertedListt;
+
     invoiceRequestModel = InvoiceRequestModel(
       no: widget.invoiceEntity?.no ?? "",
       heading: widget.invoiceEntity?.heading ?? "",
@@ -745,11 +789,48 @@ emailto_clientstaff:[{"id":"23214","email":"abc@exaple.com"},{"id":"23216","emai
             return;
           }
           if (returnedIndex != null) {
+            var itemId = lineItem.itemId ?? "";
+            var taxes = lineItem.taxes;
+            if (taxes != null) {
+              var taxModels = taxes.map((returnedTax) {
+                TaxData(
+                    id: returnedTax.id,
+                    name: returnedTax.name,
+                    rate: returnedTax.rate);
+              });
+            }
+
+            // if (itemId.isNotEmpty) {
+            //   //Consider as InvoiceItemModel
+            //   InvoiceItemModel(
+            //     itemId: lineItem.itemId,
+            //     type: lineItem.type,
+            //     itemName: lineItem.itemName,
+            //     isTaxable: lineItem.isTaxable,
+            //     description: lineItem.description,
+            //     date: lineItem.date,
+            //     time: lineItem.time,
+            //     custom: lineItem.custom,
+            //     qty: lineItem.qty,
+            //     unit: lineItem.unit,
+            //     rate: lineItem.rate,
+            //     discountType: lineItem.discountType,
+            //     discountValue: lineItem.discountValue,
+            //     taxes: lineItem.taxes
+            //   );
+            // }
+
+            if (selectedLineItems[returnedIndex].runtimeType ==
+                InvoiceItemModel) {
+              debugPrint("Its InvoiceItemModel");
+            } else {
+              debugPrint("Its Not InvoiceItemModel");
+            }
             selectedLineItems[returnedIndex] = lineItem;
           } else {
             selectedLineItems.add(lineItem);
           }
-
+//InvoiceItemEntity
           calculateListOfTaxes();
 
           setState(() {});

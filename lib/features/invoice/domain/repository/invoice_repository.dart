@@ -26,15 +26,16 @@ import 'package:fpdart/fpdart.dart';
 import '../../data/models/invoice_details_model.dart';
 import '../entities/add_payment_entity.dart';
 import '../entities/delete_payment_entity.dart';
+import '../entities/invoice_list_entity.dart';
 import '../entities/invoice_marksend_entity.dart';
 import '../entities/invoice_unvoice_entity.dart';
 import '../entities/send_document_entity.dart';
 import '../usecase/invoice_unvoid_usecase.dart';
 
 abstract interface class InvoiceRepository {
-  Future<Either<Failure, InvoiceDetailsResponseModel>> getInvoiceDetails(
+  Future<Either<Failure, InvoiceDetailsResponseEntity>> getInvoiceDetails(
       InvoiceDetailRequest params);
-  Future<Either<Failure, InvoiceListMainResModel>> getInvoices(
+  Future<Either<Failure, InvoiceListMainResEntity>> getInvoices(
       InvoiceListReqParams params);
 
   Future<Either<Failure, AddInvoiceMainResEntity>> addInvoice(

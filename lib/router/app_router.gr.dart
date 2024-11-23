@@ -497,6 +497,12 @@ abstract class _$AppRouter extends RootStackRouter {
         ),
       );
     },
+    PlanExpiredPageRoute.name: (routeData) {
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: const PlanExpiredPage(),
+      );
+    },
     PreferencesPageRoute.name: (routeData) {
       return AutoRoutePage<dynamic>(
         routeData: routeData,
@@ -2577,6 +2583,20 @@ class PdfviewerPageRouteArgs {
   String toString() {
     return 'PdfviewerPageRouteArgs{key: $key, enumPageType: $enumPageType, id: $id, isPrint: $isPrint}';
   }
+}
+
+/// generated route for
+/// [PlanExpiredPage]
+class PlanExpiredPageRoute extends PageRouteInfo<void> {
+  const PlanExpiredPageRoute({List<PageRouteInfo>? children})
+      : super(
+          PlanExpiredPageRoute.name,
+          initialChildren: children,
+        );
+
+  static const String name = 'PlanExpiredPageRoute';
+
+  static const PageInfo<void> page = PageInfo<void>(name);
 }
 
 /// generated route for

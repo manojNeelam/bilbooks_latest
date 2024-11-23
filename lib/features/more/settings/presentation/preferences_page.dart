@@ -95,6 +95,8 @@ class _PreferencesPageState extends State<PreferencesPage> {
   PaymentTerms? selectedPaymentTerms;
   PreferencesEntity? preferencesEntity;
   UpdatePreferenceColumnReqParams? updatePreferenceColumnReqParams;
+  String invoiceTerms = "";
+  String estimateTerms = "";
 
   @override
   void initState() {
@@ -135,7 +137,7 @@ class _PreferencesPageState extends State<PreferencesPage> {
           notes: notesController.text,
           paymentTerms: selectedPaymentTerms?.value ?? "",
           template: "",
-          terms: "",
+          terms: invoiceTerms,
         )));
     // }
     //if (selectedType == EnumPreferencesType.estimate) {
@@ -145,7 +147,7 @@ class _PreferencesPageState extends State<PreferencesPage> {
             estimateNo: estimateNumberController.text,
             estimateNotes: estimateNotesController.text,
             estimateTemplate: '',
-            estimateTerms: 'estimate terms')));
+            estimateTerms: estimateTerms)));
 
     if (updatePreferenceColumnReqParams != null) {
       context.read<OrganizationBloc>().add(UpdatePreferenceColumnDetailsEvent(
@@ -289,7 +291,12 @@ class _PreferencesPageState extends State<PreferencesPage> {
           PreferenceTitleArroaWidget(
             title: "Terms & Conditions",
             callback: () {
-              AutoRouter.of(context).push(const TermsConditionPageRoute());
+              AutoRouter.of(context).push(InvoiceEstimateTermsInoutPageRoute(
+                terms: invoiceTerms,
+                callback: (terms) {
+                  invoiceTerms = terms;
+                },
+              ));
             },
           ),
           AppConstants.sizeBoxHeight10,
@@ -324,7 +331,12 @@ class _PreferencesPageState extends State<PreferencesPage> {
           PreferenceTitleArroaWidget(
             title: "Terms & Conditions",
             callback: () {
-              AutoRouter.of(context).push(const TermsConditionPageRoute());
+              AutoRouter.of(context).push(InvoiceEstimateTermsInoutPageRoute(
+                terms: estimateTerms,
+                callback: (terms) {
+                  estimateTerms = terms;
+                },
+              ));
             },
           ),
           AppConstants.sizeBoxHeight10,
@@ -407,6 +419,9 @@ class _PreferencesPageState extends State<PreferencesPage> {
             invoiceTitleController.text =
                 preferencesEntity?.invoiceHeading ?? "";
             notesController.text = preferencesEntity?.invoiceNotes ?? "";
+
+            invoiceTerms = preferencesEntity?.invoiceTerms ?? "";
+            estimateTerms = preferencesEntity?.estimateTerms ?? "";
 
             selectedCurrency = currencies.firstWhere(
               (returnedCurrency) {

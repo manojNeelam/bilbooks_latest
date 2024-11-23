@@ -2,7 +2,9 @@ import 'package:auto_route/auto_route.dart';
 import 'package:billbooks_app/core/app_constants.dart';
 import 'package:billbooks_app/core/theme/app_fonts.dart';
 import 'package:billbooks_app/core/theme/app_pallete.dart';
+import 'package:billbooks_app/core/utils/utils.dart';
 import 'package:billbooks_app/router/app_router.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import '../domain/entity/authinfo_entity.dart';
 import 'widgets/accounts_receivables_widget.dart';
@@ -26,6 +28,18 @@ class _DashboardPageState extends State<DashboardPage>
   void initState() {
     authInfoMainDataEntity = widget.authInfoMainDataEntity;
     super.initState();
+  }
+
+  bool isExpired() {
+    var plan = authInfoMainDataEntity?.sessionData?.organization?.plan;
+    if (plan == null) {
+      return true;
+    }
+    var isPlanExpired = plan.isExpired ?? true;
+    if (isPlanExpired) {
+      return true;
+    }
+    return false;
   }
 
   @override
@@ -61,7 +75,8 @@ class _DashboardPageState extends State<DashboardPage>
             children: [
               Flexible(
                 child: Text(
-                  authInfoMainDataEntity?.sessionData?.organization?.name ?? "",
+                  (authInfoMainDataEntity?.sessionData?.organization?.name ??
+                      ""),
                   style: AppFonts.mediumStyle(),
                 ),
               ),
@@ -77,8 +92,41 @@ class _DashboardPageState extends State<DashboardPage>
       body: SingleChildScrollView(
         child: Container(
           padding: const EdgeInsets.all(16),
-          child: const Column(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              if (!isExpired())
+                RichText(
+                  textAlign: TextAlign.start,
+                  text: TextSpan(
+                      text: "Hello",
+                      style: AppFonts.regularStyle(
+                          color: AppPallete.red, size: 14),
+                      children: <TextSpan>[
+                        TextSpan(
+                            text:
+                                " ${authInfoMainDataEntity?.sessionData?.user?.firstname ?? ""}",
+                            style: AppFonts.mediumStyle(
+                                color: AppPallete.red, size: 16)),
+                        TextSpan(
+                            text: ", your trail has expired. ",
+                            style: AppFonts.regularStyle(
+                                color: AppPallete.red, size: 14)),
+                        TextSpan(
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () => Utils.showTrailExpired(context),
+                            text: "Choose a plane",
+                            style: AppFonts.regularStyle(
+                              color: AppPallete.blueColor,
+                              size: 14,
+                            ).copyWith(decoration: TextDecoration.underline)),
+                        TextSpan(
+                            text: " to resume services.",
+                            style: AppFonts.regularStyle(
+                                color: AppPallete.red, size: 14)),
+                      ]),
+                ),
+              AppConstants.sizeBoxHeight15,
               SalesexpensesWidget(),
               AppConstants.sizeBoxHeight15,
               OverdueInvoceWidget(),

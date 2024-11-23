@@ -49,6 +49,8 @@ class _AddNewLineItemPageState extends State<AddNewLineItemPage> {
   bool isPercentage = true;
   @override
   void initState() {
+    newItemModel = widget.updateLineItem;
+
     _populateData();
     //_fetchTaxes();
     _checkIfItemSelected();

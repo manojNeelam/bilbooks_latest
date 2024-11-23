@@ -4,6 +4,7 @@ import 'package:billbooks_app/features/more/reports/presentation/report_item_sal
 import 'package:billbooks_app/features/splash/splash_page.dart';
 import 'package:flutter/material.dart';
 
+import '../core/widgets/plan_expired_page.dart';
 import '../core/widgets/terms_condition_page.dart';
 import '../features/auth/presentation/pages/forgot_password_page.dart';
 import '../features/auth/presentation/pages/login_page.dart';
@@ -102,6 +103,7 @@ class AppRouter extends _$AppRouter {
         AutoRoute(page: SplashPageRoute.page, path: "/", initial: true),
         AutoRoute(page: ForgotPasswordPageRoute.page),
         AutoRoute(page: SignUpPageRoute.page),
+        AutoRoute(page: PlanExpiredPageRoute.page, fullscreenDialog: true),
         AutoRoute(page: NotificationPageRoute.page, fullscreenDialog: true),
         AutoRoute(
             page: InvoiceEstimateTermsInoutPageRoute.page,
