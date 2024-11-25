@@ -14,6 +14,14 @@ class Assets {
   /// assets/images/edit_ic.png
   static const String assetsImagesEditIc = "assets/images/edit_ic.png";
 
+  /// Assets for assetsImagesEstimateClassic
+  /// assets/images/estimate_classic.jpg
+  static const String assetsImagesEstimateClassic = "assets/images/estimate_classic.jpg";
+
+  /// Assets for assetsImagesEstimateModern
+  /// assets/images/estimate_modern.jpg
+  static const String assetsImagesEstimateModern = "assets/images/estimate_modern.jpg";
+
   /// Assets for assetsImagesExpired
   /// assets/images/expired.svg
   static const String assetsImagesExpired = "assets/images/expired.svg";
@@ -145,6 +153,14 @@ class Assets {
   /// Assets for assetsImagesIcWebwingz
   /// assets/images/ic_webwingz.png
   static const String assetsImagesIcWebwingz = "assets/images/ic_webwingz.png";
+
+  /// Assets for assetsImagesInvoiceClassic
+  /// assets/images/invoice_classic.jpg
+  static const String assetsImagesInvoiceClassic = "assets/images/invoice_classic.jpg";
+
+  /// Assets for assetsImagesInvoiceModern
+  /// assets/images/invoice_modern.jpg
+  static const String assetsImagesInvoiceModern = "assets/images/invoice_modern.jpg";
 
   /// Assets for assetsImagesIosClients
   /// assets/images/ios-clients.png

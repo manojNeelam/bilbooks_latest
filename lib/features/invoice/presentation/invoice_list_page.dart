@@ -245,7 +245,9 @@ class _InvoiceListPageState extends State<InvoiceListPage>
   }
 
   bool canShowPayments(InvoiceEntity invoiceEntity) {
-    if (isSent(invoiceEntity) || isPartial(invoiceEntity)) {
+    if (isSent(invoiceEntity) ||
+        isPartial(invoiceEntity) ||
+        isOverdue(invoiceEntity)) {
       return true;
     }
     return false;
@@ -270,6 +272,14 @@ class _InvoiceListPageState extends State<InvoiceListPage>
   bool isPartial(InvoiceEntity invoiceEntity) {
     final status = invoiceEntity.status ?? "";
     if (status.isNotEmpty && status.toLowerCase() == "partial") {
+      return true;
+    }
+    return false;
+  }
+
+  bool isOverdue(InvoiceEntity invoiceEntity) {
+    final status = invoiceEntity.status ?? "";
+    if (status.isNotEmpty && status.toLowerCase() == "overdue") {
       return true;
     }
     return false;

@@ -75,6 +75,7 @@ import '../features/more/settings/domain/usecase/update_preference_column_usecas
 import '../features/more/settings/presentation/column_settings_page.dart';
 import '../features/more/settings/presentation/organization_profile_page.dart';
 import '../features/more/settings/presentation/preferences_page.dart';
+import '../features/more/settings/presentation/setting_template_page.dart';
 import '../features/more/settings/settings_page.dart';
 import '../features/notifications/presentation/notification_page.dart';
 import '../features/pdfviewer/presentation/pdfviewer_page.dart';
@@ -103,6 +104,7 @@ class AppRouter extends _$AppRouter {
         AutoRoute(page: SplashPageRoute.page, path: "/", initial: true),
         AutoRoute(page: ForgotPasswordPageRoute.page),
         AutoRoute(page: SignUpPageRoute.page),
+        AutoRoute(page: SettingTemplatePageRoute.page, fullscreenDialog: true),
         AutoRoute(page: PlanExpiredPageRoute.page, fullscreenDialog: true),
         AutoRoute(page: NotificationPageRoute.page, fullscreenDialog: true),
         AutoRoute(

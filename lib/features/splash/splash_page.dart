@@ -29,6 +29,12 @@ class _SplashPageState extends State<SplashPage> {
     super.initState();
   }
 
+  Future<void> saveEstimateTitle(title) async {
+    await Utils.saveEstimate(title);
+    var estimateTitle = await Utils.getEstimate();
+    debugPrint("estimateTitle: $estimateTitle");
+  }
+
   Future<void> _callApi() async {
     var token = await Utils.getToken();
     if (token == null) {
@@ -49,6 +55,10 @@ class _SplashPageState extends State<SplashPage> {
           if (!ignoreObserving) {
             ignoreObserving = true;
             authInfoMainDataEntity = state.authInfoMainResEntity.data;
+            var estimateTitle = authInfoMainDataEntity
+                    ?.sessionData?.organization?.estimateHeading ??
+                "";
+            saveEstimateTitle(estimateTitle);
             AutoRouter.of(context).pushAndPopUntil(
                 GeneralRoute(authInfoMainDataEntity: authInfoMainDataEntity!),
                 predicate: (_) => false);

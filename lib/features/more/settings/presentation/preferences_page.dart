@@ -22,6 +22,7 @@ import 'package:billbooks_app/features/more/settings/domain/usecase/preference_d
 import 'package:billbooks_app/features/more/settings/domain/usecase/update_preference_estimate_usecase.dart';
 import 'package:billbooks_app/features/more/settings/presentation/bloc/organization_bloc.dart';
 import 'package:billbooks_app/features/more/settings/presentation/preference_type%20header_widget.dart';
+import 'package:billbooks_app/features/more/settings/presentation/setting_template_page.dart';
 import 'package:billbooks_app/router/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -274,7 +275,10 @@ class _PreferencesPageState extends State<PreferencesPage> {
               }),
           AppConstants.sizeBoxHeight10,
           TemplateWidget(
-            callBack: () {},
+            callBack: () {
+              AutoRouter.of(context).push(SettingTemplatePageRoute(
+                  enumSettingTemplateType: EnumSettingTemplateType.invoice));
+            },
           ),
           AppConstants.sizeBoxHeight10,
           PreferenceTitleArroaWidget(
@@ -326,7 +330,10 @@ class _PreferencesPageState extends State<PreferencesPage> {
                 _showEstimateNamePopup();
               }),
           AppConstants.sizeBoxHeight10,
-          TemplateWidget(callBack: () {}),
+          TemplateWidget(callBack: () {
+            AutoRouter.of(context).push(SettingTemplatePageRoute(
+                enumSettingTemplateType: EnumSettingTemplateType.estimate));
+          }),
           AppConstants.sizeBoxHeight10,
           PreferenceTitleArroaWidget(
             title: "Terms & Conditions",

@@ -499,6 +499,14 @@ class _InvoiceDetailPageState extends State<InvoiceDetailPage>
     return false;
   }
 
+  bool isOverdue() {
+    final status = invoiceEntity?.status ?? "";
+    if (status.isNotEmpty && status.toLowerCase() == "overdue") {
+      return true;
+    }
+    return false;
+  }
+
   bool isVoid() {
     final status = invoiceEntity?.status ?? "";
     if (status.isNotEmpty && status.toLowerCase() == "void") {
@@ -579,7 +587,8 @@ class _InvoiceDetailPageState extends State<InvoiceDetailPage>
         context: context,
         actions: [
           if (invoiceEntity?.status?.toLowerCase() == "sent" ||
-              invoiceEntity?.status?.toLowerCase() == "invoiced")
+              invoiceEntity?.status?.toLowerCase() == "invoiced" ||
+              invoiceEntity?.status?.toLowerCase() == "expired")
             BottomSheetAction(
                 title: Text(
                   "Send Estimate",
@@ -691,7 +700,7 @@ class _InvoiceDetailPageState extends State<InvoiceDetailPage>
         isDismissible: true,
         context: context,
         actions: [
-          if (isSent() || isPartial() || isPaid())
+          if (isSent() || isPartial() || isPaid() || isOverdue())
             BottomSheetAction(
                 title: Text(
                   "Send Invoice",
@@ -731,7 +740,7 @@ class _InvoiceDetailPageState extends State<InvoiceDetailPage>
                   dismissPopup(context);
                   showAlert();
                 }),
-          if (isSent() || isPartial())
+          if (isSent() || isPartial() || isOverDue())
             BottomSheetAction(
                 title: Text(
                   "View PDF",
@@ -773,7 +782,7 @@ class _InvoiceDetailPageState extends State<InvoiceDetailPage>
                       isIgnoreBlocStates = false;
                     }));
               }),
-          if (isSent() || isPartial())
+          if (isSent() || isPartial() || isOverDue())
             BottomSheetAction(
                 title: Text(
                   "Void",

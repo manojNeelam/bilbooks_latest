@@ -622,6 +622,16 @@ abstract class _$AppRouter extends RootStackRouter {
         ),
       );
     },
+    SettingTemplatePageRoute.name: (routeData) {
+      final args = routeData.argsAs<SettingTemplatePageRouteArgs>();
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: SettingTemplatePage(
+          key: args.key,
+          enumSettingTemplateType: args.enumSettingTemplateType,
+        ),
+      );
+    },
     SettingsPageRoute.name: (routeData) {
       final args = routeData.argsAs<SettingsPageRouteArgs>();
       return AutoRoutePage<dynamic>(
@@ -2990,6 +3000,45 @@ class SendtoBccPageRouteArgs {
   @override
   String toString() {
     return 'SendtoBccPageRouteArgs{key: $key, onpressDone: $onpressDone, list: $list, selectedList: $selectedList}';
+  }
+}
+
+/// generated route for
+/// [SettingTemplatePage]
+class SettingTemplatePageRoute
+    extends PageRouteInfo<SettingTemplatePageRouteArgs> {
+  SettingTemplatePageRoute({
+    Key? key,
+    required EnumSettingTemplateType enumSettingTemplateType,
+    List<PageRouteInfo>? children,
+  }) : super(
+          SettingTemplatePageRoute.name,
+          args: SettingTemplatePageRouteArgs(
+            key: key,
+            enumSettingTemplateType: enumSettingTemplateType,
+          ),
+          initialChildren: children,
+        );
+
+  static const String name = 'SettingTemplatePageRoute';
+
+  static const PageInfo<SettingTemplatePageRouteArgs> page =
+      PageInfo<SettingTemplatePageRouteArgs>(name);
+}
+
+class SettingTemplatePageRouteArgs {
+  const SettingTemplatePageRouteArgs({
+    this.key,
+    required this.enumSettingTemplateType,
+  });
+
+  final Key? key;
+
+  final EnumSettingTemplateType enumSettingTemplateType;
+
+  @override
+  String toString() {
+    return 'SettingTemplatePageRouteArgs{key: $key, enumSettingTemplateType: $enumSettingTemplateType}';
   }
 }
 

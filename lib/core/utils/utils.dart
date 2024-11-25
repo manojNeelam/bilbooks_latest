@@ -12,6 +12,16 @@ class Utils {
     FocusManager.instance.primaryFocus!.unfocus();
   }
 
+  static Future<String?> getEstimate() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString("estimateTitle");
+  }
+
+  static Future<void> saveEstimate(estimate) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString("estimateTitle", estimate);
+  }
+
   static Future<void> saveToken(token) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString("token", token);

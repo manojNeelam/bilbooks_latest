@@ -197,7 +197,8 @@ class InvoiceEntity {
     } else if (status.toLowerCase() == "paid" ||
         status.toLowerCase() == "invoiced") {
       return AppPallete.greenColor;
-    } else if (status.toLowerCase() == "overdue") {
+    } else if (status.toLowerCase() == "overdue" ||
+        status.toLowerCase() == "expired") {
       return AppPallete.red;
     } else if (status.toLowerCase() == "sent" ||
         status.toLowerCase() == "partial") {

@@ -119,6 +119,8 @@ class OrganizationAuthModel extends OrganizationAuthEntity {
     PlanModel? plan,
     ColumnSettingsModel? columnSettings,
   }) : super(
+            invoiceHeading: invoiceHeading,
+            estimateHeading: estimateHeading,
             columnSettings: columnSettings,
             country: country,
             countryId: countryId,
