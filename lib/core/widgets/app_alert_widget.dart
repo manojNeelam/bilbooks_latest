@@ -4,7 +4,7 @@ import '../app_constants.dart';
 import '../theme/app_fonts.dart';
 import '../theme/app_pallete.dart';
 
-enum EnumAppAlertType { delete, ok, voidInvoice, unVoid }
+enum EnumAppAlertType { delete, ok, voidInvoice, unVoid, logout }
 
 extension EnumAppAlertTypeExtension on EnumAppAlertType {
   String get title {
@@ -17,6 +17,8 @@ extension EnumAppAlertTypeExtension on EnumAppAlertType {
         return "Void it";
       case EnumAppAlertType.unVoid:
         return "Unvoid it";
+      case EnumAppAlertType.logout:
+        return "Log me out";
     }
   }
 }

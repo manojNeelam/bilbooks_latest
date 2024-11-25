@@ -3,6 +3,7 @@ import 'package:billbooks_app/core/app_constants.dart';
 import 'package:billbooks_app/core/constants/assets.dart';
 import 'package:billbooks_app/core/theme/app_fonts.dart';
 import 'package:billbooks_app/core/theme/app_pallete.dart';
+import 'package:billbooks_app/core/utils/alert_utility.dart';
 import 'package:billbooks_app/core/widgets/item_separator.dart';
 import 'package:billbooks_app/router/app_router.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +11,7 @@ import 'package:flutter_section_list/flutter_section_list.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/utils/utils.dart';
+import '../../core/widgets/app_alert_widget.dart';
 import '../dashboard/domain/entity/authinfo_entity.dart';
 
 @RoutePage()
@@ -93,10 +95,26 @@ class MorePage extends StatelessWidget with SectionAdapterMixin {
     }
   }
 
+  void _showConfirmLogoutAlert(context) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AppAlertWidget(
+            title: "Are you sure?",
+            message: "Please confirm if you want to logout.",
+            onTapDelete: () async {
+              AutoRouter.of(context).maybePop();
+              await Utils.clearAll();
+              AutoRouter.of(context).pushAndPopUntil(const LoginPageRoute(),
+                  predicate: (_) => false);
+            },
+            alertType: EnumAppAlertType.logout,
+          );
+        });
+  }
+
   void _logout(BuildContext context) async {
-    await Utils.clearAll();
-    AutoRouter.of(context)
-        .pushAndPopUntil(const LoginPageRoute(), predicate: (_) => false);
+    _showConfirmLogoutAlert(context);
   }
 
   @override
