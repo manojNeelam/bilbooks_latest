@@ -95,7 +95,7 @@ class _DashboardPageState extends State<DashboardPage>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              if (!isExpired())
+              if (isExpired())
                 RichText(
                   textAlign: TextAlign.start,
                   text: TextSpan(

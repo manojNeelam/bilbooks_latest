@@ -3,6 +3,7 @@ import 'dart:ffi';
 
 import 'package:auto_route/auto_route.dart';
 import 'package:billbooks_app/core/app_constants.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:billbooks_app/core/constants/assets.dart';
@@ -24,7 +25,7 @@ class SettingTemplatePage extends StatefulWidget {
 }
 
 class _SettingTemplatePageState extends State<SettingTemplatePage> {
-  final PageController pageController = PageController(initialPage: 0);
+  PageController pageController = PageController(initialPage: 0);
 
   int _activePage = 0;
   List<TemplateModel> templateList = [];
@@ -73,6 +74,7 @@ class _SettingTemplatePageState extends State<SettingTemplatePage> {
       ),
       body: Stack(children: [
         PageView.builder(
+            scrollBehavior: CupertinoScrollBehavior(),
             itemCount: templateList.length,
             controller: pageController,
             onPageChanged: (int page) {
@@ -106,9 +108,15 @@ class _SettingTemplatePageState extends State<SettingTemplatePage> {
               children: List<Widget>.generate(templateList.length, (index) {
                 return InkWell(
                   onTap: () {
-                    pageController.animateTo(index.toDouble(),
+                    debugPrint(index.toString());
+                    debugPrint("Current page: ${pageController.page}");
+
+                    _activePage = index;
+
+                    pageController.animateToPage(index,
                         duration: Duration(milliseconds: 300),
-                        curve: Curves.easeIn);
+                        curve: Curves.ease);
+                    setState(() {});
                   },
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 5),
