@@ -1,10 +1,14 @@
+import 'dart:convert';
+
 import 'package:billbooks_app/core/app_constants.dart';
 import 'package:billbooks_app/core/theme/app_fonts.dart';
 import 'package:billbooks_app/core/theme/app_pallete.dart';
+import 'package:billbooks_app/core/utils/utils.dart';
 import 'package:billbooks_app/features/invoice/domain/entities/invoice_details_entity.dart';
 import 'package:billbooks_app/features/invoice/domain/entities/invoice_list_entity.dart';
 import 'package:flutter/material.dart';
 
+import '../../../../core/utils/escape_html_code.dart';
 import '../add_new_invoice_page.dart';
 
 class ItemsTaxAmountDetailsWidget extends StatelessWidget {
@@ -72,7 +76,8 @@ class ItemsTaxAmountDetailsWidget extends StatelessWidget {
     (bool, String) canShowShipping() {
       final shipping = invoiceEntity.shipping ?? "";
       if (shipping.isNotEmpty) {
-        final appendCurrency = "\$$shipping";
+        final appendCurrency =
+            "${invoiceEntity.decodedCurrencySymbol}$shipping";
         return (true, appendCurrency);
       }
       return (false, "");
@@ -83,7 +88,8 @@ class ItemsTaxAmountDetailsWidget extends StatelessWidget {
       final discountType = invoiceEntity.discountType ?? "";
       final discountValue = invoiceEntity.discountValue ?? "";
       if (discount.isNotEmpty) {
-        final appendCurrency = "\$$discount";
+        final appendCurrency =
+            "${invoiceEntity.decodedCurrencySymbol}$discount";
         if (discountType == "0") {
           return (true, appendCurrency, "$discountValue%");
         }
@@ -103,7 +109,8 @@ class ItemsTaxAmountDetailsWidget extends StatelessWidget {
               getTaxCell(context,
                   title: "Subtotal",
                   subTitle: "",
-                  value: "\$${invoiceEntity.subtotal ?? "-"}",
+                  value:
+                      "${invoiceEntity.decodedCurrencySymbol}${invoiceEntity.subtotal ?? "-"}",
                   isSubTotal: true),
               AppConstants.sepSizeBox5,
               if (canShowDiscount().$1)
@@ -123,7 +130,8 @@ class ItemsTaxAmountDetailsWidget extends StatelessWidget {
                 getTaxCell(context,
                     title: "${taxItem.name} (${taxItem.rate}%)",
                     subTitle: "",
-                    value: "\$${taxItem.amount.toStringAsFixed(2)}",
+                    value:
+                        "${invoiceEntity.decodedCurrencySymbol}${taxItem.amount.toStringAsFixed(2)}",
                     isSubTotal: false),
               AppConstants.sepSizeBox5,
               if (canShowShipping().$1 == true)
@@ -141,7 +149,8 @@ class ItemsTaxAmountDetailsWidget extends StatelessWidget {
               getTaxCell(context,
                   title: "Total",
                   subTitle: "(AUD)",
-                  value: "\$${invoiceEntity.nettotal ?? "-"}",
+                  value:
+                      "${invoiceEntity.decodedCurrencySymbol}${invoiceEntity.nettotal ?? "-"}",
                   isTotal: true),
               if (canShowPaidBalance())
                 Column(
@@ -150,13 +159,15 @@ class ItemsTaxAmountDetailsWidget extends StatelessWidget {
                     getTaxCell(context,
                         title: "Paid",
                         subTitle: "",
-                        value: "\$${invoiceEntity.paid ?? "0.00"}",
+                        value:
+                            "${invoiceEntity.decodedCurrencySymbol}${invoiceEntity.paid ?? "0.00"}",
                         isPaid: true),
                     AppConstants.sepSizeBox5,
                     getTaxCell(context,
                         title: "Amount Due",
                         subTitle: "",
-                        value: "\$${invoiceEntity.balance ?? "0.00"}",
+                        value:
+                            "${invoiceEntity.decodedCurrencySymbol}${invoiceEntity.balance ?? "0.00"}",
                         isDue: true),
                   ],
                 )

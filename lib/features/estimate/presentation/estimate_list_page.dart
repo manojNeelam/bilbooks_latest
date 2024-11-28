@@ -343,12 +343,22 @@ class _EstimateListPageState extends State<EstimateListPage>
         )));
   }
 
+  Future<String> estimateTitle() async {
+    return await Utils.getEstimate() ?? "Estimates";
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Estimates"),
+        title: FutureBuilder(
+          future: estimateTitle(),
+          initialData: "Estimates",
+          builder: (context, snapshot) {
+            return Text(snapshot.data ?? "Estimates");
+          },
+        ),
         bottom: PreferredSize(
             preferredSize: const Size.fromHeight(45),
             child: EstimateTypeHeaderWidget(

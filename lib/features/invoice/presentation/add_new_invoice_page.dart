@@ -22,6 +22,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_section_list/flutter_section_list.dart';
 import 'package:flutter_swipe_action_cell/core/cell.dart';
 import 'package:toastification/toastification.dart';
+import '../../../core/utils/utils.dart';
 import '../../../core/widgets/app_alert_widget.dart';
 import '../../../core/widgets/notes_widget.dart';
 import '../../../core/widgets/terms_card_widget.dart';
@@ -65,17 +66,17 @@ extension EnumNewInvoiceEstimateTypeExtension on EnumNewInvoiceEstimateType {
     }
   }
 
-  String getTitle() {
+  String getTitle(String estimateTitle) {
     switch (this) {
       case EnumNewInvoiceEstimateType.estimate ||
             EnumNewInvoiceEstimateType.duplicateEstimate:
-        return "New Estimate";
+        return "New $estimateTitle";
       case EnumNewInvoiceEstimateType.invoice ||
             EnumNewInvoiceEstimateType.convertEstimateToInvoice ||
             EnumNewInvoiceEstimateType.duplicateInvoice:
         return "New Invoice";
       case EnumNewInvoiceEstimateType.editEstimate:
-        return "Edit Estimate";
+        return "Edit $estimateTitle";
       case EnumNewInvoiceEstimateType.editInvoice:
         return "Edit Invoice";
     }
@@ -219,6 +220,11 @@ class _AddNewInvoiceEstimatePageState extends State<AddNewInvoiceEstimatePage>
     await _readRepeatEvery();
     await _readTimeZones();
     await _readPaymentTerms();
+  }
+
+  Future<String> estimateTitle() async {
+    String estimateHeading = await Utils.getEstimate() ?? "Estimate";
+    return widget.type.getTitle(estimateHeading);
   }
 
   Future<void> _readDeliveryOptions() async {
@@ -501,8 +507,13 @@ emailto_clientstaff:[{"id":"23214","email":"abc@exaple.com"},{"id":"23216","emai
     return Scaffold(
         backgroundColor: AppPallete.kF2F2F2,
         appBar: AppBar(
-          title: Text(widget.type
-              .getTitle()), //Text(isEdit() ? "Edit Invoice" : "New Invoice"),
+          title: FutureBuilder(
+            future: estimateTitle(),
+            initialData: "",
+            builder: (context, snapshot) {
+              return Text(snapshot.data ?? "NO Data");
+            },
+          ),
           bottom: AppConstants.getAppBarDivider,
           leading: IconButton(
               onPressed: () {

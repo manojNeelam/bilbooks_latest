@@ -8,6 +8,7 @@ import 'package:billbooks_app/features/dashboard/presentation/bloc/salesexpenses
 import 'package:billbooks_app/features/dashboard/presentation/bloc/totalincomes_bloc.dart';
 import 'package:billbooks_app/features/dashboard/presentation/bloc/totalreceivable_bloc.dart';
 import 'package:billbooks_app/features/estimate/presentation/bloc/estimate_bloc.dart';
+import 'package:billbooks_app/features/general/bloc/general_bloc.dart';
 import 'package:billbooks_app/features/integrations/presentation/bloc/online_payments_bloc.dart';
 import 'package:billbooks_app/features/more/expenses/presentation/bloc/expenses_bloc.dart';
 import 'package:billbooks_app/features/more/settings/presentation/bloc/organization_bloc.dart';
@@ -22,7 +23,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import 'core/theme/theme.dart';
-import 'core/utils/utils.dart';
 import 'features/invoice/presentation/bloc/invoice_bloc.dart';
 import 'features/item/presentation/bloc/item_bloc.dart';
 
@@ -32,6 +32,9 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initDependencies();
   runApp(MultiBlocProvider(providers: [
+    BlocProvider(
+      create: (context) => GeneralBloc(),
+    ),
     BlocProvider(
         create: (context) => ProjectBloc(
               projectListUsecase: serviceLocator(),

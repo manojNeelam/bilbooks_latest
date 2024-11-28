@@ -26,6 +26,12 @@ class _EstimateNamePopupWidgetState extends State<EstimateNamePopupWidget> {
   EstimateName? selectedEstimateName;
 
   @override
+  void initState() {
+    selectedEstimateName = widget.defaultEstimateName;
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return AppSingleSelectionPopupWidget(
         data: widget.estimateNameList,

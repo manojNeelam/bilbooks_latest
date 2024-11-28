@@ -8,7 +8,11 @@ import 'package:flutter/material.dart';
 
 class ItemDetailsCardWidget extends StatelessWidget {
   final InvoiceItemEntity invoiceItemEntity;
-  const ItemDetailsCardWidget({super.key, required this.invoiceItemEntity});
+  final String currencySymbol;
+  const ItemDetailsCardWidget(
+      {super.key,
+      required this.invoiceItemEntity,
+      required this.currencySymbol});
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +33,7 @@ class ItemDetailsCardWidget extends StatelessWidget {
                       style: AppFonts.mediumStyle(size: 16),
                     ),
                     Text(
-                      "\$${invoiceItemEntity.amount}",
+                      "${currencySymbol}${invoiceItemEntity.amount}",
                       style: AppFonts.mediumStyle(size: 16),
                     ),
                   ],

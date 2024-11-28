@@ -1,6 +1,7 @@
 import 'package:adaptive_action_sheet/adaptive_action_sheet.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:billbooks_app/core/utils/show_toast.dart';
+import 'package:billbooks_app/core/utils/utils.dart';
 import 'package:billbooks_app/core/widgets/loading_page.dart';
 import 'package:billbooks_app/core/widgets/section_header_widget.dart';
 import 'package:billbooks_app/features/clients/presentation/widgets/client_item_widget.dart';
@@ -80,6 +81,14 @@ class _InvoiceDetailPageState extends State<InvoiceDetailPage>
     AutoRouter.of(context).maybePop();
   }
 
+  Future<String> estimateTitle() async {
+    if (widget.type == EnumNewInvoiceEstimateType.estimate) {
+      return await Utils.getEstimate() ?? "Estimate";
+    } else {
+      return "Invoice";
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -104,9 +113,13 @@ class _InvoiceDetailPageState extends State<InvoiceDetailPage>
               color: AppPallete.blueColor,
             )),
         backgroundColor: AppPallete.lightBlueColor,
-        title: widget.type == EnumNewInvoiceEstimateType.estimate
-            ? const Text("Estimate")
-            : const Text("Invoice"),
+        title: FutureBuilder(
+          future: estimateTitle(),
+          initialData: "",
+          builder: (context, snapshot) {
+            return Text(snapshot.data ?? "NO Data");
+          },
+        ),
       ),
       body: SafeArea(
         child: BlocConsumer<InvoiceBloc, InvoiceState>(
@@ -251,7 +264,7 @@ class _InvoiceDetailPageState extends State<InvoiceDetailPage>
           //   height: 5,
           // ),
           Text(
-            "\$${invoiceEntity?.nettotal}",
+            "${invoiceEntity?.displayNetTotal}",
             style: AppFonts.mediumStyle(color: AppPallete.blueColor, size: 24),
           ),
 
@@ -980,6 +993,7 @@ class _InvoiceDetailPageState extends State<InvoiceDetailPage>
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: ItemDetailsCardWidget(
             invoiceItemEntity: items[indexPath.item],
+            currencySymbol: invoiceEntity!.decodedCurrencySymbol,
           ),
         );
       }

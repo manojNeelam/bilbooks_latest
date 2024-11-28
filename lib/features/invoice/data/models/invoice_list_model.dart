@@ -95,6 +95,7 @@ class GrandtotalModel extends GrandtotalEntity {
 
 class InvoiceModel extends InvoiceEntity {
   InvoiceModel({
+    String? currencySymbol,
     String? id,
     String? date,
     DateTime? dateYmd,
@@ -156,6 +157,7 @@ class InvoiceModel extends InvoiceEntity {
     List<InvoiceItemModel>? items,
     List<InvoiceTaxModel>? taxes,
   }) : super(
+          currencySymbol: currencySymbol,
           items: items,
           emailtoMystaff: emailtoMystaff,
           //dateModified: dateModified,
@@ -253,6 +255,7 @@ json["persons"] == null
         pono: json["pono"],
         summary: json["summary"],
         currency: json["currency"],
+        currencySymbol: json["currency_symbol"],
         //exchangeRate: json["exchange_rate"],
         dueTerms: json["due_terms"],
         dueDate: json["due_date"],

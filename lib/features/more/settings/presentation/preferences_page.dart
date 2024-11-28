@@ -5,6 +5,7 @@ import 'package:billbooks_app/core/app_constants.dart';
 import 'package:billbooks_app/core/theme/app_fonts.dart';
 import 'package:billbooks_app/core/theme/app_pallete.dart';
 import 'package:billbooks_app/core/utils/show_toast.dart';
+import 'package:billbooks_app/core/utils/utils.dart';
 import 'package:billbooks_app/core/widgets/date_formater_popup_widget.dart';
 import 'package:billbooks_app/core/widgets/estimate_name_popup_widget.dart';
 import 'package:billbooks_app/core/widgets/input_dropdown_view.dart';
@@ -14,6 +15,7 @@ import 'package:billbooks_app/core/widgets/new_inputview_widget.dart';
 import 'package:billbooks_app/core/widgets/notes_widget.dart';
 import 'package:billbooks_app/core/widgets/paper_format_popup_widget.dart';
 import 'package:billbooks_app/core/widgets/section_header_widget.dart';
+import 'package:billbooks_app/features/general/bloc/general_bloc.dart';
 import 'package:billbooks_app/features/more/settings/domain/entity/date_formater.dart';
 import 'package:billbooks_app/features/more/settings/domain/entity/estimate_name_entity.dart';
 import 'package:billbooks_app/features/more/settings/domain/entity/paper_format_entity.dart';
@@ -116,7 +118,7 @@ class _PreferencesPageState extends State<PreferencesPage> {
     //if (selectedType == EnumPreferencesType.general) {
     context.read<OrganizationBloc>().add(UpdatePreferenceGeneralDetailsEvent(
             preferenceUpdateReqParams: UpdatePrefGeneralReqParams(
-          portalName: "SSMK",
+          portalName: preferencesEntity?.portalName ?? "",
           numberFormat: "",
           paperSize: selectedPaperFormatter?.format ?? "",
           attachPdf: attachPDF,
@@ -276,6 +278,7 @@ class _PreferencesPageState extends State<PreferencesPage> {
           AppConstants.sizeBoxHeight10,
           TemplateWidget(
             callBack: () {
+              debugPrint("estimateHeading update..");
               AutoRouter.of(context).push(SettingTemplatePageRoute(
                   enumSettingTemplateType: EnumSettingTemplateType.invoice));
             },
@@ -392,6 +395,12 @@ class _PreferencesPageState extends State<PreferencesPage> {
                 context, state.errorMessage, ToastificationType.error);
           }
           if (state is UpdateGeneralSettingsErrorState) {
+            String updatedEstimateTitle =
+                selectedEstimateName?.name ?? "Estimate";
+            Utils.saveEstimate(updatedEstimateTitle);
+            context
+                .read<GeneralBloc>()
+                .add(SetEstimateHeading(estimateHeading: updatedEstimateTitle));
             showToastification(
                 context, state.errorMessage, ToastificationType.error);
           }

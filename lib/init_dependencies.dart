@@ -34,6 +34,7 @@ import 'package:billbooks_app/features/estimate/domain/repository/estimate_repos
 import 'package:billbooks_app/features/estimate/domain/usecase/estimate_detail_usecase.dart';
 import 'package:billbooks_app/features/estimate/domain/usecase/estimate_list_usecase.dart';
 import 'package:billbooks_app/features/estimate/presentation/bloc/estimate_bloc.dart';
+import 'package:billbooks_app/features/general/bloc/general_bloc.dart';
 import 'package:billbooks_app/features/integrations/data/datasource/integration_remote_datasource.dart';
 import 'package:billbooks_app/features/integrations/domain/repository/online_payment_repository.dart';
 import 'package:billbooks_app/features/integrations/domain/usecase/online_payment_details_usecase.dart';
@@ -128,6 +129,7 @@ Future<void> initDependencies() async {
 }
 
 void _initProfile() {
+  serviceLocator.registerLazySingleton(() => GeneralBloc());
   serviceLocator.registerFactory<ProfileRemoteDataSource>(() =>
       ProfileRemoteDataSourceImpl(apiClient: serviceLocator<APIClient>()));
   serviceLocator.registerFactory<ProfileRepository>(

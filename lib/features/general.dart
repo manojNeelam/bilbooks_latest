@@ -4,13 +4,16 @@ import 'package:billbooks_app/core/constants/assets.dart';
 import 'package:billbooks_app/core/theme/app_pallete.dart';
 import 'package:billbooks_app/features/clients/presentation/client_list_page.dart';
 import 'package:billbooks_app/features/dashboard/domain/entity/authinfo_entity.dart';
+import 'package:billbooks_app/features/estimate/presentation/bloc/estimate_bloc.dart';
 import 'package:billbooks_app/features/invoice/presentation/invoice_list_page.dart';
 import 'package:feather_icons/feather_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 
 import 'dashboard/presentation/dashboard_page.dart';
 import 'estimate/presentation/estimate_list_page.dart';
+import 'general/bloc/general_bloc.dart';
 import 'more/more_page.dart';
 
 @RoutePage()
@@ -24,10 +27,16 @@ class General extends StatefulWidget {
 
 class _GeneralState extends State<General> {
   late AuthInfoMainDataEntity authInfoMainDataEntity;
+  String estimateTitle = "Estimate";
 
   @override
   void initState() {
     authInfoMainDataEntity = widget.authInfoMainDataEntity;
+    estimateTitle =
+        authInfoMainDataEntity.sessionData?.organization?.estimateHeading ??
+            "Estimate";
+
+    loadData();
     super.initState();
   }
 
@@ -38,33 +47,25 @@ class _GeneralState extends State<General> {
   int visit = 0;
   List<Widget> pages = [];
 
-  List<BottomNavigationBarItem> items = [
-    const BottomNavigationBarItem(
-      icon: Icon(Icons.dashboard_outlined),
-      label: "Home",
-    ),
-    const BottomNavigationBarItem(
-      icon: Icon(Icons.people_outline),
-      label: "Clients",
-    ),
-    const BottomNavigationBarItem(
-        icon: Icon(Icons.note_add_outlined), label: 'Invoices'),
-    const BottomNavigationBarItem(
-        icon: Icon(Icons.note_outlined), label: 'Estimates'),
-    const BottomNavigationBarItem(
-        icon: Icon(Icons.more_horiz_outlined), label: 'More'),
-
-    // new BottomNavigationBarItem(
-    //     icon: ImageIcon(
-    //       AssetImage(Assets.assetsImagesIosDashboard),
-    //       color: Color(0xFF3A5A98),
-    //     ),
-    //     title: 'Dashboard'),
-    // const TabItem(icon: Icons.people, title: 'Clients'),
-    // const TabItem(icon: FeatherIcons.filePlus, title: 'Invoices'),
-    // const TabItem(icon: FeatherIcons.file, title: 'Estimates'),
-    // const TabItem(icon: FeatherIcons.moreHorizontal, title: 'More'),
-  ];
+  List<BottomNavigationBarItem> items = [];
+  loadData() {
+    items = [
+      const BottomNavigationBarItem(
+        icon: Icon(Icons.dashboard_outlined),
+        label: "Home",
+      ),
+      const BottomNavigationBarItem(
+        icon: Icon(Icons.people_outline),
+        label: "Clients",
+      ),
+      const BottomNavigationBarItem(
+          icon: Icon(Icons.note_add_outlined), label: 'Invoices'),
+      BottomNavigationBarItem(
+          icon: Icon(Icons.note_outlined), label: estimateTitle),
+      const BottomNavigationBarItem(
+          icon: Icon(Icons.more_horiz_outlined), label: 'More'),
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -91,20 +92,30 @@ class _GeneralState extends State<General> {
             });
           },
         ),
-        bottomNavigationBar: BottomNavigationBar(
-            onTap: (index) {
-              controller.jumpToPage(index);
-              setState(() {
-                visit = index;
-              });
-            },
-            type: BottomNavigationBarType.fixed,
-            selectedIconTheme: IconThemeData(opacity: 1.0, size: 30),
-            unselectedIconTheme: IconThemeData(opacity: 1.0, size: 30),
-            selectedItemColor: AppPallete.blueColor,
-            unselectedItemColor: Colors.grey,
-            currentIndex: visit,
-            items: items));
+        bottomNavigationBar: BlocBuilder<GeneralBloc, GeneralState>(
+          builder: (context, state) {
+            if (state is EstimateHeadingState) {
+              estimateTitle = state.estimateHeading;
+              items[3] = BottomNavigationBarItem(
+                  icon: Icon(Icons.note_outlined), label: estimateTitle);
+            }
+            return BottomNavigationBar(
+                //9490144443
+                onTap: (index) {
+                  controller.jumpToPage(index);
+                  setState(() {
+                    visit = index;
+                  });
+                },
+                type: BottomNavigationBarType.fixed,
+                selectedIconTheme: IconThemeData(opacity: 1.0, size: 30),
+                unselectedIconTheme: IconThemeData(opacity: 1.0, size: 30),
+                selectedItemColor: AppPallete.blueColor,
+                unselectedItemColor: Colors.grey,
+                currentIndex: visit,
+                items: items);
+          },
+        ));
   }
 }
 

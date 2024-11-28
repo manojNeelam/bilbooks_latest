@@ -56,15 +56,15 @@ class _SalesexpensesWidgetState extends State<SalesexpensesWidget> {
       }
     }
 
-    if (totalsEntity?.expenses != null) {
-      if (totalsEntity?.expenses is double) {
-        expenses = totalsEntity?.expenses;
-      } else if (totalsEntity?.expenses is String) {
-        expenses = double.parse(totalsEntity?.expenses);
-      } else {
-        expenses = 0.0;
-      }
-    }
+    // if (totalsEntity?.expenses != null) {
+    //   if (totalsEntity?.expenses is double) {
+    //     expenses = totalsEntity?.expenses;
+    //   } else if (totalsEntity?.expenses is String) {
+    //     expenses = double.parse(totalsEntity?.expenses);
+    //   } else {
+    //     expenses = 0.0;
+    //   }
+    // }
 
     if (totalsEntity?.receipts != null) {
       if (totalsEntity?.receipts is double) {

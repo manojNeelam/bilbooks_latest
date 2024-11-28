@@ -10,6 +10,7 @@ import 'package:billbooks_app/features/clients/domain/entities/client_list_entit
 import 'package:flutter_contacts/flutter_contacts.dart';
 
 import '../../../../core/theme/app_pallete.dart';
+import '../../../../core/utils/escape_html_code.dart';
 import 'invoice_details_entity.dart';
 
 class InvoiceListMainResEntity {
@@ -59,7 +60,13 @@ class GrandtotalEntity {
 }
 
 class InvoiceEntity {
+  String get decodedCurrencySymbol =>
+      EscapeHtmlCode().convert(currencySymbol ?? "");
+
+  String get displayNetTotal => "$decodedCurrencySymbol${nettotal ?? ""}";
+
   String? id;
+  String? currencySymbol;
   String? date;
   DateTime? dateYmd;
   String? clientId;
@@ -120,6 +127,7 @@ class InvoiceEntity {
   List<InvoiceItemEntity>? items;
   List<InvoiceTaxEntity>? taxes;
   InvoiceEntity({
+    this.currencySymbol,
     this.id,
     this.date,
     this.dateYmd,
