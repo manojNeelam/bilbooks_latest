@@ -15,6 +15,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import 'package:toastification/toastification.dart';
 
+import '../../../../core/utils/column_settings_pref.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../localization/locales.dart';
 import '../../../../router/app_router.dart';
@@ -60,6 +61,18 @@ class _LoginPageState extends State<LoginPage> {
                   state.user.data?.message ?? "Successfully logged in.",
                   ToastificationType.success);
               final token = state.user.data?.sessionToken;
+
+              ColumnSettingsEntity? columnSettingsEntity =
+                  state.user.data?.sessionData?.organization?.columnSettings;
+              ColumnSettingsPref columnSettingsPref =
+                  ColumnSettingsPref.fromInfo(
+                      qty: columnSettingsEntity?.columnUnitsTitle,
+                      rate: columnSettingsEntity?.columnRateTitle,
+                      hideQty: columnSettingsEntity?.hideColumnQty,
+                      itemTitle: columnSettingsEntity?.columnItemsTitle,
+                      hideRate: columnSettingsEntity?.hideColumnRate);
+              Utils.saveColumnSettings(columnSettingsPref);
+
               if (token != null) {
                 Utils.saveToken(token);
               }
