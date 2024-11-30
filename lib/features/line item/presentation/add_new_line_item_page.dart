@@ -6,6 +6,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/app_constants.dart';
 import '../../../core/theme/app_fonts.dart';
 import '../../../core/theme/app_pallete.dart';
+import '../../../core/utils/column_settings_pref.dart';
+import '../../../core/utils/utils.dart';
 import '../../../core/widgets/input_dropdown_view.dart';
 import '../../../core/widgets/new_inputview_widget.dart';
 import '../../../core/widgets/new_multiline_input_widget.dart';
@@ -44,17 +46,49 @@ class _AddNewLineItemPageState extends State<AddNewLineItemPage> {
   List<TaxEntity>? selectedTaxes = [];
   ItemListEntity? selectedItem;
   InvoiceItemEntity? newItemModel;
+  String qtyTitle = "";
+  String rateTitle = "";
 
   DateTime selectedLineItemDate = DateTime.now();
   bool isPercentage = true;
   @override
   void initState() {
     newItemModel = widget.updateLineItem;
+    _getColumnsettings();
 
     _populateData();
     //_fetchTaxes();
     _checkIfItemSelected();
+
     super.initState();
+  }
+
+  Future<void> _getColumnsettings() async {
+    ColumnSettingsPref? columnSettingsEntity = await Utils.getColumnSettings();
+    qtyTitle = columnSettingsEntity?.qty ?? "";
+    //rateTitle = columnSettingsEntity?.rate ?? "";
+    debugPrint(columnSettingsEntity?.qty ?? "");
+  }
+
+  Future<String> _getItemsTitle() async {
+    ColumnSettingsPref? columnSettingsEntity = await Utils.getColumnSettings();
+    return columnSettingsEntity?.itemTitle ?? "";
+  }
+
+  Future<(String title, bool hideQty)> _getQtyTitle() async {
+    ColumnSettingsPref? columnSettingsEntity = await Utils.getColumnSettings();
+    return (
+      columnSettingsEntity?.qty ?? "",
+      columnSettingsEntity?.hideQty ?? false
+    );
+  }
+
+  Future<(String title, bool hideRate)> _getRateTitle() async {
+    ColumnSettingsPref? columnSettingsEntity = await Utils.getColumnSettings();
+    return (
+      columnSettingsEntity?.rate ?? "",
+      columnSettingsEntity?.hideRate ?? false
+    );
   }
 
   void _populateData() {
@@ -166,18 +200,24 @@ class _AddNewLineItemPageState extends State<AddNewLineItemPage> {
           child: Column(
             children: [
               AppConstants.sizeBoxHeight10,
-              InputDropdownView(
-                  title: "Items",
-                  defaultText: "Tap to Select",
-                  value: selectedItem?.name ?? "",
-                  isRequired: false,
-                  showDivider: true,
-                  isMediumFont:
-                      (selectedItem?.name ?? "").isEmpty ? false : true,
-                  dropDownImageName: Icons.chevron_right,
-                  onPress: () {
-                    _openItemsPage();
-                  }),
+              FutureBuilder(
+                future: _getItemsTitle(),
+                initialData: "Items",
+                builder: (context, snapshot) {
+                  return InputDropdownView(
+                      title: snapshot.data!,
+                      defaultText: "Tap to Select",
+                      value: selectedItem?.name ?? "",
+                      isRequired: false,
+                      showDivider: true,
+                      isMediumFont:
+                          (selectedItem?.name ?? "").isEmpty ? false : true,
+                      dropDownImageName: Icons.chevron_right,
+                      onPress: () {
+                        _openItemsPage();
+                      });
+                },
+              ),
               NewMultilineInputWidget(
                 title: "Description",
                 hintText: "Add description to your item",
@@ -199,28 +239,42 @@ class _AddNewLineItemPageState extends State<AddNewLineItemPage> {
                     selectedLineItemDate = date ?? DateTime.now();
                     setState(() {});
                   }),*/
-              NewInputViewWidget(
-                title: "Qty",
-                hintText: "0",
-                controller: qtyController,
-                inputType: TextInputType.number,
-                inputAction: TextInputAction.next,
-                isRequired: false,
-                onChanged: (value) {
-                  getFinalAmount();
-                  setState(() {});
+              FutureBuilder<(String, bool)>(
+                future: _getQtyTitle(),
+                initialData: ("Qty", false),
+                builder: (context, snapshot) {
+                  return NewInputViewWidget(
+                    title: snapshot.data?.$1 ?? "",
+                    hintText: "0",
+                    controller: qtyController,
+                    inputType: TextInputType.number,
+                    inputAction: TextInputAction.next,
+                    isRequired: false,
+                    isHideImage: snapshot.data?.$2 ?? false,
+                    onChanged: (value) {
+                      getFinalAmount();
+                      setState(() {});
+                    },
+                  );
                 },
               ),
-              NewInputViewWidget(
-                title: "Rate",
-                hintText: "0.00",
-                controller: rateController,
-                inputType: TextInputType.number,
-                inputAction: TextInputAction.next,
-                isRequired: false,
-                onChanged: (value) {
-                  getFinalAmount();
-                  setState(() {});
+              FutureBuilder<(String title, bool hideRate)>(
+                future: _getRateTitle(),
+                initialData: ("Rate", false),
+                builder: (context, snapshot) {
+                  return NewInputViewWidget(
+                    title: snapshot.data!.$1,
+                    hintText: "0.00",
+                    controller: rateController,
+                    inputType: TextInputType.number,
+                    inputAction: TextInputAction.next,
+                    isRequired: false,
+                    isHideImage: snapshot.data!.$2,
+                    onChanged: (value) {
+                      getFinalAmount();
+                      setState(() {});
+                    },
+                  );
                 },
               ),
               InputDiscountWidget(

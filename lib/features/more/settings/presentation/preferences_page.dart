@@ -32,6 +32,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:toastification/toastification.dart';
 
 import '../../../../core/models/language_model.dart';
+import '../../../../core/utils/column_settings_pref.dart';
 import '../../../../core/widgets/currency_list_popup_widget.dart';
 import '../../../../core/widgets/fiscal_year_popup.dart';
 import '../../../../core/widgets/language_list_popup_widget.dart';
@@ -288,7 +289,8 @@ class _PreferencesPageState extends State<PreferencesPage> {
             title: "Column Settings",
             callback: () {
               AutoRouter.of(context).push(UserColumnSettingsPageRoute(
-                  preferencesEntity: preferencesEntity,
+                  updatePreferenceColumnReqParams:
+                      updatePreferenceColumnReqParams,
                   onupdateColumnSettings: (reParams) {
                     updatePreferenceColumnReqParams = reParams;
                   }));
@@ -395,12 +397,6 @@ class _PreferencesPageState extends State<PreferencesPage> {
                 context, state.errorMessage, ToastificationType.error);
           }
           if (state is UpdateGeneralSettingsErrorState) {
-            String updatedEstimateTitle =
-                selectedEstimateName?.name ?? "Estimate";
-            Utils.saveEstimate(updatedEstimateTitle);
-            context
-                .read<GeneralBloc>()
-                .add(SetEstimateHeading(estimateHeading: updatedEstimateTitle));
             showToastification(
                 context, state.errorMessage, ToastificationType.error);
           }
@@ -413,6 +409,24 @@ class _PreferencesPageState extends State<PreferencesPage> {
               isShownSuccessToast = true;
               showToastification(context, "Preferences updated successfully",
                   ToastificationType.success);
+
+              String updatedEstimateTitle =
+                  selectedEstimateName?.name ?? "Estimate";
+              Utils.saveEstimate(updatedEstimateTitle);
+              context.read<GeneralBloc>().add(
+                  SetEstimateHeading(estimateHeading: updatedEstimateTitle));
+
+              ColumnSettingsPref columnSettingsPref =
+                  ColumnSettingsPref.fromInfo(
+                      qty: updatePreferenceColumnReqParams?.columnUnitsTitle,
+                      rate: updatePreferenceColumnReqParams?.columnRateTitle,
+                      hideQty: updatePreferenceColumnReqParams?.hideColumnQty,
+                      itemTitle:
+                          updatePreferenceColumnReqParams?.columnItemsTitle,
+                      hideRate:
+                          updatePreferenceColumnReqParams?.hideColumnRate);
+
+              Utils.saveColumnSettings(columnSettingsPref);
             }
             AutoRouter.of(context).maybePop();
           }
@@ -422,6 +436,23 @@ class _PreferencesPageState extends State<PreferencesPage> {
             debugPrint(
                 state.preferenceMainResEntity.data?.preferences?.portalName);
             preferencesEntity = state.preferenceMainResEntity.data?.preferences;
+            updatePreferenceColumnReqParams = UpdatePreferenceColumnReqParams(
+                columnAmountOther: "",
+                columnAmountTitle: preferencesEntity?.columnAmountTitle ?? "",
+                columnCustom: preferencesEntity?.columnCustom ?? false,
+                columnCustomTitle: preferencesEntity?.columnCustomTitle ?? "",
+                columnDate: preferencesEntity?.columnDate ?? false,
+                columnItemsOther: "",
+                columnItemsTitle: preferencesEntity?.columnItemsTitle ?? "",
+                columnRateOther: "",
+                columnRateTitle: preferencesEntity?.columnRateTitle ?? "",
+                columnTime: preferencesEntity?.columnTime ?? false,
+                columnUnitsOther: "",
+                columnUnitsTitle: preferencesEntity?.columnUnitsTitle ?? "",
+                hideColumnAmount: preferencesEntity?.hideColumnAmount ?? false,
+                hideColumnQty: preferencesEntity?.hideColumnQty ?? false,
+                hideColumnRate: preferencesEntity?.hideColumnRate ?? false);
+
             estimateNotesController.text =
                 preferencesEntity?.estimateNotes ?? "";
             estimateNumberController.text = preferencesEntity?.estimateNo ?? "";

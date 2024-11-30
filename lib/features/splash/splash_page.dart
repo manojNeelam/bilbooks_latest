@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../core/constants/assets.dart';
+import '../../core/utils/column_settings_pref.dart';
 import '../dashboard/domain/entity/authinfo_entity.dart';
 import '../dashboard/domain/usecase/auth_info_usecase.dart';
 
@@ -35,6 +36,14 @@ class _SplashPageState extends State<SplashPage> {
     debugPrint("estimateTitle: $estimateTitle");
   }
 
+  //ColumnSettingsEntity
+
+  Future<void> saveColumnSettings(ColumnSettingsPref pref) async {
+    await Utils.saveColumnSettings(pref);
+    ColumnSettingsPref? columnSettingsEntity = await Utils.getColumnSettings();
+    debugPrint(columnSettingsEntity?.qty ?? "");
+  }
+
   Future<void> _callApi() async {
     var token = await Utils.getToken();
     if (token == null) {
@@ -56,8 +65,19 @@ class _SplashPageState extends State<SplashPage> {
             ignoreObserving = true;
             authInfoMainDataEntity = state.authInfoMainResEntity.data;
             var estimateTitle = authInfoMainDataEntity
-                    ?.sessionData?.organization?.estimateHeading ??
-                "";
+                ?.sessionData?.organization?.estimateHeading;
+
+            ColumnSettingsEntity? columnSettingsEntity = authInfoMainDataEntity
+                ?.sessionData?.organization?.columnSettings;
+
+            ColumnSettingsPref columnSettingsPref = ColumnSettingsPref.fromInfo(
+                qty: columnSettingsEntity?.columnUnitsTitle,
+                rate: columnSettingsEntity?.columnRateTitle,
+                hideQty: columnSettingsEntity?.hideColumnQty,
+                itemTitle: columnSettingsEntity?.columnItemsTitle,
+                hideRate: columnSettingsEntity?.hideColumnRate);
+            saveColumnSettings(columnSettingsPref);
+
             saveEstimateTitle(estimateTitle);
             AutoRouter.of(context).pushAndPopUntil(
                 GeneralRoute(authInfoMainDataEntity: authInfoMainDataEntity!),

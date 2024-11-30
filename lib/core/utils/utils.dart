@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:auto_route/auto_route.dart';
+import 'package:billbooks_app/core/utils/column_settings_pref.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -10,6 +13,23 @@ class Utils {
   //MARK: - Private helpers
   static void hideKeyboard() {
     FocusManager.instance.primaryFocus!.unfocus();
+  }
+
+  static Future<ColumnSettingsPref?> getColumnSettings() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    String columnPrefString = prefs.getString("column_settings_pref") ?? "";
+    if (columnPrefString.isNotEmpty) {
+      Map<String, dynamic> columnMap = jsonDecode(columnPrefString);
+      return ColumnSettingsPref.fromJson(columnMap);
+    }
+    return null;
+  }
+
+  static Future<void> saveColumnSettings(
+      ColumnSettingsPref columnSettingsPref) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    String jsonString = jsonEncode(columnSettingsPref);
+    prefs.setString("column_settings_pref", jsonString);
   }
 
   static Future<String?> getEstimate() async {

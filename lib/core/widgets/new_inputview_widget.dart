@@ -14,9 +14,11 @@ class NewInputViewWidget extends StatelessWidget {
   final TextInputAction inputAction;
   final Function(String?)? onChanged;
   final bool isBold;
+  final bool isHideImage;
 
   const NewInputViewWidget(
       {Key? key,
+      this.isHideImage = false,
       this.isRequired = true,
       required this.title,
       required this.hintText,
@@ -40,16 +42,36 @@ class NewInputViewWidget extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                RichText(
-                  text: TextSpan(
-                    style: AppFonts.regularStyle(),
-                    text: title,
+                Container(
+                  constraints: BoxConstraints(maxWidth: 180),
+                  child: Row(
                     children: [
-                      if (isRequired)
-                        TextSpan(
-                            text: " *",
-                            style: AppFonts.regularStyle()
-                                .copyWith(color: AppPallete.red))
+                      Flexible(
+                        child: RichText(
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          text: TextSpan(
+                            style: AppFonts.regularStyle(),
+                            text: title,
+                            children: [
+                              if (isRequired)
+                                TextSpan(
+                                    text: " *",
+                                    style: AppFonts.regularStyle()
+                                        .copyWith(color: AppPallete.red))
+                            ],
+                          ),
+                        ),
+                      ),
+                      Wrap(children: [
+                        AppConstants.sizeBoxWidth5,
+                        if (isHideImage)
+                          Icon(
+                            Icons.visibility_off_rounded,
+                            color: AppPallete.red,
+                            size: 18,
+                          )
+                      ]),
                     ],
                   ),
                 ),

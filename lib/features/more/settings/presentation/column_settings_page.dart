@@ -7,16 +7,16 @@ import 'package:billbooks_app/core/widgets/new_inputview_widget.dart';
 import 'package:billbooks_app/features/clients/presentation/widgets/new_client_section_widget.dart';
 import 'package:billbooks_app/features/more/settings/domain/usecase/update_preference_column_usecase.dart';
 import 'package:flutter/material.dart';
-import '../domain/entity/preference_details_entity.dart';
 
 @RoutePage()
 class UserColumnSettingsPage extends StatefulWidget {
-  final PreferencesEntity? preferencesEntity;
+  final UpdatePreferenceColumnReqParams? updatePreferenceColumnReqParams;
   final Function(UpdatePreferenceColumnReqParams) onupdateColumnSettings;
-  const UserColumnSettingsPage(
-      {super.key,
-      required this.preferencesEntity,
-      required this.onupdateColumnSettings});
+  const UserColumnSettingsPage({
+    super.key,
+    required this.onupdateColumnSettings,
+    required this.updatePreferenceColumnReqParams,
+  });
 
   @override
   State<UserColumnSettingsPage> createState() => _UserColumnSettingsPageState();
@@ -46,18 +46,18 @@ class _UserColumnSettingsPageState extends State<UserColumnSettingsPage> {
   }
 
   void _populateData() {
-    final preference = widget.preferencesEntity;
+    final preference = widget.updatePreferenceColumnReqParams;
     if (preference != null) {
-      dateBool = preference.columnDate ?? false;
-      timeBool = preference.columnTime ?? false;
-      customBool = preference.columnCustom ?? false;
-      hideUnits = preference.hideColumnQty ?? false;
-      hideAmount = preference.hideColumnAmount ?? false;
-      hideRates = preference.hideColumnRate ?? false;
-      itemsController.text = preference.columnItemsTitle ?? "";
-      unitsController.text = preference.columnUnitsTitle ?? "";
-      rateController.text = preference.columnRateTitle ?? "";
-      amountController.text = preference.columnAmountTitle ?? "";
+      dateBool = preference.columnDate;
+      timeBool = preference.columnTime;
+      customBool = preference.columnCustom;
+      hideUnits = preference.hideColumnQty;
+      hideAmount = preference.hideColumnAmount;
+      hideRates = preference.hideColumnRate;
+      itemsController.text = preference.columnItemsTitle;
+      unitsController.text = preference.columnUnitsTitle;
+      rateController.text = preference.columnRateTitle;
+      amountController.text = preference.columnAmountTitle;
       updateUI();
     }
   }

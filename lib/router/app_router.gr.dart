@@ -715,8 +715,8 @@ abstract class _$AppRouter extends RootStackRouter {
         routeData: routeData,
         child: UserColumnSettingsPage(
           key: args.key,
-          preferencesEntity: args.preferencesEntity,
           onupdateColumnSettings: args.onupdateColumnSettings,
+          updatePreferenceColumnReqParams: args.updatePreferenceColumnReqParams,
         ),
       );
     },
@@ -3312,16 +3312,16 @@ class UserColumnSettingsPageRoute
     extends PageRouteInfo<UserColumnSettingsPageRouteArgs> {
   UserColumnSettingsPageRoute({
     Key? key,
-    required PreferencesEntity? preferencesEntity,
     required dynamic Function(UpdatePreferenceColumnReqParams)
         onupdateColumnSettings,
+    required UpdatePreferenceColumnReqParams? updatePreferenceColumnReqParams,
     List<PageRouteInfo>? children,
   }) : super(
           UserColumnSettingsPageRoute.name,
           args: UserColumnSettingsPageRouteArgs(
             key: key,
-            preferencesEntity: preferencesEntity,
             onupdateColumnSettings: onupdateColumnSettings,
+            updatePreferenceColumnReqParams: updatePreferenceColumnReqParams,
           ),
           initialChildren: children,
         );
@@ -3335,20 +3335,20 @@ class UserColumnSettingsPageRoute
 class UserColumnSettingsPageRouteArgs {
   const UserColumnSettingsPageRouteArgs({
     this.key,
-    required this.preferencesEntity,
     required this.onupdateColumnSettings,
+    required this.updatePreferenceColumnReqParams,
   });
 
   final Key? key;
 
-  final PreferencesEntity? preferencesEntity;
-
   final dynamic Function(UpdatePreferenceColumnReqParams)
       onupdateColumnSettings;
 
+  final UpdatePreferenceColumnReqParams? updatePreferenceColumnReqParams;
+
   @override
   String toString() {
-    return 'UserColumnSettingsPageRouteArgs{key: $key, preferencesEntity: $preferencesEntity, onupdateColumnSettings: $onupdateColumnSettings}';
+    return 'UserColumnSettingsPageRouteArgs{key: $key, onupdateColumnSettings: $onupdateColumnSettings, updatePreferenceColumnReqParams: $updatePreferenceColumnReqParams}';
   }
 }
 
