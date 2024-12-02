@@ -127,6 +127,12 @@ class InvoiceRemoteDatasourceImpl implements InvoiceRemoteDatasource {
         "page": params.page,
       };
 
+      if (params.startDate != null) {
+        queryParameters.addAll({"start_date": params.startDate ?? ""});
+      }
+      if (params.endDate != null) {
+        queryParameters.addAll({"end_date": params.endDate ?? ""});
+      }
       if (params.status.isNotEmpty) {
         queryParameters.addAll({
           "status": params.status,

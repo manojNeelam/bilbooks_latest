@@ -22,11 +22,15 @@ class InvoiceListReqParams {
   final String columnName;
   final String sortOrder;
   final String page;
-  InvoiceListReqParams({
-    required this.status,
-    required this.query,
-    required this.columnName,
-    required this.sortOrder,
-    required this.page,
-  });
+  final String? startDate;
+  final String? endDate;
+
+  InvoiceListReqParams(
+      {required this.status,
+      required this.query,
+      required this.columnName,
+      required this.sortOrder,
+      required this.page,
+      this.startDate,
+      this.endDate});
 }

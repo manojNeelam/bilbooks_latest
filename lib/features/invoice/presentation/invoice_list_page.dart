@@ -112,13 +112,15 @@ class _InvoiceListPageState extends State<InvoiceListPage>
   EnumOrderBy selectedOrderBy = EnumOrderBy.ascending;
   List<InvoiceEntity> invoices = [];
   EnumAllTimes selectedAllTimes = EnumAllTimes.all;
-  String allTimesDisplayName = EnumAllTimes.all.displayName;
+  String allTimesDisplayName = EnumAllTimes.all.displayName.$3;
   bool isIgnoreBlocStates = false;
   EnumInvoiceSwipeOptions? enumInvoiceSwipeOptions;
   ScrollController _scrollController = ScrollController();
   Paging? paging;
   int currentPage = 1;
   bool isFromPagination = false;
+  String? startDateReqParams;
+  String? endDateReqParams;
 
   @override
   void initState() {
@@ -154,6 +156,8 @@ class _InvoiceListPageState extends State<InvoiceListPage>
           sortOrder: selectedOrderBy.apiParamsValue,
           columnName: selectedInvoiceSortBy.apiParams,
           page: currentPage.toString(),
+          startDate: startDateReqParams,
+          endDate: endDateReqParams,
         )));
   }
 
@@ -220,7 +224,8 @@ class _InvoiceListPageState extends State<InvoiceListPage>
             refreshList: () {
               isIgnoreBlocStates = false;
               _getInvoiceList();
-            }));
+            },
+            estimateTitle: ''));
         // Navigator.of(context).push(MaterialPageRoute(builder: (context) {
         //   return InvoiceDetailPage(
         //     invoiceEntity: item,
@@ -310,11 +315,18 @@ class _InvoiceListPageState extends State<InvoiceListPage>
         onSubmitted: (val) {
           _getInvoiceList();
         },
-        onSelectedMenuItem: (val, displayName) {
+        onSelectedMenuItem: (val, displayName, startDate, endDate) {
           selectedAllTimes = val;
           allTimesDisplayName = displayName;
+          //Call API
+
+          startDateReqParams = startDate;
+          endDateReqParams = endDate;
+
           showToastification(
               context, "Selected ${val.title}", ToastificationType.info);
+
+          _getInvoiceList();
           setState(() {});
         },
       ),

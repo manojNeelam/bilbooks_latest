@@ -8,8 +8,10 @@ class InvoiceInfoWidget extends StatelessWidget {
   final EnumNewInvoiceEstimateType type;
   final InvoiceRequestModel invoiceRequestModel;
   final Color? invoiceStatusColor;
+  final String estimateTitle;
   const InvoiceInfoWidget(
       {super.key,
+      required this.estimateTitle,
       required this.invoiceRequestModel,
       required this.type,
       this.invoiceStatusColor});
@@ -28,7 +30,7 @@ class InvoiceInfoWidget extends StatelessWidget {
               children: [
                 RichText(
                     text: TextSpan(
-                        text: type.getName(),
+                        text: type.getName(estimateTitle: estimateTitle),
                         style: AppFonts.regularStyle(),
                         children: [
                       const TextSpan(text: " "),

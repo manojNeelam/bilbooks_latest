@@ -22,6 +22,7 @@ abstract class _$AppRouter extends RootStackRouter {
         child: AddNewInvoiceEstimatePage(
           key: args.key,
           invoiceEntity: args.invoiceEntity,
+          estimateTitle: args.estimateTitle,
           type: args.type,
           refreshCallBack: args.refreshCallBack,
           invoiceDetailResEntity: args.invoiceDetailResEntity,
@@ -225,6 +226,7 @@ abstract class _$AppRouter extends RootStackRouter {
         routeData: routeData,
         child: EstimateAddInfoDetails(
           key: args.key,
+          estimateTitle: args.estimateTitle,
           invoiceRequestModel: args.invoiceRequestModel,
           callback: args.callback,
         ),
@@ -299,6 +301,7 @@ abstract class _$AppRouter extends RootStackRouter {
           type: args.type,
           refreshList: args.refreshList,
           startObserveBlocBack: args.startObserveBlocBack,
+          estimateTitle: args.estimateTitle,
         ),
       );
     },
@@ -747,6 +750,7 @@ class AddNewInvoiceEstimatePageRoute
   AddNewInvoiceEstimatePageRoute({
     Key? key,
     InvoiceEntity? invoiceEntity,
+    String estimateTitle = "estimate",
     required EnumNewInvoiceEstimateType type,
     required dynamic Function() refreshCallBack,
     required InvoiceDetailResEntity? invoiceDetailResEntity,
@@ -757,6 +761,7 @@ class AddNewInvoiceEstimatePageRoute
           args: AddNewInvoiceEstimatePageRouteArgs(
             key: key,
             invoiceEntity: invoiceEntity,
+            estimateTitle: estimateTitle,
             type: type,
             refreshCallBack: refreshCallBack,
             invoiceDetailResEntity: invoiceDetailResEntity,
@@ -775,6 +780,7 @@ class AddNewInvoiceEstimatePageRouteArgs {
   const AddNewInvoiceEstimatePageRouteArgs({
     this.key,
     this.invoiceEntity,
+    this.estimateTitle = "estimate",
     required this.type,
     required this.refreshCallBack,
     required this.invoiceDetailResEntity,
@@ -784,6 +790,8 @@ class AddNewInvoiceEstimatePageRouteArgs {
   final Key? key;
 
   final InvoiceEntity? invoiceEntity;
+
+  final String estimateTitle;
 
   final EnumNewInvoiceEstimateType type;
 
@@ -795,7 +803,7 @@ class AddNewInvoiceEstimatePageRouteArgs {
 
   @override
   String toString() {
-    return 'AddNewInvoiceEstimatePageRouteArgs{key: $key, invoiceEntity: $invoiceEntity, type: $type, refreshCallBack: $refreshCallBack, invoiceDetailResEntity: $invoiceDetailResEntity, startObserveBlocBack: $startObserveBlocBack}';
+    return 'AddNewInvoiceEstimatePageRouteArgs{key: $key, invoiceEntity: $invoiceEntity, estimateTitle: $estimateTitle, type: $type, refreshCallBack: $refreshCallBack, invoiceDetailResEntity: $invoiceDetailResEntity, startObserveBlocBack: $startObserveBlocBack}';
   }
 }
 
@@ -1546,6 +1554,7 @@ class EstimateAddInfoDetailsRoute
     extends PageRouteInfo<EstimateAddInfoDetailsRouteArgs> {
   EstimateAddInfoDetailsRoute({
     Key? key,
+    required String estimateTitle,
     required InvoiceRequestModel invoiceRequestModel,
     required dynamic Function()? callback,
     List<PageRouteInfo>? children,
@@ -1553,6 +1562,7 @@ class EstimateAddInfoDetailsRoute
           EstimateAddInfoDetailsRoute.name,
           args: EstimateAddInfoDetailsRouteArgs(
             key: key,
+            estimateTitle: estimateTitle,
             invoiceRequestModel: invoiceRequestModel,
             callback: callback,
           ),
@@ -1568,11 +1578,14 @@ class EstimateAddInfoDetailsRoute
 class EstimateAddInfoDetailsRouteArgs {
   const EstimateAddInfoDetailsRouteArgs({
     this.key,
+    required this.estimateTitle,
     required this.invoiceRequestModel,
     required this.callback,
   });
 
   final Key? key;
+
+  final String estimateTitle;
 
   final InvoiceRequestModel invoiceRequestModel;
 
@@ -1580,7 +1593,7 @@ class EstimateAddInfoDetailsRouteArgs {
 
   @override
   String toString() {
-    return 'EstimateAddInfoDetailsRouteArgs{key: $key, invoiceRequestModel: $invoiceRequestModel, callback: $callback}';
+    return 'EstimateAddInfoDetailsRouteArgs{key: $key, estimateTitle: $estimateTitle, invoiceRequestModel: $invoiceRequestModel, callback: $callback}';
   }
 }
 
@@ -1825,6 +1838,7 @@ class InvoiceDetailPageRoute extends PageRouteInfo<InvoiceDetailPageRouteArgs> {
     required EnumNewInvoiceEstimateType type,
     dynamic Function()? refreshList,
     required dynamic Function() startObserveBlocBack,
+    required String estimateTitle,
     List<PageRouteInfo>? children,
   }) : super(
           InvoiceDetailPageRoute.name,
@@ -1834,6 +1848,7 @@ class InvoiceDetailPageRoute extends PageRouteInfo<InvoiceDetailPageRouteArgs> {
             type: type,
             refreshList: refreshList,
             startObserveBlocBack: startObserveBlocBack,
+            estimateTitle: estimateTitle,
           ),
           initialChildren: children,
         );
@@ -1851,6 +1866,7 @@ class InvoiceDetailPageRouteArgs {
     required this.type,
     this.refreshList,
     required this.startObserveBlocBack,
+    required this.estimateTitle,
   });
 
   final Key? key;
@@ -1863,9 +1879,11 @@ class InvoiceDetailPageRouteArgs {
 
   final dynamic Function() startObserveBlocBack;
 
+  final String estimateTitle;
+
   @override
   String toString() {
-    return 'InvoiceDetailPageRouteArgs{key: $key, invoiceEntity: $invoiceEntity, type: $type, refreshList: $refreshList, startObserveBlocBack: $startObserveBlocBack}';
+    return 'InvoiceDetailPageRouteArgs{key: $key, invoiceEntity: $invoiceEntity, type: $type, refreshList: $refreshList, startObserveBlocBack: $startObserveBlocBack, estimateTitle: $estimateTitle}';
   }
 }
 

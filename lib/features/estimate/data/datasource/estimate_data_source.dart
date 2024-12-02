@@ -32,6 +32,18 @@ class EstimateDataSourceImpl implements EstimateDataSource {
         "page": params.page,
       };
 
+      if (params.startDateStr != null) {
+        queryParameters.addAll({
+          "start_date": params.startDateStr ?? "",
+        });
+      }
+
+      if (params.endDateStr != null) {
+        queryParameters.addAll({
+          "end_date": params.endDateStr ?? "",
+        });
+      }
+
       if (params.status.isNotEmpty) {
         queryParameters.addAll({
           "status": params.status,

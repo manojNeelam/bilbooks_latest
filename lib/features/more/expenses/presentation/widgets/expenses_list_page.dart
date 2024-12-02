@@ -112,11 +112,13 @@ class _ExpensesListPageState extends State<ExpensesListPage>
   List<ExpenseEntity> expensesList = [];
   bool isLoading = false;
   EnumAllTimes selectedAllTimes = EnumAllTimes.all;
-  String allTimesDisplayName = EnumAllTimes.all.displayName;
+  String allTimesDisplayName = EnumAllTimes.all.displayName.$3;
   ScrollController _scrollController = ScrollController();
   Paging? paging;
   int currentPage = 1;
   bool isFromPagination = false;
+  String? startDateReqParams;
+  String? endDateReqParams;
 
   @override
   void initState() {
@@ -152,6 +154,8 @@ class _ExpensesListPageState extends State<ExpensesListPage>
           sortBy: selectedExpenseSortBy.apiParams,
           orderBy: selectedOrderBy.apiParamsValue,
           page: currentPage.toString(),
+          endDate: endDateReqParams,
+          startDate: startDateReqParams,
         )));
   }
 
@@ -214,12 +218,19 @@ class _ExpensesListPageState extends State<ExpensesListPage>
           controller: searchController,
           hintText: "Search Expenses",
           capsuleText: "${expensesList.length} Expenses",
-          onSelectedMenuItem: (val, displayName) {
+          onSelectedMenuItem: (val, displayName, startDate, endDate) {
             selectedAllTimes = val;
             allTimesDisplayName = displayName;
+
+            startDateReqParams = startDate;
+            endDateReqParams = endDate;
+
             showToastification(
                 context, "Selected ${val.title}", ToastificationType.info);
+
             setState(() {});
+
+            _getExpensesList();
           },
           dismissKeyboard: () {
             Utils.hideKeyboard();

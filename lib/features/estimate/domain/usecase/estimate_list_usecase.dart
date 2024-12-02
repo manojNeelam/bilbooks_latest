@@ -23,11 +23,16 @@ class EstimateListReqParams {
   final String columnName;
   final String sortOrder;
   final String page;
+  final String? startDateStr;
+  final String? endDateStr;
+
   EstimateListReqParams({
     required this.status,
     required this.query,
     required this.columnName,
     required this.sortOrder,
     required this.page,
+    this.startDateStr,
+    this.endDateStr,
   });
 }

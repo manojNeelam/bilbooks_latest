@@ -100,13 +100,16 @@ class _EstimateListPageState extends State<EstimateListPage>
   List<InvoiceEntity> estimates = [];
   bool isLoading = false;
   EnumAllTimes selectedAllTimes = EnumAllTimes.all;
-  String allTimesDisplayName = EnumAllTimes.all.displayName;
+  String allTimesDisplayName = EnumAllTimes.all.displayName.$3;
   bool isIgnoreBlocStates = false;
   EnumNewInvoiceEstimateType? invoiceEstimateType;
   ScrollController _scrollController = ScrollController();
   bool isFromPagination = false;
   int currentPage = 1;
   Paging? paging;
+  String estimateHeading = "Estimate";
+  String? startDateReqParams;
+  String? endDateReqParams;
 
   bool isSent(InvoiceEntity invoiceEntity) {
     final status = invoiceEntity.status ?? "";
@@ -221,7 +224,8 @@ class _EstimateListPageState extends State<EstimateListPage>
             refreshList: () {
               isIgnoreBlocStates = false;
               _loadEstimates();
-            }));
+            },
+            estimateTitle: estimateHeading));
       },
     );
   }
@@ -243,31 +247,39 @@ class _EstimateListPageState extends State<EstimateListPage>
   void _onTapConvertToInvoice(
       InvoiceEntity item, InvoiceDetailResEntity detailResEntity) {
     isIgnoreBlocStates = true;
-    AutoRouter.of(context).push(AddNewInvoiceEstimatePageRoute(
-        invoiceDetailResEntity: detailResEntity,
-        invoiceEntity: item,
-        type: EnumNewInvoiceEstimateType.convertEstimateToInvoice,
-        startObserveBlocBack: () {
-          isIgnoreBlocStates = false;
-        },
-        refreshCallBack: () {
-          isIgnoreBlocStates = false;
-        }));
+
+    _openAddEstimateInvoicePage(detailResEntity, item,
+        EnumNewInvoiceEstimateType.convertEstimateToInvoice);
+
+    // AutoRouter.of(context).push(AddNewInvoiceEstimatePageRoute(
+    //     invoiceDetailResEntity: detailResEntity,
+    //     invoiceEntity: item,
+    //     type: EnumNewInvoiceEstimateType.convertEstimateToInvoice,
+    //     startObserveBlocBack: () {
+    //       isIgnoreBlocStates = false;
+    //     },
+    //     refreshCallBack: () {
+    //       isIgnoreBlocStates = false;
+    //     }));
   }
 
   void _onTapDuplicate(
       InvoiceEntity item, InvoiceDetailResEntity detailResEntity) {
     isIgnoreBlocStates = true;
-    AutoRouter.of(context).push(AddNewInvoiceEstimatePageRoute(
-        invoiceDetailResEntity: null,
-        invoiceEntity: item,
-        type: EnumNewInvoiceEstimateType.duplicateEstimate,
-        startObserveBlocBack: () {
-          isIgnoreBlocStates = false;
-        },
-        refreshCallBack: () {
-          isIgnoreBlocStates = false;
-        }));
+
+    _openAddEstimateInvoicePage(
+        null, item, EnumNewInvoiceEstimateType.duplicateEstimate);
+
+    // AutoRouter.of(context).push(AddNewInvoiceEstimatePageRoute(
+    //     invoiceDetailResEntity: null,
+    //     invoiceEntity: item,
+    //     type: EnumNewInvoiceEstimateType.duplicateEstimate,
+    //     startObserveBlocBack: () {
+    //       isIgnoreBlocStates = false;
+    //     },
+    //     refreshCallBack: () {
+    //       isIgnoreBlocStates = false;
+    //     }));
   }
 
   @override
@@ -284,22 +296,33 @@ class _EstimateListPageState extends State<EstimateListPage>
   Widget getSectionHeader(BuildContext context, int section) {
     return Padding(
       padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
-      child: ListCountHeader(
-        controller: searchController,
-        hintText: "Search Estimates",
-        capsuleText: estimateCountText,
-        onSubmitted: (val) {
-          _loadEstimates();
-        },
-        dismissKeyboard: () {
-          Utils.hideKeyboard();
-        },
-        onSelectedMenuItem: (val, displayName) {
-          selectedAllTimes = val;
-          allTimesDisplayName = displayName;
-          showToastification(
-              context, "Selected ${val.title}", ToastificationType.info);
-          setState(() {});
+      child: FutureBuilder(
+        future: estimateTitle(),
+        builder: (context, snapshot) {
+          return ListCountHeader(
+            controller: searchController,
+            hintText: "Search ${snapshot.data ?? "Estimates"}",
+            capsuleText: "${estimates.length} ${snapshot.data ?? "Estimates"}",
+            onSubmitted: (val) {
+              _loadEstimates();
+            },
+            dismissKeyboard: () {
+              Utils.hideKeyboard();
+            },
+            onSelectedMenuItem: (val, displayName, startDate, endDate) {
+              selectedAllTimes = val;
+              allTimesDisplayName = displayName;
+
+              startDateReqParams = startDate;
+              endDateReqParams = endDate;
+
+              showToastification(
+                  context, "Selected ${val.title}", ToastificationType.info);
+
+              _loadEstimates();
+              setState(() {});
+            },
+          );
         },
       ),
     );
@@ -311,18 +334,37 @@ class _EstimateListPageState extends State<EstimateListPage>
     return isLoading ? 10 : estimates.length;
   }
 
-  void _addNewEstimate() {
-    isIgnoreBlocStates = true;
+  void _openAddEstimateInvoicePage(InvoiceDetailResEntity? detailResEntity,
+      InvoiceEntity? item, EnumNewInvoiceEstimateType type) {
     AutoRouter.of(context).push(AddNewInvoiceEstimatePageRoute(
-        invoiceDetailResEntity: null,
+        invoiceDetailResEntity: detailResEntity,
+        invoiceEntity: item,
+        type: type,
+        estimateTitle: estimateHeading,
         startObserveBlocBack: () {
           isIgnoreBlocStates = false;
         },
-        type: EnumNewInvoiceEstimateType.estimate,
         refreshCallBack: () {
           isIgnoreBlocStates = false;
           _loadEstimates();
         }));
+
+    // AutoRouter.of(context).push(AddNewInvoiceEstimatePageRoute(
+    //     invoiceDetailResEntity: null,
+    //     startObserveBlocBack: () {
+    //       isIgnoreBlocStates = false;
+    //     },
+    //     type: EnumNewInvoiceEstimateType.estimate,
+    //     refreshCallBack: () {
+    //       isIgnoreBlocStates = false;
+    //       _loadEstimates();
+    //     }));
+  }
+
+  void _addNewEstimate() {
+    isIgnoreBlocStates = true;
+    _openAddEstimateInvoicePage(
+        null, null, EnumNewInvoiceEstimateType.estimate);
   }
 
   @override
@@ -340,11 +382,14 @@ class _EstimateListPageState extends State<EstimateListPage>
           columnName: "date",
           sortOrder: selectedOrderBy.apiParamsValue,
           page: currentPage.toString(),
+          endDateStr: endDateReqParams,
+          startDateStr: startDateReqParams,
         )));
   }
 
   Future<String> estimateTitle() async {
-    return await Utils.getEstimate() ?? "Estimates";
+    estimateHeading = await Utils.getEstimate() ?? "Estimates";
+    return estimateHeading;
   }
 
   @override
@@ -513,14 +558,20 @@ class _EstimateListPageState extends State<EstimateListPage>
             _loadEstimates();
           });
     }
-    return ListEmptyPage(
-        buttonTitle: "Add estimate",
-        noDataText: "No Estimates Records",
-        noDataSubtitle: "",
-        iconName: Icons.file_copy,
-        callBack: () {
-          _addNewEstimate();
-        });
+    return FutureBuilder<String>(
+      future: estimateTitle(),
+      builder: (context, snapshot) {
+        String title = snapshot.data ?? "estimate";
+        return ListEmptyPage(
+            buttonTitle: "Add $title",
+            noDataText: "No $title Records",
+            noDataSubtitle: "",
+            iconName: Icons.file_copy,
+            callBack: () {
+              _addNewEstimate();
+            });
+      },
+    );
   }
 
   Future<void> _handleRefresh() async {

@@ -33,6 +33,15 @@ class ExpensesRemoteDatasourceImpl implements ExpensesRemoteDatasource {
         "q": params.query,
         "page": params.page,
       };
+
+      if (params.startDate != null) {
+        queryParameters.addAll({"start_date": params.startDate ?? ""});
+      }
+
+      if (params.endDate != null) {
+        queryParameters.addAll({"end_date": params.endDate ?? ""});
+      }
+
       debugPrint(queryParameters.toString());
       final response = await apiClient.getRequest(ApiEndPoints.expenses,
           queryParameters: queryParameters);

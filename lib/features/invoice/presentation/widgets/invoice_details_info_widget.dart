@@ -10,8 +10,12 @@ import '../../domain/entities/invoice_list_entity.dart';
 class InvoiceDetailsInfoWidget extends StatelessWidget {
   final EnumNewInvoiceEstimateType type;
   final InvoiceEntity invoiceEntity;
+  final String estimateTitle;
   const InvoiceDetailsInfoWidget(
-      {super.key, required this.invoiceEntity, required this.type});
+      {super.key,
+      required this.invoiceEntity,
+      required this.type,
+      required this.estimateTitle});
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +47,7 @@ class InvoiceDetailsInfoWidget extends StatelessWidget {
                   children: [
                     RichText(
                         text: TextSpan(
-                            text: type.getName(),
+                            text: type.getName(estimateTitle: estimateTitle),
                             style: AppFonts.regularStyle(size: 15),
                             children: [
                           const TextSpan(text: " "),

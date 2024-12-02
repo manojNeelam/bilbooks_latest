@@ -195,6 +195,13 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    // var now = DateTime.now();
+    // final currentMonth = now.month;
+    // final currentYear = now.year;
+    // var date = DateTime(currentYear, currentMonth - 1, 0);
+    // var lastDay = date.day;
+    // debugPrint("Last day: $lastDay");
+
     final mediaQueryData = MediaQuery.of(context);
     final scale = mediaQueryData.textScaler.clamp(
       minScaleFactor: 1.0, // Minimum scale factor allowed.

@@ -39,15 +39,16 @@ import 'dart:async';
 class InvoiceDetailPage extends StatefulWidget {
   final EnumNewInvoiceEstimateType type;
   final InvoiceEntity invoiceEntity;
+  final String estimateTitle;
   final Function()? refreshList;
   final Function() startObserveBlocBack;
-  const InvoiceDetailPage({
-    super.key,
-    required this.invoiceEntity,
-    required this.type,
-    this.refreshList,
-    required this.startObserveBlocBack,
-  });
+  const InvoiceDetailPage(
+      {super.key,
+      required this.invoiceEntity,
+      required this.type,
+      this.refreshList,
+      required this.startObserveBlocBack,
+      required this.estimateTitle});
 
   @override
   State<InvoiceDetailPage> createState() => _InvoiceDetailPageState();
@@ -449,6 +450,7 @@ class _InvoiceDetailPageState extends State<InvoiceDetailPage>
     AutoRouter.of(context).push(AddNewInvoiceEstimatePageRoute(
         invoiceDetailResEntity: invoiceDetailResEntity,
         invoiceEntity: invoiceEntity,
+        estimateTitle: widget.estimateTitle,
         type: isInvoice()
             ? EnumNewInvoiceEstimateType.editInvoice
             : EnumNewInvoiceEstimateType.editEstimate,
@@ -975,6 +977,7 @@ class _InvoiceDetailPageState extends State<InvoiceDetailPage>
         return InvoiceDetailsInfoWidget(
           invoiceEntity: invoiceEntity!,
           type: widget.type,
+          estimateTitle: widget.estimateTitle,
         );
       }
       return Container(

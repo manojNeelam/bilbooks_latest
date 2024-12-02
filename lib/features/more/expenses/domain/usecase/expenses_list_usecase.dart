@@ -22,11 +22,15 @@ class ExpensesListRequestParams {
   final String orderBy;
   final String query;
   final String page;
+  final String? startDate;
+  final String? endDate;
   ExpensesListRequestParams({
     required this.status,
     required this.orderBy,
     required this.sortBy,
     required this.query,
     required this.page,
+    this.startDate,
+    this.endDate,
   });
 }

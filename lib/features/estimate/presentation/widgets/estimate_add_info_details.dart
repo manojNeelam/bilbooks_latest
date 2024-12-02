@@ -13,8 +13,10 @@ import '../../../invoice/presentation/add_new_invoice_page.dart';
 class EstimateAddInfoDetails extends StatefulWidget {
   final InvoiceRequestModel invoiceRequestModel;
   final Function()? callback;
+  final String estimateTitle;
   const EstimateAddInfoDetails({
     super.key,
+    required this.estimateTitle,
     required this.invoiceRequestModel,
     required this.callback,
   });
@@ -59,7 +61,7 @@ class _EstimateAddInfoDetailsState extends State<EstimateAddInfoDetails> {
     return Scaffold(
       backgroundColor: AppPallete.kF2F2F2,
       appBar: AppBar(
-        title: const Text("Estimate Details"),
+        title: Text("${widget.estimateTitle} Details"),
         bottom: AppConstants.getAppBarDivider,
         actions: [
           TextButton(
@@ -89,7 +91,8 @@ class _EstimateAddInfoDetailsState extends State<EstimateAddInfoDetails> {
           AppConstants.sizeBoxHeight10,
           NewMultilineInputWidget(
             title: 'Title/Summary',
-            hintText: "e.g. description of estimate",
+            hintText:
+                "e.g. description of ${widget.estimateTitle.toLowerCase()}",
             controller: titleController,
             inputType: TextInputType.name,
             inputAction: TextInputAction.newline,
@@ -98,8 +101,8 @@ class _EstimateAddInfoDetailsState extends State<EstimateAddInfoDetails> {
           ),
           AppConstants.sizeBoxHeight10,
           NewInputViewWidget(
-            title: 'Estimate #',
-            hintText: "Estimate #",
+            title: '${widget.estimateTitle} #',
+            hintText: "${widget.estimateTitle} #",
             controller: estimateNoController,
             inputType: TextInputType.name,
             inputAction: TextInputAction.next,
@@ -110,7 +113,7 @@ class _EstimateAddInfoDetailsState extends State<EstimateAddInfoDetails> {
             },
           ),
           InputDropdownView(
-              title: "Estimate Date",
+              title: "${widget.estimateTitle} Date",
               value: selectedEstimateDate.getDateString(),
               defaultText: selectedEstimateDate.getDateString(),
               isRequired: true,

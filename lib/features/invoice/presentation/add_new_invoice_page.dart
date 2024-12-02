@@ -33,6 +33,8 @@ import '../domain/entities/payment_terms_model.dart';
 import '../domain/entities/repeat_every_model.dart';
 import '../domain/entities/time_zone_model.dart';
 import '../domain/usecase/add_invoice_usecase.dart';
+import '../domain/usecase/get_document_usecase.dart';
+import '../domain/usecase/invoice_delete_usecase.dart';
 import 'widgets/invoice_add_client_widget.dart';
 import 'widgets/invoice_client_details_widget.dart';
 import 'widgets/invoice_info_widget.dart';
@@ -50,17 +52,17 @@ enum EnumNewInvoiceEstimateType {
 }
 
 extension EnumNewInvoiceEstimateTypeExtension on EnumNewInvoiceEstimateType {
-  String getName() {
+  String getName({required String estimateTitle}) {
     switch (this) {
       case EnumNewInvoiceEstimateType.estimate ||
             EnumNewInvoiceEstimateType.duplicateEstimate:
-        return "Estimate";
+        return estimateTitle;
       case EnumNewInvoiceEstimateType.invoice ||
             EnumNewInvoiceEstimateType.convertEstimateToInvoice ||
             EnumNewInvoiceEstimateType.duplicateInvoice:
         return "Invoice";
       case EnumNewInvoiceEstimateType.editEstimate:
-        return "Estimate";
+        return estimateTitle;
       case EnumNewInvoiceEstimateType.editInvoice:
         return "Invoice";
     }
@@ -90,9 +92,11 @@ class AddNewInvoiceEstimatePage extends StatefulWidget {
   final EnumNewInvoiceEstimateType type;
   final Function() refreshCallBack;
   final Function() startObserveBlocBack;
+  final String estimateTitle;
   const AddNewInvoiceEstimatePage({
     super.key,
     this.invoiceEntity,
+    this.estimateTitle = "estimate",
     required this.type,
     required this.refreshCallBack,
     required this.invoiceDetailResEntity,
@@ -347,21 +351,21 @@ class _AddNewInvoiceEstimatePageState extends State<AddNewInvoiceEstimatePage>
     List<InvoiceItemEntity> convertedListt = [];
     for (final item in itemListss) {
       convertedListt.add(InvoiceItemEntity(
-        itemId: item.itemId,
-        type: item.type,
-        itemName: item.itemName,
-        description: item.description,
-        date: item.date,
-        time: item.time,
-        custom: item.custom,
-        qty: item.qty,
-        unit: item.unit,
-        rate: item.rate,
-        discountType: item.discountType,
-        discountValue: item.discountValue,
-        isTaxable: item.isTaxable,
-        taxes: item.taxes,
-      ));
+          itemId: item.itemId,
+          type: item.type,
+          itemName: item.itemName,
+          description: item.description,
+          date: item.date,
+          time: item.time,
+          custom: item.custom,
+          qty: item.qty,
+          unit: item.unit,
+          rate: item.rate,
+          discountType: item.discountType,
+          discountValue: item.discountValue,
+          isTaxable: item.isTaxable,
+          taxes: item.taxes,
+          amount: item.amount));
     }
 
     // var convertedItemlISTS = itemListss.map((item) => {
@@ -552,11 +556,12 @@ emailto_clientstaff:[{"id":"23214","email":"abc@exaple.com"},{"id":"23216","emai
               showToastification(
                   context, state.errorMessage, ToastificationType.error);
             }
+
             if (state is InvoiceEstimateAddSuccessState) {
               showToastification(
                   context,
                   state.addInvoiceMainResEntity.data?.message ??
-                      "Successfully addes ${isEstimate() ? "estimate" : "invoice"}.",
+                      "Successfully added ${isEstimate() ? widget.estimateTitle : "invoice"}.",
                   ToastificationType.success);
               widget.refreshCallBack();
               AutoRouter.of(context).maybePop();
@@ -600,12 +605,12 @@ emailto_clientstaff:[{"id":"23214","email":"abc@exaple.com"},{"id":"23216","emai
             if (state is InvoiceEstimateAddLoadingState) {
               return LoadingPage(
                   title:
-                      "${isEdit() ? "Updating" : "Adding"} ${isEstimate() ? "estimate" : "invoice"} data..");
+                      "${isEdit() ? "Updating" : "Adding"} ${isEstimate() ? widget.estimateTitle : "invoice"} data..");
             }
             if (state is InvoiceDetailsLoadingState) {
               return LoadingPage(
                   title:
-                      "Loading ${isEstimate() ? "estimate" : "invoice"} data..");
+                      "Loading ${isEstimate() ? widget.estimateTitle : "invoice"} data..");
             }
             return SectionListView.builder(
               adapter: this,
@@ -940,12 +945,13 @@ emailto_clientstaff:[{"id":"23214","email":"abc@exaple.com"},{"id":"23216","emai
                     builder: (BuildContext context) {
                       return AppAlertWidget(
                         title:
-                            "Delete ${isEstimate() ? "Estimate" : "Invoice"}",
+                            "Delete ${isEstimate() ? widget.estimateTitle : "Invoice"}",
                         message:
-                            "Are you sure you want to delete this ${isEstimate() ? "estimate" : "invoice"}?",
+                            "Are you sure you want to delete this ${isEstimate() ? widget.estimateTitle : "invoice"}?",
                         onTapDelete: () {
                           debugPrint("on tap delete item");
                           AutoRouter.of(context).maybePop();
+                          _deleteInvoice();
                         },
                       );
                     });
@@ -961,6 +967,7 @@ emailto_clientstaff:[{"id":"23214","email":"abc@exaple.com"},{"id":"23216","emai
           invoiceStatusColor: widget.invoiceEntity?.statusColor,
           invoiceRequestModel: invoiceRequestModel,
           type: widget.type,
+          estimateTitle: widget.estimateTitle,
         ),
         onTap: () {
           if (isEstimate()) {
@@ -968,7 +975,8 @@ emailto_clientstaff:[{"id":"23214","email":"abc@exaple.com"},{"id":"23216","emai
                 invoiceRequestModel: invoiceRequestModel,
                 callback: () {
                   setState(() {});
-                }));
+                },
+                estimateTitle: widget.estimateTitle));
           } else {
             AutoRouter.of(context).push(InvoiceAddBasicDetailsWidgetRoute(
                 invoiceRequestModel: invoiceRequestModel,
@@ -1006,7 +1014,7 @@ emailto_clientstaff:[{"id":"23214","email":"abc@exaple.com"},{"id":"23216","emai
         controller: notesController,
         title: "Notes",
         hintText: isEstimate()
-            ? "Will be displayed on the estimate"
+            ? "Will be displayed on the ${widget.estimateTitle.toLowerCase()}"
             : "Will be displayed on the invoice",
       );
     } else if (indexPath.section == 4) {
@@ -1046,6 +1054,18 @@ emailto_clientstaff:[{"id":"23214","email":"abc@exaple.com"},{"id":"23216","emai
       );
     }
     return const SizedBox();
+  }
+
+  void _deleteInvoice() {
+    if (widget.invoiceEntity != null && widget.invoiceEntity!.id != null) {
+      context.read<InvoiceBloc>().add(InvoiceDeleteEvent(
+              params: InvoiceDeleteReqParms(
+            id: widget.invoiceEntity?.id ?? "",
+            type: isEstimate()
+                ? EnumDocumentType.estimate
+                : EnumDocumentType.invoice,
+          )));
+    }
   }
 
   @override
