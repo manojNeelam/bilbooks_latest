@@ -118,15 +118,24 @@ class TotalsModel extends TotalsEntity {
     dynamic sales,
     dynamic receipts,
     dynamic expenses,
+    String? formattedSales,
+    String? formattedReceipts,
+    String? formattedExpenses,
   }) : super(
           sales: sales,
           receipts: receipts,
           expenses: expenses,
+          formattedExpenses: formattedExpenses,
+          formattedReceipts: formattedReceipts,
+          formattedSales: formattedSales,
         );
 
   factory TotalsModel.fromJson(Map<String, dynamic> json) => TotalsModel(
         sales: json["sales"],
         receipts: json["receipts"],
         expenses: json["expenses"],
+        formattedExpenses: json['formated_expenses'],
+        formattedReceipts: json['formated_receipts'],
+        formattedSales: json['formated_sales'],
       );
 }

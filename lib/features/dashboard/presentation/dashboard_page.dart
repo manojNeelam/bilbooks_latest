@@ -23,6 +23,12 @@ class DashboardPage extends StatefulWidget {
 
 class _DashboardPageState extends State<DashboardPage>
     with AutomaticKeepAliveClientMixin {
+  late void Function() updateSalesExpenses;
+  late void Function() updateOverdueInvoiceMethod;
+  late void Function() updateTotalInvoiceMethod;
+  late void Function() updateTotalReceivablesMethod;
+  late void Function() updateAccountReceivableMethod;
+
   AuthInfoMainDataEntity? authInfoMainDataEntity;
   @override
   void initState() {
@@ -66,7 +72,16 @@ class _DashboardPageState extends State<DashboardPage>
             debugPrint("on tap user profile");
             AutoRouter.of(context).push(UserProfilePageRoute(
                 authInfoMainDataEntity: authInfoMainDataEntity,
+                updateAuthInfo: (p0) {
+                  authInfoMainDataEntity = p0;
+                },
                 refresh: () {
+                  updateSalesExpenses.call();
+                  updateAccountReceivableMethod.call();
+                  updateOverdueInvoiceMethod.call();
+                  updateTotalInvoiceMethod.call();
+                  updateTotalReceivablesMethod.call();
+                  //myMethod.call();
                   setState(() {});
                 }));
           },
@@ -127,15 +142,35 @@ class _DashboardPageState extends State<DashboardPage>
                       ]),
                 ),
               AppConstants.sizeBoxHeight15,
-              SalesexpensesWidget(),
+              SalesexpensesWidget(
+                builder: (context, methodA) {
+                  updateSalesExpenses = methodA;
+                },
+              ),
               AppConstants.sizeBoxHeight15,
-              OverdueInvoceWidget(),
+              OverdueInvoceWidget(
+                builder: (context, updateOverdueInvoice) {
+                  updateOverdueInvoiceMethod = updateOverdueInvoice;
+                },
+              ),
               AppConstants.sizeBoxHeight15,
-              TotalInvoiceWidget(),
+              TotalInvoiceWidget(
+                builder: (context, updateTotalInvoice) {
+                  updateTotalInvoiceMethod = updateTotalInvoice;
+                },
+              ),
               AppConstants.sizeBoxHeight15,
-              TotalReceivablesWidget(),
+              TotalReceivablesWidget(
+                builder: (context, updateTotalReceivables) {
+                  updateTotalReceivablesMethod = updateTotalReceivables;
+                },
+              ),
               AppConstants.sizeBoxHeight15,
-              AccountsReceivables(),
+              AccountsReceivables(
+                builder: (context, updateAccountReceivable) {
+                  updateAccountReceivableMethod = updateAccountReceivable;
+                },
+              ),
             ],
           ),
         ),

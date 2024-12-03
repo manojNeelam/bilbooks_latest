@@ -86,6 +86,7 @@ class ApiEndPoints {
   static const String totalincomes = "dashboard/totalincomes";
   static const String totalreceivables = "dashboard/totalreceivables";
   static const String authInfo = "auth/info";
+  static const String latestactivity = "dashboard/latestactivity";
 
   //Settings
   static const String selectorganization = "settings/selectorganization";

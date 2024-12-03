@@ -2,6 +2,7 @@ import 'package:billbooks_app/core/app_constants.dart';
 import 'package:billbooks_app/core/theme/app_fonts.dart';
 import 'package:billbooks_app/core/widgets/item_separator.dart';
 import 'package:billbooks_app/core/widgets/loading_page.dart';
+import 'package:billbooks_app/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -12,7 +13,9 @@ import '../bloc/totalreceivable_bloc.dart';
 import 'dropdown_view.dart';
 
 class TotalReceivablesWidget extends StatefulWidget {
-  const TotalReceivablesWidget({super.key});
+  final TotalReceivablesBuilder builder;
+
+  const TotalReceivablesWidget({super.key, required this.builder});
 
   @override
   State<TotalReceivablesWidget> createState() => _TotalReceivablesWidgetState();
@@ -70,6 +73,8 @@ class _TotalReceivablesWidgetState extends State<TotalReceivablesWidget> {
 
   @override
   Widget build(BuildContext context) {
+    widget.builder.call(context, _callApi);
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
       decoration: BoxDecoration(

@@ -18,10 +18,12 @@ import '../../dashboard/domain/entity/authinfo_entity.dart';
 class UserProfilePage extends StatefulWidget {
   final AuthInfoMainDataEntity? authInfoMainDataEntity;
   final Function() refresh;
+  final Function(AuthInfoMainDataEntity?) updateAuthInfo;
   const UserProfilePage({
     super.key,
     required this.authInfoMainDataEntity,
     required this.refresh,
+    required this.updateAuthInfo,
   });
 
   @override
@@ -53,6 +55,7 @@ class _UserProfilePageState extends State<UserProfilePage>
         leading: IconButton(
             onPressed: () {
               if (isRefreshonPop) {
+                widget.updateAuthInfo(authInfoMainDataEntity);
                 widget.refresh();
               }
               AutoRouter.of(context).maybePop();

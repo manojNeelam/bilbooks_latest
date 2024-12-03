@@ -54,10 +54,16 @@ class TotalsEntity {
   dynamic sales;
   dynamic receipts;
   dynamic expenses;
+  String? formattedSales;
+  String? formattedReceipts;
+  String? formattedExpenses;
 
   TotalsEntity({
     this.sales,
     this.receipts,
     this.expenses,
+    this.formattedExpenses,
+    this.formattedReceipts,
+    this.formattedSales,
   });
 }

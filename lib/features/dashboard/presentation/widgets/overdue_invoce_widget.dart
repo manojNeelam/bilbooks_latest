@@ -1,5 +1,6 @@
 import 'package:billbooks_app/core/app_constants.dart';
 import 'package:billbooks_app/core/widgets/item_separator.dart';
+import 'package:billbooks_app/main.dart';
 import 'package:flutter/material.dart';
 import 'package:billbooks_app/core/theme/app_fonts.dart';
 import 'package:billbooks_app/core/theme/app_pallete.dart';
@@ -11,9 +12,9 @@ import '../../domain/usecase/overdue_invoice_usecase.dart';
 import '../bloc/overdueinvoice_bloc.dart';
 
 class OverdueInvoceWidget extends StatefulWidget {
-  const OverdueInvoceWidget({
-    Key? key,
-  }) : super(key: key);
+  final OverdueInvoiceBuilder builder;
+
+  const OverdueInvoceWidget({super.key, required this.builder});
 
   @override
   State<OverdueInvoceWidget> createState() => _OverdueInvoceWidgetState();
@@ -43,6 +44,8 @@ class _OverdueInvoceWidgetState extends State<OverdueInvoceWidget> {
 
   @override
   Widget build(BuildContext context) {
+    widget.builder.call(context, _callApi);
+
     return Container(
       width: MediaQuery.of(context).size.width,
       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),

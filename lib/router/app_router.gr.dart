@@ -731,6 +731,7 @@ abstract class _$AppRouter extends RootStackRouter {
           key: args.key,
           authInfoMainDataEntity: args.authInfoMainDataEntity,
           refresh: args.refresh,
+          updateAuthInfo: args.updateAuthInfo,
         ),
       );
     },
@@ -3377,6 +3378,7 @@ class UserProfilePageRoute extends PageRouteInfo<UserProfilePageRouteArgs> {
     Key? key,
     required AuthInfoMainDataEntity? authInfoMainDataEntity,
     required dynamic Function() refresh,
+    required dynamic Function(AuthInfoMainDataEntity?) updateAuthInfo,
     List<PageRouteInfo>? children,
   }) : super(
           UserProfilePageRoute.name,
@@ -3384,6 +3386,7 @@ class UserProfilePageRoute extends PageRouteInfo<UserProfilePageRouteArgs> {
             key: key,
             authInfoMainDataEntity: authInfoMainDataEntity,
             refresh: refresh,
+            updateAuthInfo: updateAuthInfo,
           ),
           initialChildren: children,
         );
@@ -3399,6 +3402,7 @@ class UserProfilePageRouteArgs {
     this.key,
     required this.authInfoMainDataEntity,
     required this.refresh,
+    required this.updateAuthInfo,
   });
 
   final Key? key;
@@ -3407,9 +3411,11 @@ class UserProfilePageRouteArgs {
 
   final dynamic Function() refresh;
 
+  final dynamic Function(AuthInfoMainDataEntity?) updateAuthInfo;
+
   @override
   String toString() {
-    return 'UserProfilePageRouteArgs{key: $key, authInfoMainDataEntity: $authInfoMainDataEntity, refresh: $refresh}';
+    return 'UserProfilePageRouteArgs{key: $key, authInfoMainDataEntity: $authInfoMainDataEntity, refresh: $refresh, updateAuthInfo: $updateAuthInfo}';
   }
 }
 

@@ -77,6 +77,11 @@ import 'package:billbooks_app/features/more/settings/domain/usecase/update_pref_
 import 'package:billbooks_app/features/more/settings/domain/usecase/update_pref_invoice_usecase.dart';
 import 'package:billbooks_app/features/more/settings/domain/usecase/update_preference_column_usecase.dart';
 import 'package:billbooks_app/features/more/settings/presentation/bloc/organization_bloc.dart';
+import 'package:billbooks_app/features/notifications/bloc/notification_bloc.dart';
+import 'package:billbooks_app/features/notifications/data/datasource/remote/notification_datasource.dart';
+import 'package:billbooks_app/features/notifications/data/repository/notification_repository_impl.dart';
+import 'package:billbooks_app/features/notifications/domain/repository/notification_repository.dart';
+import 'package:billbooks_app/features/notifications/domain/usecase/notification_list_usercase.dart';
 import 'package:billbooks_app/features/profile/data/remote/profile_datasource.dart';
 import 'package:billbooks_app/features/profile/data/repository/repository_impl.dart';
 import 'package:billbooks_app/features/profile/domain/repository/repository.dart';
@@ -113,6 +118,7 @@ Future<void> initDependencies() async {
   final apiClient = APIClient();
   serviceLocator.registerFactory(() => apiClient);
   _initAuth();
+  _notification();
   _initClient();
   _initInvoice();
   _initItem();
@@ -126,6 +132,29 @@ Future<void> initDependencies() async {
   _initEstimates();
   _initDashboard();
   _initProfile();
+}
+
+void _initCategories() {
+  serviceLocator.registerFactory<CategoryRemoteDatasource>(() =>
+      CategoryRemoteDatasourceImpl(apiClient: serviceLocator<APIClient>()));
+  serviceLocator.registerFactory<CategoryRepository>(
+      () => CategoryRepositoryImpl(categoryRemoteDatasource: serviceLocator()));
+  serviceLocator.registerFactory(
+      () => CategoryListUsecase(categoryRepository: serviceLocator()));
+  serviceLocator
+      .registerLazySingleton(() => CategoryBloc(usecase: serviceLocator()));
+}
+
+void _notification() {
+  serviceLocator.registerFactory<NotificationRemoteDatasource>(() =>
+      NotificationRemoteDatasourceImpl(apiClient: serviceLocator<APIClient>()));
+  serviceLocator.registerFactory<NotificationRepository>(() =>
+      NotificationRepositoryImpl(
+          notificationRemoteDatasourceImpl: serviceLocator()));
+  serviceLocator.registerFactory(
+      () => NotificationListUsercase(notificationRepository: serviceLocator()));
+  serviceLocator.registerLazySingleton(
+      () => NotificationBloc(notificationListUsercase: serviceLocator()));
 }
 
 void _initProfile() {
@@ -289,17 +318,6 @@ void _initEstimates() {
         estimateListUsecase: serviceLocator(),
         estimateDetailUsecase: serviceLocator(),
       ));
-}
-
-void _initCategories() {
-  serviceLocator.registerFactory<CategoryRemoteDatasource>(() =>
-      CategoryRemoteDatasourceImpl(apiClient: serviceLocator<APIClient>()));
-  serviceLocator.registerFactory<CategoryRepository>(
-      () => CategoryRepositoryImpl(categoryRemoteDatasource: serviceLocator()));
-  serviceLocator.registerFactory(
-      () => CategoryListUsecase(categoryRepository: serviceLocator()));
-  serviceLocator
-      .registerLazySingleton(() => CategoryBloc(usecase: serviceLocator()));
 }
 
 void _initExpenses() {

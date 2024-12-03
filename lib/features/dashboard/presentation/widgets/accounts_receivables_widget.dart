@@ -1,5 +1,6 @@
 import 'package:billbooks_app/core/theme/app_fonts.dart';
 import 'package:billbooks_app/core/widgets/loading_page.dart';
+import 'package:billbooks_app/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -11,9 +12,9 @@ import '../../domain/usecase/account_receivables_usecase.dart';
 import '../bloc/accountrecivable_bloc.dart';
 
 class AccountsReceivables extends StatefulWidget {
-  const AccountsReceivables({
-    super.key,
-  });
+  final AccountsReceivablesBuilder builder;
+
+  const AccountsReceivables({super.key, required this.builder});
 
   @override
   State<AccountsReceivables> createState() => _AccountsReceivablesState();
@@ -35,6 +36,8 @@ class _AccountsReceivablesState extends State<AccountsReceivables> {
 
   @override
   Widget build(BuildContext context) {
+    widget.builder.call(context, _callApi);
+
     // List<String> ReceivableList = [
     //   "Asia Art archive",
     //   "Zf-India",

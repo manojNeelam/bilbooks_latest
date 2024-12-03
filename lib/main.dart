@@ -12,6 +12,7 @@ import 'package:billbooks_app/features/general/bloc/general_bloc.dart';
 import 'package:billbooks_app/features/integrations/presentation/bloc/online_payments_bloc.dart';
 import 'package:billbooks_app/features/more/expenses/presentation/bloc/expenses_bloc.dart';
 import 'package:billbooks_app/features/more/settings/presentation/bloc/organization_bloc.dart';
+import 'package:billbooks_app/features/notifications/bloc/notification_bloc.dart';
 import 'package:billbooks_app/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:billbooks_app/features/project/presentation/bloc/project_bloc.dart';
 import 'package:billbooks_app/features/taxes/presentation/bloc/tax_bloc.dart';
@@ -25,6 +26,17 @@ import 'package:flutter_localization/flutter_localization.dart';
 import 'core/theme/theme.dart';
 import 'features/invoice/presentation/bloc/invoice_bloc.dart';
 import 'features/item/presentation/bloc/item_bloc.dart';
+
+typedef SalesExpensesBuilder = void Function(
+    BuildContext context, void Function() updateSalesExepnses);
+typedef OverdueInvoiceBuilder = void Function(
+    BuildContext context, void Function() updateOverdueInvoice);
+typedef TotalinvoicesBuilder = void Function(
+    BuildContext context, void Function() updateTotalInvoice);
+typedef TotalReceivablesBuilder = void Function(
+    BuildContext context, void Function() updateTotalReceivables);
+typedef AccountsReceivablesBuilder = void Function(
+    BuildContext context, void Function() updateAccountReceivable);
 
 final navigatorKey = GlobalKey<NavigatorState>();
 
@@ -45,6 +57,10 @@ void main() async {
             )),
     BlocProvider(
       create: (context) => CategoryBloc(usecase: serviceLocator()),
+    ),
+    BlocProvider(
+      create: (context) =>
+          NotificationBloc(notificationListUsercase: serviceLocator()),
     ),
     BlocProvider(
         create: (context) => OnlinePaymentsBloc(

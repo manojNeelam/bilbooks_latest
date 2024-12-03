@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:billbooks_app/core/app_constants.dart';
 import 'package:billbooks_app/core/theme/app_fonts.dart';
 import 'package:billbooks_app/core/theme/app_pallete.dart';
@@ -10,12 +8,15 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../main.dart';
 import '../../domain/usecase/sales_expenses_usecase.dart';
 import '../../model/sales_types.dart';
 import '../bloc/salesexpenses_bloc.dart';
 
 class SalesexpensesWidget extends StatefulWidget {
-  const SalesexpensesWidget({super.key});
+  final SalesExpensesBuilder builder;
+
+  const SalesexpensesWidget({super.key, required this.builder});
   /*
   final Function(EnumSummaryTypes, String) onSelectedMenuItem;
   final EnumSummaryTypes? selectedMenuItem;
@@ -56,15 +57,15 @@ class _SalesexpensesWidgetState extends State<SalesexpensesWidget> {
       }
     }
 
-    // if (totalsEntity?.expenses != null) {
-    //   if (totalsEntity?.expenses is double) {
-    //     expenses = totalsEntity?.expenses;
-    //   } else if (totalsEntity?.expenses is String) {
-    //     expenses = double.parse(totalsEntity?.expenses);
-    //   } else {
-    //     expenses = 0.0;
-    //   }
-    // }
+    if (totalsEntity?.expenses != null) {
+      if (totalsEntity?.expenses is double) {
+        expenses = totalsEntity?.expenses;
+      } else if (totalsEntity?.expenses is String) {
+        expenses = double.parse(totalsEntity?.expenses);
+      } else {
+        expenses = 0.0;
+      }
+    }
 
     if (totalsEntity?.receipts != null) {
       if (totalsEntity?.receipts is double) {
@@ -154,6 +155,11 @@ class _SalesexpensesWidgetState extends State<SalesexpensesWidget> {
     super.initState();
   }
 
+  void childMethod() {
+    debugPrint("childMethod");
+    _callApi();
+  }
+
   void _callApi() {
     context
         .read<SalesexpensesBloc>()
@@ -162,6 +168,8 @@ class _SalesexpensesWidgetState extends State<SalesexpensesWidget> {
 
   @override
   Widget build(BuildContext context) {
+    widget.builder.call(context, childMethod);
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
       decoration: BoxDecoration(
@@ -249,11 +257,14 @@ class _SalesexpensesWidgetState extends State<SalesexpensesWidget> {
                     Column(
                       children: [
                         legendWidget(context, EnumSalesType.sales,
-                            (totalsEntity?.sales ?? 0.0).toString()),
-                        legendWidget(context, EnumSalesType.receipts,
-                            (totalsEntity?.receipts ?? 0.0).toString()),
+                            (totalsEntity?.formattedSales ?? 0.0).toString()),
+                        legendWidget(
+                            context,
+                            EnumSalesType.receipts,
+                            (totalsEntity?.formattedReceipts ?? 0.0)
+                                .toString()),
                         legendWidget(context, EnumSalesType.expenses,
-                            (totalsEntity?.expenses ?? 0.0).toString())
+                            (totalsEntity?.formattedExpenses ?? 0.0).toString())
                       ],
                     )
                   ],
@@ -294,7 +305,7 @@ class _SalesexpensesWidgetState extends State<SalesexpensesWidget> {
           ],
         ),
         Text(
-          "\$$amount",
+          amount,
           style: AppFonts.regularStyle(),
         )
       ],
