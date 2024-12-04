@@ -86,8 +86,36 @@ class MorePage extends StatelessWidget with SectionAdapterMixin {
     ]),
   ];
 
+  String? encodeQueryParameters(Map<String, String> params) {
+    return params.entries
+        .map((MapEntry<String, String> e) =>
+            '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}')
+        .join('&');
+  }
+
+  Future<void> launchMail(String email) async {
+    final Uri emailLaunchUri = Uri(
+      scheme: 'mailto',
+      path: email,
+      query: encodeQueryParameters(<String, String>{
+        'subject': 'Billbooks Android App Feedback',
+      }),
+    );
+
+    // final Uri emailLaunchUri = Uri.parse(
+    //     "${EnumUrlScheme.mail.path}$email?subject=subject comes here&body=body comes here");
+    debugPrint("Email: $emailLaunchUri");
+    if (await canLaunchUrl(emailLaunchUri)) {
+      launchUrl(emailLaunchUri);
+    } else {
+      debugPrint("Unable to launch email");
+    }
+  }
+
   openUrlFor(EnumMoreScreen type) async {
-    if (type.url != null) {
+    if (type == EnumMoreScreen.contactus) {
+      launchMail("support@billbooks.com");
+    } else if (type.url != null) {
       final Uri url = Uri.parse(type.url!);
       if (!await launchUrl(url)) {
         throw Exception('Could not launch $url');
@@ -290,19 +318,19 @@ extension EnumMoreScreenExtension on EnumMoreScreen {
             EnumMoreScreen.settings:
         return null;
       case EnumMoreScreen.faq:
-        return defaultUrl;
+        return "https://www.billbooks.com/faq/";
       case EnumMoreScreen.rateOurApp:
         return defaultUrl;
       case EnumMoreScreen.contactus:
         return defaultUrl;
       case EnumMoreScreen.privacyPolicy:
-        return defaultUrl;
+        return "https://www.billbooks.com/privacy-policy/";
       case EnumMoreScreen.terms:
-        return defaultUrl;
+        return "https://www.billbooks.com/terms-of-service/";
       case EnumMoreScreen.security:
-        return defaultUrl;
+        return "https://www.billbooks.com/security";
       case EnumMoreScreen.visitOurWebiste:
-        return defaultUrl;
+        return "https://www.billbooks.com";
     }
   }
 }

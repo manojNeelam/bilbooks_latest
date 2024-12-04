@@ -29,6 +29,7 @@ import 'features/item/presentation/bloc/item_bloc.dart';
 
 typedef SalesExpensesBuilder = void Function(
     BuildContext context, void Function() updateSalesExepnses);
+
 typedef OverdueInvoiceBuilder = void Function(
     BuildContext context, void Function() updateOverdueInvoice);
 typedef TotalinvoicesBuilder = void Function(

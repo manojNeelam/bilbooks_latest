@@ -52,8 +52,8 @@ class Utils {
     return prefs.getString("token");
   }
 
-  static showTrailExpired(context) {
-    AutoRouter.of(context).push(const PlanExpiredPageRoute());
+  static showTrailExpired(context, String planName) {
+    AutoRouter.of(context).push(PlanExpiredPageRoute(planName: planName));
   }
 
   // static Future<void> manipulateLogin(context) async {

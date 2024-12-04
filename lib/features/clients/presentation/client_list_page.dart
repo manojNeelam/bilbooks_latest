@@ -270,5 +270,5 @@ class _ClientListPageState extends State<ClientListPage>
   }
 
   @override
-  bool get wantKeepAlive => true;
+  bool get wantKeepAlive => false;
 }

@@ -550,6 +550,20 @@ class _EstimateListPageState extends State<EstimateListPage>
   }
 
   Widget showEmptyView() {
+    if (selectedAllTimes != EnumAllTimes.all) {
+      return ListEmptySearchPage(
+          searchText: allTimesDisplayName,
+          buttonTitle: "Reset",
+          noDataText: "No results found for",
+          callBack: () {
+            selectedAllTimes = EnumAllTimes.all;
+            allTimesDisplayName = "";
+            startDateReqParams = null;
+            endDateReqParams = null;
+            _loadEstimates();
+          });
+    }
+
     if (searchController.text.isNotEmpty) {
       return ListEmptySearchPage(
           searchText: searchController.text,

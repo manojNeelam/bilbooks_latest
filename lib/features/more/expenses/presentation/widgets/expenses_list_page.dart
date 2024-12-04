@@ -322,6 +322,20 @@ class _ExpensesListPageState extends State<ExpensesListPage>
             isLoading = false;
 
             if (expensesList.isEmpty) {
+              if (selectedAllTimes != EnumAllTimes.all) {
+                return ListEmptySearchPage(
+                    searchText: allTimesDisplayName,
+                    buttonTitle: "Reset",
+                    noDataText: "No results found for",
+                    callBack: () {
+                      selectedAllTimes = EnumAllTimes.all;
+                      allTimesDisplayName = "";
+                      startDateReqParams = null;
+                      endDateReqParams = null;
+                      _getExpensesList();
+                    });
+              }
+
               if (searchController.text.isNotEmpty) {
                 return _showNoSearchResultFound();
               }

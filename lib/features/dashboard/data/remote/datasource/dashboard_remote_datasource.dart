@@ -101,6 +101,16 @@ class DashboardRemoteDatasourceImpl implements DashboardRemoteDatasource {
     try {
       Map<String, dynamic> queryParameters = {};
 
+      if (params.startDate != null &&
+          params.startDate!.isNotEmpty &&
+          params.endDate != null &&
+          params.endDate!.isNotEmpty) {
+        queryParameters.addAll({
+          "date_start": params.startDate,
+          "date_end": params.endDate,
+        });
+      }
+
       final response = await apiClient.getRequest(ApiEndPoints.salesandexpenses,
           queryParameters: queryParameters);
       debugPrint("SalesExpensesMainResModel ");

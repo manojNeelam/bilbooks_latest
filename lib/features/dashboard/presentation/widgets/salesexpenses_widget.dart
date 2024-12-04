@@ -31,6 +31,9 @@ class SalesexpensesWidget extends StatefulWidget {
 class _SalesexpensesWidgetState extends State<SalesexpensesWidget> {
   TotalsEntity? totalsEntity;
   final CustomPopupMenuController _controller = CustomPopupMenuController();
+  String? startDatePrams;
+  String? endDateParams;
+
   List<EnumSummaryTypes> menuItems = [
     EnumSummaryTypes.last30Days,
     EnumSummaryTypes.thisMonth,
@@ -161,9 +164,9 @@ class _SalesexpensesWidgetState extends State<SalesexpensesWidget> {
   }
 
   void _callApi() {
-    context
-        .read<SalesexpensesBloc>()
-        .add(GetSalesExpensesEvent(params: SalesExpensesUsecaseReqParams()));
+    context.read<SalesexpensesBloc>().add(GetSalesExpensesEvent(
+        params: SalesExpensesUsecaseReqParams(
+            startDate: startDatePrams, endDate: endDateParams)));
   }
 
   @override
@@ -214,9 +217,13 @@ class _SalesexpensesWidgetState extends State<SalesexpensesWidget> {
                                 debugPrint(
                                     "Formatted Date: ${val.displayName}");
                                 selectedSummaryType = val;
+                                startDatePrams = val.displayName.$1;
+                                endDateParams = val.displayName.$2;
                                 //widget.onSelectedMenuItem(val, val.displayName);
                                 setState(() {});
                                 _controller.hideMenu();
+
+                                _callApi();
                               },
                             );
                           },
@@ -225,7 +232,7 @@ class _SalesexpensesWidgetState extends State<SalesexpensesWidget> {
                           pressType: PressType.singleClick,
                           controller: _controller,
                           child: Text(
-                            selectedSummaryType.displayName,
+                            selectedSummaryType.displayName.$3,
                             style: AppFonts.regularStyle(
                               color: AppPallete.blueColor,
                             ),

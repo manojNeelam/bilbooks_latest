@@ -501,9 +501,13 @@ abstract class _$AppRouter extends RootStackRouter {
       );
     },
     PlanExpiredPageRoute.name: (routeData) {
+      final args = routeData.argsAs<PlanExpiredPageRouteArgs>();
       return AutoRoutePage<dynamic>(
         routeData: routeData,
-        child: const PlanExpiredPage(),
+        child: PlanExpiredPage(
+          key: args.key,
+          planName: args.planName,
+        ),
       );
     },
     PreferencesPageRoute.name: (routeData) {
@@ -2616,16 +2620,40 @@ class PdfviewerPageRouteArgs {
 
 /// generated route for
 /// [PlanExpiredPage]
-class PlanExpiredPageRoute extends PageRouteInfo<void> {
-  const PlanExpiredPageRoute({List<PageRouteInfo>? children})
-      : super(
+class PlanExpiredPageRoute extends PageRouteInfo<PlanExpiredPageRouteArgs> {
+  PlanExpiredPageRoute({
+    Key? key,
+    required String planName,
+    List<PageRouteInfo>? children,
+  }) : super(
           PlanExpiredPageRoute.name,
+          args: PlanExpiredPageRouteArgs(
+            key: key,
+            planName: planName,
+          ),
           initialChildren: children,
         );
 
   static const String name = 'PlanExpiredPageRoute';
 
-  static const PageInfo<void> page = PageInfo<void>(name);
+  static const PageInfo<PlanExpiredPageRouteArgs> page =
+      PageInfo<PlanExpiredPageRouteArgs>(name);
+}
+
+class PlanExpiredPageRouteArgs {
+  const PlanExpiredPageRouteArgs({
+    this.key,
+    required this.planName,
+  });
+
+  final Key? key;
+
+  final String planName;
+
+  @override
+  String toString() {
+    return 'PlanExpiredPageRouteArgs{key: $key, planName: $planName}';
+  }
 }
 
 /// generated route for

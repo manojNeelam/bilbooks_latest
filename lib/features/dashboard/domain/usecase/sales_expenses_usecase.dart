@@ -17,4 +17,9 @@ class SalesExpensesUsecase
   }
 }
 
-class SalesExpensesUsecaseReqParams {}
+class SalesExpensesUsecaseReqParams {
+  final String? endDate;
+  final String? startDate;
+
+  SalesExpensesUsecaseReqParams({this.startDate, this.endDate});
+}

@@ -2,7 +2,9 @@ import 'package:billbooks_app/core/app_constants.dart';
 import 'package:billbooks_app/core/theme/app_fonts.dart';
 import 'package:billbooks_app/core/widgets/item_separator.dart';
 import 'package:billbooks_app/core/widgets/loading_page.dart';
+import 'package:billbooks_app/features/dashboard/presentation/widgets/salesexpenses_widget.dart';
 import 'package:billbooks_app/main.dart';
+import 'package:custom_pop_up_menu/custom_pop_up_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -25,6 +27,7 @@ class _TotalInvoiceWidgetState extends State<TotalInvoiceWidget> {
   TotalIncomesEntity? selectedItem;
   List<TotalIncomesEntity> totalIncomes = [];
   List<String> totalIncomesCurrencies = [];
+  final CustomPopupMenuController _controller = CustomPopupMenuController();
 
   List<String> incomesList = [
     "Today",
@@ -65,7 +68,7 @@ class _TotalInvoiceWidgetState extends State<TotalInvoiceWidget> {
     if (index == 4) {
       return selectedItem?.thisFiscalYear ?? "";
     }
-    return "Hello";
+    return "";
   }
 
   @override
@@ -100,10 +103,46 @@ class _TotalInvoiceWidgetState extends State<TotalInvoiceWidget> {
               children: [
                 DropdownView(
                   title: 'Total Incomes'.toUpperCase(),
-                  defaultText: 'AUD',
+                  defaultText: '-',
+                  value: selectedItem?.currency ?? "",
                   dropDownColor: AppPallete.blueColor,
                   dropDownIconColor: AppPallete.blueColor50,
-                  onPress: () {},
+                  onPress: () {
+                    CustomPopupMenu(
+                      position: PreferredPosition.bottom,
+                      arrowSize: 20,
+                      arrowColor: AppPallete.white,
+                      menuBuilder: () {
+                        return Text("");
+                        // return TotalInvoicePopOverWidget(
+                        //   menuItems: totalIncomesCurrencies,
+                        //   selectedItem: selectedSummaryType,
+                        //   onSelectItem: (val) {
+                        //     //debugPrint(val.title);
+                        //     //debugPrint("Formatted Date: ${val.displayName}");
+                        //     // selectedSummaryType = val;
+                        //     // startDatePrams = val.displayName.$1;
+                        //     // endDateParams = val.displayName.$2;
+                        //     //widget.onSelectedMenuItem(val, val.displayName);
+                        //     setState(() {});
+                        //     _controller.hideMenu();
+
+                        //     //_callApi();
+                        //   },
+                        // );
+                      },
+                      menuOnChange: (updated) {},
+                      verticalMargin: -10,
+                      pressType: PressType.singleClick,
+                      controller: _controller,
+                      child: Text(
+                        "",
+                        style: AppFonts.regularStyle(
+                          color: AppPallete.blueColor,
+                        ),
+                      ),
+                    );
+                  },
                 ),
                 AppConstants.sizeBoxHeight15,
                 if (selectedItem != null)
@@ -150,3 +189,13 @@ class _TotalInvoiceWidgetState extends State<TotalInvoiceWidget> {
     );
   }
 }
+
+// class TotalInvoicePopOverWidget extends StatelessWidget {
+//   final List<String> 
+//   const TotalInvoicePopOverWidget({super.key});
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return const Placeholder();
+//   }
+// }

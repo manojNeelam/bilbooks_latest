@@ -8,7 +8,8 @@ import 'package:flutter_svg/svg.dart';
 
 @RoutePage()
 class PlanExpiredPage extends StatelessWidget {
-  const PlanExpiredPage({super.key});
+  final String planName;
+  const PlanExpiredPage({super.key, required this.planName});
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +30,7 @@ class PlanExpiredPage extends StatelessWidget {
                 SvgPicture.asset(Assets.assetsImagesExpired),
                 AppConstants.sizeBoxHeight15,
                 Text(
-                  "Your trial has expired.",
+                  "Your ${planName.toLowerCase()} plan has expired.",
                   style: AppFonts.mediumStyle(color: AppPallete.red, size: 25),
                 ),
                 AppConstants.sizeBoxHeight15,

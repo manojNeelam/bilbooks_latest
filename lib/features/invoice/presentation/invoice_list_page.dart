@@ -112,7 +112,7 @@ class _InvoiceListPageState extends State<InvoiceListPage>
   EnumOrderBy selectedOrderBy = EnumOrderBy.ascending;
   List<InvoiceEntity> invoices = [];
   EnumAllTimes selectedAllTimes = EnumAllTimes.all;
-  String allTimesDisplayName = EnumAllTimes.all.displayName.$3;
+  String allTimesDisplayName = "All";
   bool isIgnoreBlocStates = false;
   EnumInvoiceSwipeOptions? enumInvoiceSwipeOptions;
   ScrollController _scrollController = ScrollController();
@@ -531,6 +531,19 @@ class _InvoiceListPageState extends State<InvoiceListPage>
   }
 
   Widget showEmptyView() {
+    if (selectedAllTimes != EnumAllTimes.all) {
+      return ListEmptySearchPage(
+          searchText: allTimesDisplayName,
+          buttonTitle: "Reset",
+          noDataText: "No results found for",
+          callBack: () {
+            selectedAllTimes = EnumAllTimes.all;
+            allTimesDisplayName = "";
+            startDateReqParams = null;
+            endDateReqParams = null;
+            _getInvoiceList();
+          });
+    }
     if (searchController.text.isNotEmpty) {
       return ListEmptySearchPage(
           searchText: searchController.text,

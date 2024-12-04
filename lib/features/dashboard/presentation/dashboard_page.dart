@@ -28,12 +28,22 @@ class _DashboardPageState extends State<DashboardPage>
   late void Function() updateTotalInvoiceMethod;
   late void Function() updateTotalReceivablesMethod;
   late void Function() updateAccountReceivableMethod;
+  String planName = "trail";
 
   AuthInfoMainDataEntity? authInfoMainDataEntity;
   @override
   void initState() {
     authInfoMainDataEntity = widget.authInfoMainDataEntity;
+    planName = _getPlanName();
     super.initState();
+  }
+
+  String _getPlanName() {
+    var plan = authInfoMainDataEntity?.sessionData?.organization?.plan;
+    if (plan == null) {
+      return "trail";
+    }
+    return plan.name ?? "trail";
   }
 
   bool isExpired() {
@@ -46,6 +56,14 @@ class _DashboardPageState extends State<DashboardPage>
       return true;
     }
     return false;
+  }
+
+  Future<void> refreshDashBoardPage() async {
+    updateSalesExpenses.call();
+    updateAccountReceivableMethod.call();
+    updateOverdueInvoiceMethod.call();
+    updateTotalInvoiceMethod.call();
+    updateTotalReceivablesMethod.call();
   }
 
   @override
@@ -81,7 +99,7 @@ class _DashboardPageState extends State<DashboardPage>
                   updateOverdueInvoiceMethod.call();
                   updateTotalInvoiceMethod.call();
                   updateTotalReceivablesMethod.call();
-                  //myMethod.call();
+                  planName = _getPlanName();
                   setState(() {});
                 }));
           },
@@ -104,74 +122,79 @@ class _DashboardPageState extends State<DashboardPage>
         ),
         bottom: AppConstants.getAppBarDivider,
       ),
-      body: SingleChildScrollView(
-        child: Container(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              if (isExpired())
-                RichText(
-                  textAlign: TextAlign.start,
-                  text: TextSpan(
-                      text: "Hello",
-                      style: AppFonts.regularStyle(
-                          color: AppPallete.red, size: 14),
-                      children: <TextSpan>[
-                        TextSpan(
-                            text:
-                                " ${authInfoMainDataEntity?.sessionData?.user?.firstname ?? ""}",
-                            style: AppFonts.mediumStyle(
-                                color: AppPallete.red, size: 16)),
-                        TextSpan(
-                            text: ", your trail has expired. ",
-                            style: AppFonts.regularStyle(
-                                color: AppPallete.red, size: 14)),
-                        TextSpan(
-                            recognizer: TapGestureRecognizer()
-                              ..onTap = () => Utils.showTrailExpired(context),
-                            text: "Choose a plane",
-                            style: AppFonts.regularStyle(
-                              color: AppPallete.blueColor,
-                              size: 14,
-                            ).copyWith(decoration: TextDecoration.underline)),
-                        TextSpan(
-                            text: " to resume services.",
-                            style: AppFonts.regularStyle(
-                                color: AppPallete.red, size: 14)),
-                      ]),
+      body: RefreshIndicator(
+        onRefresh: refreshDashBoardPage,
+        child: SingleChildScrollView(
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                if (isExpired())
+                  RichText(
+                    textAlign: TextAlign.start,
+                    text: TextSpan(
+                        text: "Hello",
+                        style: AppFonts.regularStyle(
+                            color: AppPallete.red, size: 14),
+                        children: <TextSpan>[
+                          TextSpan(
+                              text:
+                                  " ${authInfoMainDataEntity?.sessionData?.user?.firstname ?? ""}",
+                              style: AppFonts.mediumStyle(
+                                  color: AppPallete.red, size: 16)),
+                          TextSpan(
+                              text:
+                                  ", your ${planName.toLowerCase()} plan has expired. ",
+                              style: AppFonts.regularStyle(
+                                  color: AppPallete.red, size: 14)),
+                          TextSpan(
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = () =>
+                                    Utils.showTrailExpired(context, planName),
+                              text: "Choose a plane",
+                              style: AppFonts.regularStyle(
+                                color: AppPallete.blueColor,
+                                size: 14,
+                              ).copyWith(decoration: TextDecoration.underline)),
+                          TextSpan(
+                              text: " to resume services.",
+                              style: AppFonts.regularStyle(
+                                  color: AppPallete.red, size: 14)),
+                        ]),
+                  ),
+                AppConstants.sizeBoxHeight15,
+                SalesexpensesWidget(
+                  builder: (context, methodA) {
+                    updateSalesExpenses = methodA;
+                  },
                 ),
-              AppConstants.sizeBoxHeight15,
-              SalesexpensesWidget(
-                builder: (context, methodA) {
-                  updateSalesExpenses = methodA;
-                },
-              ),
-              AppConstants.sizeBoxHeight15,
-              OverdueInvoceWidget(
-                builder: (context, updateOverdueInvoice) {
-                  updateOverdueInvoiceMethod = updateOverdueInvoice;
-                },
-              ),
-              AppConstants.sizeBoxHeight15,
-              TotalInvoiceWidget(
-                builder: (context, updateTotalInvoice) {
-                  updateTotalInvoiceMethod = updateTotalInvoice;
-                },
-              ),
-              AppConstants.sizeBoxHeight15,
-              TotalReceivablesWidget(
-                builder: (context, updateTotalReceivables) {
-                  updateTotalReceivablesMethod = updateTotalReceivables;
-                },
-              ),
-              AppConstants.sizeBoxHeight15,
-              AccountsReceivables(
-                builder: (context, updateAccountReceivable) {
-                  updateAccountReceivableMethod = updateAccountReceivable;
-                },
-              ),
-            ],
+                AppConstants.sizeBoxHeight15,
+                OverdueInvoceWidget(
+                  builder: (context, updateOverdueInvoice) {
+                    updateOverdueInvoiceMethod = updateOverdueInvoice;
+                  },
+                ),
+                AppConstants.sizeBoxHeight15,
+                TotalInvoiceWidget(
+                  builder: (context, updateTotalInvoice) {
+                    updateTotalInvoiceMethod = updateTotalInvoice;
+                  },
+                ),
+                AppConstants.sizeBoxHeight15,
+                TotalReceivablesWidget(
+                  builder: (context, updateTotalReceivables) {
+                    updateTotalReceivablesMethod = updateTotalReceivables;
+                  },
+                ),
+                AppConstants.sizeBoxHeight15,
+                AccountsReceivables(
+                  builder: (context, updateAccountReceivable) {
+                    updateAccountReceivableMethod = updateAccountReceivable;
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ),
