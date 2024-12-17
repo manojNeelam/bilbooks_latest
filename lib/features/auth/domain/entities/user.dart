@@ -1,4 +1,4 @@
-import '../../../dashboard/domain/entity/authinfo_entity.dart';
+import '../../../dashboard/domain/entity/session_data.dart';
 
 class UserEntity {
   int? success;

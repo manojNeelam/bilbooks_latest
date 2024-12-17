@@ -23,7 +23,7 @@ class _UpdateUserProfilePageState extends State<UpdateUserProfilePage> {
   TextEditingController newEmailController = TextEditingController();
   TextEditingController confirmEmailController = TextEditingController();
   TextEditingController curretPasswordController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
+  TextEditingController newPasswordController = TextEditingController();
   TextEditingController cofirmPasswordController = TextEditingController();
   bool isChangeEmailAddress = false;
   bool isChangePassword = false;
@@ -63,167 +63,169 @@ class _UpdateUserProfilePageState extends State<UpdateUserProfilePage> {
               ))
         ],
       ),
-      body: Column(
-        children: [
-          AppConstants.sizeBoxHeight10,
-          NewInputViewWidget(
-              title: "Full Name",
-              hintText: "Full Name",
-              showDivider: false,
-              controller: fullNameController),
-          AppConstants.sizeBoxHeight10,
-          if (isChangeEmailAddress)
-            Container(
-              color: AppPallete.white,
-              child: Column(
-                children: [
-                  NewInputViewWidget(
-                    title: "New Email",
-                    hintText: "New Email",
-                    controller: newEmailController,
-                    isRequired: true,
-                  ),
-                  NewInputViewWidget(
-                    title: "Confirm Email",
-                    hintText: "Confirm Email",
-                    controller: confirmEmailController,
-                    isRequired: true,
-                  ),
-                  Align(
-                    alignment: Alignment.topRight,
-                    child: TextButton(
-                        onPressed: () {
-                          toggleChangeEmailAddress();
-                        },
-                        child: Text(
-                          "Cancel",
-                          style: AppFonts.regularStyle(
-                              color: AppPallete.blueColor),
-                        )),
-                  )
-                ],
-              ),
-            ),
-          if (!isChangeEmailAddress)
-            Container(
-              color: AppPallete.white,
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 13, horizontal: 16),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          "Email",
-                          style:
-                              AppFonts.regularStyle(color: AppPallete.k666666),
-                        ),
-                        Text(
-                          userEmail,
-                          style:
-                              AppFonts.regularStyle(color: AppPallete.k666666),
-                        )
-                      ],
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            AppConstants.sizeBoxHeight10,
+            NewInputViewWidget(
+                title: "Full Name",
+                hintText: "Full Name",
+                showDivider: false,
+                controller: fullNameController),
+            AppConstants.sizeBoxHeight10,
+            if (isChangeEmailAddress)
+              Container(
+                color: AppPallete.white,
+                child: Column(
+                  children: [
+                    NewInputViewWidget(
+                      title: "New Email",
+                      hintText: "New Email",
+                      controller: newEmailController,
+                      isRequired: true,
                     ),
-                  ),
-                  const ItemSeparator(),
-                  Align(
-                    alignment: Alignment.topRight,
-                    child: TextButton(
-                        onPressed: () {
-                          toggleChangeEmailAddress();
-                        },
-                        child: Text(
-                          "Change email address",
-                          style: AppFonts.regularStyle(
-                              color: AppPallete.blueColor),
-                        )),
-                  ),
-                ],
-              ),
-            ),
-          AppConstants.sizeBoxHeight10,
-          if (!isChangePassword)
-            Container(
-              color: AppPallete.white,
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 13, horizontal: 16),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          "Password",
-                          style:
-                              AppFonts.regularStyle(color: AppPallete.k666666),
-                        ),
-                        Text(
-                          "*********",
-                          style:
-                              AppFonts.regularStyle(color: AppPallete.k666666),
-                        )
-                      ],
+                    NewInputViewWidget(
+                      title: "Confirm Email",
+                      hintText: "Confirm Email",
+                      controller: confirmEmailController,
+                      isRequired: true,
                     ),
-                  ),
-                  const ItemSeparator(),
-                  Align(
-                    alignment: Alignment.topRight,
-                    child: TextButton(
-                        onPressed: () {
-                          toggleChangePassword();
-                        },
-                        child: Text(
-                          "Change password",
-                          style: AppFonts.regularStyle(
-                              color: AppPallete.blueColor),
-                        )),
-                  ),
-                ],
+                    Align(
+                      alignment: Alignment.topRight,
+                      child: TextButton(
+                          onPressed: () {
+                            toggleChangeEmailAddress();
+                          },
+                          child: Text(
+                            "Cancel",
+                            style: AppFonts.regularStyle(
+                                color: AppPallete.blueColor),
+                          )),
+                    )
+                  ],
+                ),
               ),
-            ),
-          if (isChangePassword)
-            Container(
-              color: AppPallete.white,
-              child: Column(
-                children: [
-                  NewInputViewWidget(
-                    title: "Current Password",
-                    hintText: "Current Password",
-                    controller: newEmailController,
-                    isRequired: true,
-                  ),
-                  NewInputViewWidget(
-                    title: "New Password",
-                    hintText: "New Password",
-                    controller: newEmailController,
-                    isRequired: true,
-                  ),
-                  NewInputViewWidget(
-                    title: "Confirm Password",
-                    hintText: "Confirm Password",
-                    controller: confirmEmailController,
-                    isRequired: true,
-                  ),
-                  Align(
-                    alignment: Alignment.topRight,
-                    child: TextButton(
-                        onPressed: () {
-                          toggleChangePassword();
-                        },
-                        child: Text(
-                          "Cancel",
-                          style: AppFonts.regularStyle(
-                              color: AppPallete.blueColor),
-                        )),
-                  )
-                ],
+            if (!isChangeEmailAddress)
+              Container(
+                color: AppPallete.white,
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 13, horizontal: 16),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            "Email",
+                            style: AppFonts.regularStyle(
+                                color: AppPallete.k666666),
+                          ),
+                          Text(
+                            userEmail,
+                            style: AppFonts.regularStyle(
+                                color: AppPallete.k666666),
+                          )
+                        ],
+                      ),
+                    ),
+                    const ItemSeparator(),
+                    Align(
+                      alignment: Alignment.topRight,
+                      child: TextButton(
+                          onPressed: () {
+                            toggleChangeEmailAddress();
+                          },
+                          child: Text(
+                            "Change email address",
+                            style: AppFonts.regularStyle(
+                                color: AppPallete.blueColor),
+                          )),
+                    ),
+                  ],
+                ),
               ),
-            ),
-        ],
+            AppConstants.sizeBoxHeight10,
+            if (!isChangePassword)
+              Container(
+                color: AppPallete.white,
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 13, horizontal: 16),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            "Password",
+                            style: AppFonts.regularStyle(
+                                color: AppPallete.k666666),
+                          ),
+                          Text(
+                            "*********",
+                            style: AppFonts.regularStyle(
+                                color: AppPallete.k666666),
+                          )
+                        ],
+                      ),
+                    ),
+                    const ItemSeparator(),
+                    Align(
+                      alignment: Alignment.topRight,
+                      child: TextButton(
+                          onPressed: () {
+                            toggleChangePassword();
+                          },
+                          child: Text(
+                            "Change password",
+                            style: AppFonts.regularStyle(
+                                color: AppPallete.blueColor),
+                          )),
+                    ),
+                  ],
+                ),
+              ),
+            if (isChangePassword)
+              Container(
+                color: AppPallete.white,
+                child: Column(
+                  children: [
+                    NewInputViewWidget(
+                      title: "Current Password",
+                      hintText: "Current Password",
+                      controller: curretPasswordController,
+                      isRequired: true,
+                    ),
+                    NewInputViewWidget(
+                      title: "New Password",
+                      hintText: "New Password",
+                      controller: newPasswordController,
+                      isRequired: true,
+                    ),
+                    NewInputViewWidget(
+                      title: "Confirm Password",
+                      hintText: "Confirm Password",
+                      controller: cofirmPasswordController,
+                      isRequired: true,
+                    ),
+                    Align(
+                      alignment: Alignment.topRight,
+                      child: TextButton(
+                          onPressed: () {
+                            toggleChangePassword();
+                          },
+                          child: Text(
+                            "Cancel",
+                            style: AppFonts.regularStyle(
+                                color: AppPallete.blueColor),
+                          )),
+                    )
+                  ],
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }

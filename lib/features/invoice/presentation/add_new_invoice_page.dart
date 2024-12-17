@@ -92,6 +92,8 @@ class AddNewInvoiceEstimatePage extends StatefulWidget {
   final EnumNewInvoiceEstimateType type;
   final Function() refreshCallBack;
   final Function() startObserveBlocBack;
+  final Function() deletedItem;
+
   final String estimateTitle;
   const AddNewInvoiceEstimatePage({
     super.key,
@@ -101,6 +103,7 @@ class AddNewInvoiceEstimatePage extends StatefulWidget {
     required this.refreshCallBack,
     required this.invoiceDetailResEntity,
     required this.startObserveBlocBack,
+    required this.deletedItem,
   });
 
   @override
@@ -552,6 +555,21 @@ emailto_clientstaff:[{"id":"23214","email":"abc@exaple.com"},{"id":"23216","emai
                     selected: returnedItem.primary);
               }).toList();
             }
+            if (state is InvoiceDeleteErrorState) {
+              showToastification(
+                  context, state.errorMessage, ToastificationType.error);
+            }
+
+            if (state is InvoiceDeleteSuccessState) {
+              showToastification(
+                  context,
+                  state.invoiceDeleteMainResEntity.data?.message ??
+                      "Successfully deleted",
+                  ToastificationType.success);
+              widget.deletedItem();
+              AutoRouter.of(context).popUntilRoot();
+            }
+
             if (state is InvoiceEstimateAddErrorState) {
               showToastification(
                   context, state.errorMessage, ToastificationType.error);
@@ -602,6 +620,11 @@ emailto_clientstaff:[{"id":"23214","email":"abc@exaple.com"},{"id":"23216","emai
             }
           },
           builder: (context, state) {
+            if (state is InvoiceDeleteLoadingState) {
+              return LoadingPage(
+                  title:
+                      "Deleting ${isEstimate() ? widget.estimateTitle : "invoice"}..");
+            }
             if (state is InvoiceEstimateAddLoadingState) {
               return LoadingPage(
                   title:

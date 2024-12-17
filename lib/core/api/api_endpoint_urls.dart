@@ -7,6 +7,9 @@ class ApiEndPoints {
   static const String resetPassword = "auth/resetpassword";
   static const String authUser = "auth/signup";
 
+  //profile
+  static const String updateProfile = "auth/profile";
+
   //Client
   static const String client = "clients";
   static const String deleteClient = "clients/delete";
@@ -90,4 +93,6 @@ class ApiEndPoints {
 
   //Settings
   static const String selectorganization = "settings/selectorganization";
+  static const String emailTemplates = "settings/emailtemplates";
+  static const String updateEmailTemplates = "settings/emailtemplates";
 }

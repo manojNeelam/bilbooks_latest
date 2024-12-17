@@ -16,3 +16,15 @@ class SelectOrganizationSuccessState extends ProfileState {
   final AuthInfoMainResEntity authInfoMainResEntity;
   SelectOrganizationSuccessState({required this.authInfoMainResEntity});
 }
+
+class UpdateMyProfileLoadingState extends ProfileState {}
+
+class UpdateMyProfileSuccessState extends ProfileState {
+  final UpdateMyProfileResponseEntity updateMyProfileResponseEntity;
+  UpdateMyProfileSuccessState({required this.updateMyProfileResponseEntity});
+}
+
+class UpdateMyProfileErrorState extends ProfileState {
+  final String errorMessage;
+  UpdateMyProfileErrorState({required this.errorMessage});
+}

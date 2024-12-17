@@ -15,7 +15,11 @@ import 'widgets/total_receivables_widget.dart';
 
 class DashboardPage extends StatefulWidget {
   final AuthInfoMainDataEntity authInfoMainDataEntity;
-  const DashboardPage({super.key, required this.authInfoMainDataEntity});
+  final Function() refreshOtherTabs;
+  const DashboardPage(
+      {super.key,
+      required this.authInfoMainDataEntity,
+      required this.refreshOtherTabs});
 
   @override
   State<DashboardPage> createState() => _DashboardPageState();
@@ -23,11 +27,11 @@ class DashboardPage extends StatefulWidget {
 
 class _DashboardPageState extends State<DashboardPage>
     with AutomaticKeepAliveClientMixin {
-  late void Function() updateSalesExpenses;
-  late void Function() updateOverdueInvoiceMethod;
-  late void Function() updateTotalInvoiceMethod;
-  late void Function() updateTotalReceivablesMethod;
-  late void Function() updateAccountReceivableMethod;
+  void Function()? updateSalesExpenses;
+  void Function()? updateOverdueInvoiceMethod;
+  void Function()? updateTotalInvoiceMethod;
+  void Function()? updateTotalReceivablesMethod;
+  void Function()? updateAccountReceivableMethod;
   String planName = "trail";
 
   AuthInfoMainDataEntity? authInfoMainDataEntity;
@@ -59,11 +63,11 @@ class _DashboardPageState extends State<DashboardPage>
   }
 
   Future<void> refreshDashBoardPage() async {
-    updateSalesExpenses.call();
-    updateAccountReceivableMethod.call();
-    updateOverdueInvoiceMethod.call();
-    updateTotalInvoiceMethod.call();
-    updateTotalReceivablesMethod.call();
+    updateSalesExpenses?.call();
+    updateAccountReceivableMethod?.call();
+    updateOverdueInvoiceMethod?.call();
+    updateTotalInvoiceMethod?.call();
+    updateTotalReceivablesMethod?.call();
   }
 
   @override
@@ -94,12 +98,13 @@ class _DashboardPageState extends State<DashboardPage>
                   authInfoMainDataEntity = p0;
                 },
                 refresh: () {
-                  updateSalesExpenses.call();
-                  updateAccountReceivableMethod.call();
-                  updateOverdueInvoiceMethod.call();
-                  updateTotalInvoiceMethod.call();
-                  updateTotalReceivablesMethod.call();
+                  updateSalesExpenses?.call();
+                  updateAccountReceivableMethod?.call();
+                  updateOverdueInvoiceMethod?.call();
+                  updateTotalInvoiceMethod?.call();
+                  updateTotalReceivablesMethod?.call();
                   planName = _getPlanName();
+                  widget.refreshOtherTabs();
                   setState(() {});
                 }));
           },

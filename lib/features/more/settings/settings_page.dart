@@ -1,13 +1,14 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:billbooks_app/core/theme/app_fonts.dart';
 import 'package:billbooks_app/core/theme/app_pallete.dart';
-import 'package:billbooks_app/features/clients/presentation/widgets/client_item_widget.dart';
+import 'package:billbooks_app/core/utils/hive_functions.dart';
 import 'package:billbooks_app/router/app_router.dart';
 import 'package:flutter/material.dart';
 
 import '../../../core/app_constants.dart';
 import '../../../core/constants/assets.dart';
 import '../../dashboard/domain/entity/authinfo_entity.dart';
+import '../../dashboard/domain/entity/session_data.dart';
 
 enum EnumScreentype {
   preference,
@@ -39,8 +40,15 @@ class SettingsPage extends StatelessWidget {
   final AuthInfoMainDataEntity authInfoMainDataEntity;
   const SettingsPage({super.key, required this.authInfoMainDataEntity});
 
-  (bool, String) getRenewText() {
-    var plan = authInfoMainDataEntity.sessionData?.organization?.plan;
+  Future<SessionDataEntity?> getUserSessionData() async {
+    // final billbooksDatabaseBox = await Hive.openBox('billBooks_database_box');
+    // return billbooksDatabaseBox.get('user_session_data');
+
+    return HiveFunctions.getUserSessionData();
+  }
+
+  (bool, String) getRenewText(SessionDataEntity? sessionData) {
+    var plan = sessionData?.organization?.plan;
     if (plan == null) {
       return (true, "Expired");
     }
@@ -100,39 +108,40 @@ class SettingsPage extends StatelessWidget {
             color: AppPallete.lightBlueColor,
             padding: AppConstants.horizontalVerticalPadding,
             child: Center(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Image.asset(
-                    Assets.assetsImagesIcWebwingz,
-                    height: 40,
-                  ),
-                  AppConstants.sizeBoxHeight15,
-                  Text(
-                    (authInfoMainDataEntity.sessionData?.organization?.name ??
-                            "")
-                        .toUpperCase(),
-                    style: AppFonts.mediumStyle(size: 19),
-                  ),
-                  AppConstants.sepSizeBox5,
-                  Text(
-                    authInfoMainDataEntity
-                            .sessionData?.organization?.plan?.name ??
-                        "",
-                    style: AppFonts.regularStyle(
-                        color: AppPallete.k666666, size: 15),
-                  ),
-                  AppConstants.sepSizeBox5,
-                  Text(
-                    getRenewText().$2,
-                    style: AppFonts.regularStyle(
-                        color: getRenewText().$1
-                            ? AppPallete.red
-                            : AppPallete.greenColor,
-                        size: 14),
-                  )
-                ],
+              child: FutureBuilder<SessionDataEntity?>(
+                future: getUserSessionData(),
+                builder: (context, snapshot) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image.asset(
+                        Assets.assetsImagesIcWebwingz,
+                        height: 40,
+                      ),
+                      AppConstants.sizeBoxHeight15,
+                      Text(
+                        (snapshot.data?.organization?.name ?? "").toUpperCase(),
+                        style: AppFonts.mediumStyle(size: 19),
+                      ),
+                      AppConstants.sepSizeBox5,
+                      Text(
+                        snapshot.data?.organization?.plan?.name ?? "",
+                        style: AppFonts.regularStyle(
+                            color: AppPallete.k666666, size: 15),
+                      ),
+                      AppConstants.sepSizeBox5,
+                      Text(
+                        getRenewText(snapshot.data).$2,
+                        style: AppFonts.regularStyle(
+                            color: getRenewText(snapshot.data).$1
+                                ? AppPallete.red
+                                : AppPallete.greenColor,
+                            size: 14),
+                      )
+                    ],
+                  );
+                },
               ),
             ),
           ),

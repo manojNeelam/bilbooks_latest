@@ -79,67 +79,64 @@ class _OverdueInvoceWidgetState extends State<OverdueInvoceWidget> {
                 SizedBox(
                   height: maxCount() > 0 ? (65.0 * maxCount()) : 30,
                   child: (maxCount() > 0)
-                      ? Flexible(
-                          child: ListView.builder(
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemCount: maxCount(),
-                              itemBuilder: (context, index) {
-                                final invoice = overDueInvoices[index];
-                                return Column(
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 10.0),
-                                      child: Column(children: [
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Text(
-                                              invoice.clientName ?? "",
-                                              style: AppFonts.regularStyle(),
-                                            ),
-                                            Text(
-                                              invoice.balance ?? "",
-                                              style: AppFonts.mediumStyle(
-                                                  color: AppPallete.red,
-                                                  size: 16),
-                                            )
-                                          ],
+                      ? ListView.builder(
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: maxCount(),
+                          itemBuilder: (context, index) {
+                            final invoice = overDueInvoices[index];
+                            return Column(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 10.0),
+                                  child: Column(children: [
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          invoice.clientName ?? "",
+                                          style: AppFonts.regularStyle(),
                                         ),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Text(
-                                              invoice.no ?? "",
-                                              style: AppFonts.regularStyle(
-                                                  color: AppPallete.k666666,
-                                                  size: 14),
-                                            ),
-                                            Text(
-                                              invoice.date ?? "",
-                                              style: AppFonts.regularStyle(
-                                                  color: AppPallete.k666666,
-                                                  size: 14),
-                                            )
-                                          ],
-                                        ),
-                                      ]),
+                                        Text(
+                                          invoice.balance ?? "",
+                                          style: AppFonts.mediumStyle(
+                                              color: AppPallete.red, size: 16),
+                                        )
+                                      ],
                                     ),
-                                    if (maxCount() > index + 1)
-                                      const ItemSeparator(),
-                                  ],
-                                );
-                              }),
-                        )
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          invoice.no ?? "",
+                                          style: AppFonts.regularStyle(
+                                              color: AppPallete.k666666,
+                                              size: 14),
+                                        ),
+                                        Text(
+                                          invoice.date ?? "",
+                                          style: AppFonts.regularStyle(
+                                              color: AppPallete.k666666,
+                                              size: 14),
+                                        )
+                                      ],
+                                    ),
+                                  ]),
+                                ),
+                                if (maxCount() > index + 1)
+                                  const ItemSeparator(),
+                              ],
+                            );
+                          })
                       : Text(
                           "No overdue invoices to display",
                           style:
                               AppFonts.regularStyle(color: AppPallete.k666666),
                         ),
                 ),
-                if (maxCount() > 4)
+                if (overDueInvoices.length > 4)
                   GestureDetector(
                     child: Text(
                       "See more",

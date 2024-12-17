@@ -76,6 +76,7 @@ class _PreferencesPageState extends State<PreferencesPage> {
 
   TextEditingController estimateNumberController = TextEditingController();
   TextEditingController estimateNotesController = TextEditingController();
+  TextEditingController portalNameController = TextEditingController();
 
   bool attachPDF = false;
   bool notifyEstimateandInvoiceOpened = false;
@@ -172,6 +173,10 @@ class _PreferencesPageState extends State<PreferencesPage> {
       child: Column(
         children: [
           AppConstants.sizeBoxHeight10,
+          NewInputViewWidget(
+              title: "Portal Name",
+              hintText: "Portal Name",
+              controller: portalNameController),
           InputDropdownView(
               title: "Fiscal Year",
               isRequired: false,
@@ -428,6 +433,12 @@ class _PreferencesPageState extends State<PreferencesPage> {
 
               Utils.saveColumnSettings(columnSettingsPref);
             }
+          }
+
+          if (state is UpdateGeneralSettingsSuccessState &&
+              state is UpdateInvoiceSettingsSuccessState &&
+              state is UpdateEstimateSettingsSuccessState &&
+              state is UpdateColumnSettingsSuccessState) {
             AutoRouter.of(context).maybePop();
           }
 
@@ -466,6 +477,8 @@ class _PreferencesPageState extends State<PreferencesPage> {
             invoiceTitleController.text =
                 preferencesEntity?.invoiceHeading ?? "";
             notesController.text = preferencesEntity?.invoiceNotes ?? "";
+
+            portalNameController.text = preferencesEntity?.portalName ?? "";
 
             invoiceTerms = preferencesEntity?.invoiceTerms ?? "";
             estimateTerms = preferencesEntity?.estimateTerms ?? "";

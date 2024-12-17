@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:billbooks_app/core/app_constants.dart';
 import 'package:billbooks_app/core/theme/app_fonts.dart';
 import 'package:billbooks_app/core/theme/app_pallete.dart';
+import 'package:billbooks_app/core/utils/hive_functions.dart';
 import 'package:billbooks_app/core/widgets/cap_status_widget.dart';
 import 'package:billbooks_app/core/widgets/item_separator.dart';
 import 'package:billbooks_app/core/widgets/loading_page.dart';
@@ -13,6 +14,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_section_list/flutter_section_list.dart';
 
 import '../../dashboard/domain/entity/authinfo_entity.dart';
+import '../../dashboard/domain/entity/session_data.dart';
 
 @RoutePage()
 class UserProfilePage extends StatefulWidget {
@@ -40,6 +42,15 @@ class _UserProfilePageState extends State<UserProfilePage>
     debugPrint("initState");
     authInfoMainDataEntity = widget.authInfoMainDataEntity;
     super.initState();
+  }
+
+  Future<void> saveUserSessionData(SessionDataEntity sessionDataEntity) async {
+    // final _billBooks_database_box =
+    //     await Hive.openBox('billBooks_database_box');
+    // await _billBooks_database_box.put('user_session_data', sessionDataEntity);
+
+    // final user = _billBooks_database_box.get('user_session_data');
+    HiveFunctions.saveUserSessionData(sessionDataEntity);
   }
 
   void _callApi(String id) {
@@ -70,6 +81,9 @@ class _UserProfilePageState extends State<UserProfilePage>
           if (state is SelectOrganizationSuccessState) {
             isRefreshonPop = true;
             authInfoMainDataEntity = state.authInfoMainResEntity.data;
+            if (authInfoMainDataEntity?.sessionData != null) {
+              saveUserSessionData(authInfoMainDataEntity!.sessionData!);
+            }
             setState(() {});
           }
         },

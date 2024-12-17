@@ -8,6 +8,7 @@ import 'package:billbooks_app/features/estimate/presentation/bloc/estimate_bloc.
 import 'package:billbooks_app/features/estimate/presentation/widgets/estimate_type_header_widget.dart';
 import 'package:billbooks_app/features/invoice/domain/entities/invoice_list_entity.dart';
 import 'package:billbooks_app/features/invoice/presentation/add_new_invoice_page.dart';
+import 'package:billbooks_app/main.dart';
 import 'package:billbooks_app/router/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -83,7 +84,8 @@ extension EnumEstimateTypeExtension on EnumEstimateType {
 }
 
 class EstimateListPage extends StatefulWidget {
-  const EstimateListPage({super.key});
+  final EstimateListBuilder builder;
+  const EstimateListPage({super.key, required this.builder});
 
   @override
   State<EstimateListPage> createState() => _EstimateListPageState();
@@ -344,6 +346,7 @@ class _EstimateListPageState extends State<EstimateListPage>
         startObserveBlocBack: () {
           isIgnoreBlocStates = false;
         },
+        deletedItem: () {},
         refreshCallBack: () {
           isIgnoreBlocStates = false;
           _loadEstimates();
@@ -395,6 +398,7 @@ class _EstimateListPageState extends State<EstimateListPage>
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    widget.builder(context, _forceEstimateList);
     return Scaffold(
       appBar: AppBar(
         title: FutureBuilder(
@@ -588,9 +592,13 @@ class _EstimateListPageState extends State<EstimateListPage>
     );
   }
 
-  Future<void> _handleRefresh() async {
+  void _forceEstimateList() {
     currentPage = 1;
     _loadEstimates();
+  }
+
+  Future<void> _handleRefresh() async {
+    _forceEstimateList();
   }
 
   @override

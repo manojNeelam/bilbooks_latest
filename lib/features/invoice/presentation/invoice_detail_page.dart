@@ -1,7 +1,6 @@
 import 'package:adaptive_action_sheet/adaptive_action_sheet.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:billbooks_app/core/utils/show_toast.dart';
-import 'package:billbooks_app/core/utils/utils.dart';
 import 'package:billbooks_app/core/widgets/loading_page.dart';
 import 'package:billbooks_app/core/widgets/section_header_widget.dart';
 import 'package:billbooks_app/features/clients/presentation/widgets/client_item_widget.dart';
@@ -61,10 +60,12 @@ class _InvoiceDetailPageState extends State<InvoiceDetailPage>
   bool isIgnoreBlocStates = false;
   bool callRefresh = false;
   BuildContext? mainContext;
+  String? screenTitle;
 
   @override
   void initState() {
     mainContext = context;
+    screenTitle = widget.estimateTitle;
     _loadData();
     super.initState();
   }
@@ -82,13 +83,13 @@ class _InvoiceDetailPageState extends State<InvoiceDetailPage>
     AutoRouter.of(context).maybePop();
   }
 
-  Future<String> estimateTitle() async {
-    if (widget.type == EnumNewInvoiceEstimateType.estimate) {
-      return await Utils.getEstimate() ?? "Estimate";
-    } else {
-      return "Invoice";
-    }
-  }
+  // _loadScreenTitle() async {
+  //   if (widget.type == EnumNewInvoiceEstimateType.estimate) {
+  //     screenTitle = await Utils.getEstimate() ?? "Estimate";
+  //   } else {
+  //     screenTitle = "Invoice";
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -114,13 +115,7 @@ class _InvoiceDetailPageState extends State<InvoiceDetailPage>
               color: AppPallete.blueColor,
             )),
         backgroundColor: AppPallete.lightBlueColor,
-        title: FutureBuilder(
-          future: estimateTitle(),
-          initialData: "",
-          builder: (context, snapshot) {
-            return Text(snapshot.data ?? "NO Data");
-          },
-        ),
+        title: Text(screenTitle ?? ""),
       ),
       body: SafeArea(
         child: BlocConsumer<InvoiceBloc, InvoiceState>(
@@ -457,6 +452,10 @@ class _InvoiceDetailPageState extends State<InvoiceDetailPage>
         startObserveBlocBack: () {
           isIgnoreBlocStates = false;
         },
+        deletedItem: () {
+          callRefresh = true;
+          _popOut();
+        },
         refreshCallBack: () {
           isIgnoreBlocStates = false;
           _loadData();
@@ -589,6 +588,7 @@ class _InvoiceDetailPageState extends State<InvoiceDetailPage>
         startObserveBlocBack: () {
           isIgnoreBlocStates = false;
         },
+        deletedItem: () {},
         refreshCallBack: () {
           isIgnoreBlocStates = false;
         }));
@@ -667,6 +667,7 @@ class _InvoiceDetailPageState extends State<InvoiceDetailPage>
                     startObserveBlocBack: () {
                       isIgnoreBlocStates = false;
                     },
+                    deletedItem: () {},
                     refreshCallBack: () {
                       isIgnoreBlocStates = false;
                     }));
@@ -793,6 +794,7 @@ class _InvoiceDetailPageState extends State<InvoiceDetailPage>
                     startObserveBlocBack: () {
                       isIgnoreBlocStates = false;
                     },
+                    deletedItem: () {},
                     refreshCallBack: () {
                       isIgnoreBlocStates = false;
                     }));
@@ -886,6 +888,7 @@ class _InvoiceDetailPageState extends State<InvoiceDetailPage>
                       startObserveBlocBack: () {
                         isIgnoreBlocStates = false;
                       },
+                      deletedItem: () {},
                       refreshCallBack: () {
                         isIgnoreBlocStates = false;
                       }));
@@ -912,6 +915,7 @@ class _InvoiceDetailPageState extends State<InvoiceDetailPage>
                     invoiceEntity: invoiceEntity,
                     type: EnumNewInvoiceEstimateType.duplicateEstimate,
                     startObserveBlocBack: () {},
+                    deletedItem: () {},
                     refreshCallBack: () {}));
               }),
           BottomSheetAction(
@@ -1275,7 +1279,9 @@ class _InvoiceDetailPageState extends State<InvoiceDetailPage>
         context: mainContext!,
         builder: (context) {
           return AppAlertWidget(
-            title: isInvoice() ? "Delete Invoice" : "Delete Estimate",
+            title: isInvoice()
+                ? "Delete Invoice"
+                : "Delete ${(screenTitle ?? "").capitalize()}",
             message:
                 "Are you sure you want to delete this ${isInvoice() ? "invoice" : "estimate"}?",
             onTapDelete: () {

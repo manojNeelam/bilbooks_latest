@@ -1,4 +1,5 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:billbooks_app/core/utils/hive_functions.dart';
 import 'package:billbooks_app/core/utils/utils.dart';
 import 'package:billbooks_app/features/dashboard/presentation/bloc/authinfo_bloc.dart';
 import 'package:billbooks_app/router/app_router.dart';
@@ -8,6 +9,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../core/constants/assets.dart';
 import '../../core/utils/column_settings_pref.dart';
 import '../dashboard/domain/entity/authinfo_entity.dart';
+import '../dashboard/domain/entity/column_settings_data.dart';
+import '../dashboard/domain/entity/session_data.dart';
 import '../dashboard/domain/usecase/auth_info_usecase.dart';
 
 @RoutePage()
@@ -44,6 +47,15 @@ class _SplashPageState extends State<SplashPage> {
     debugPrint(columnSettingsEntity?.qty ?? "");
   }
 
+  Future<void> saveUserSessionData(SessionDataEntity sessionDataEntity) async {
+    HiveFunctions.saveUserSessionData(sessionDataEntity);
+    // final _billBooks_database_box =
+    //     await Hive.openBox('billBooks_database_box');
+    // await _billBooks_database_box.put('user_session_data', sessionDataEntity);
+
+    // final user = _billBooks_database_box.get('user_session_data');
+  }
+
   Future<void> _callApi() async {
     var token = await Utils.getToken();
     if (token == null) {
@@ -77,6 +89,10 @@ class _SplashPageState extends State<SplashPage> {
                 itemTitle: columnSettingsEntity?.columnItemsTitle,
                 hideRate: columnSettingsEntity?.hideColumnRate);
             saveColumnSettings(columnSettingsPref);
+
+            if (authInfoMainDataEntity?.sessionData != null) {
+              saveUserSessionData(authInfoMainDataEntity!.sessionData!);
+            }
 
             saveEstimateTitle(estimateTitle);
             AutoRouter.of(context).pushAndPopUntil(

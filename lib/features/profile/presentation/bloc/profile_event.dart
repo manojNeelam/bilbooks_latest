@@ -7,3 +7,8 @@ class SetOrganizationEvent extends ProfileEvent {
   final SelectOrganizationReqParams selectOrganizationReqParams;
   SetOrganizationEvent({required this.selectOrganizationReqParams});
 }
+
+class UpdateMyProfileEvent extends ProfileEvent {
+  final UpdateProfileReqParams updateProfileReqParams;
+  UpdateMyProfileEvent({required this.updateProfileReqParams});
+}

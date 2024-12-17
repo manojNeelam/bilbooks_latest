@@ -19,6 +19,7 @@ import '../../../../core/utils/column_settings_pref.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../localization/locales.dart';
 import '../../../../router/app_router.dart';
+import '../../../dashboard/domain/entity/column_settings_data.dart';
 import '../widgets/auth_password_field.dart';
 
 @RoutePage()

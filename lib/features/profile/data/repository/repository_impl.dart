@@ -2,6 +2,7 @@ import 'package:billbooks_app/core/error/failures.dart';
 
 import 'package:billbooks_app/features/dashboard/domain/entity/authinfo_entity.dart';
 import 'package:billbooks_app/features/profile/data/remote/profile_datasource.dart';
+import 'package:billbooks_app/features/profile/domain/entity/profile_entity.dart';
 
 import 'package:billbooks_app/features/profile/domain/usecase/profile_usecase.dart';
 import 'package:flutter/material.dart';
@@ -25,6 +26,23 @@ class ProfileRepositoryImpl implements ProfileRepository {
       return left(Failure(e.message));
     } catch (e) {
       debugPrint("ProfileRepository: default error");
+
+      return left(Failure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, UpdateMyProfileResponseEntity>> updateProfile(
+      UpdateProfileReqParams params) async {
+    try {
+      final res = await profileRemoteDataSource.updateProfile(params);
+      debugPrint("Update Profile: success");
+      return right(res);
+    } on ApiException catch (e) {
+      debugPrint("Update Profile: api exception error");
+      return left(Failure(e.message));
+    } catch (e) {
+      debugPrint("Update Profile: default error");
 
       return left(Failure(e.toString()));
     }

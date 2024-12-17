@@ -10,7 +10,7 @@ class TotalIncomesMainResEntity {
 
 class TotalIncomesDataEntity {
   bool? success;
-  List<TotalIncomesEntity>? data;
+  List<TotalIncomesMainDataEntity>? data;
   String? message;
 
   TotalIncomesDataEntity({
@@ -20,8 +20,13 @@ class TotalIncomesDataEntity {
   });
 }
 
-class TotalIncomesEntity {
+class TotalIncomesMainDataEntity {
   String? currency;
+  TotalIncomesEntity? details;
+  TotalIncomesMainDataEntity({this.currency, this.details});
+}
+
+class TotalIncomesEntity {
   String? today;
   String? thisWeek;
   String? thisMonth;
@@ -29,7 +34,6 @@ class TotalIncomesEntity {
   String? thisFiscalYear;
 
   TotalIncomesEntity({
-    this.currency,
     this.today,
     this.thisWeek,
     this.thisMonth,

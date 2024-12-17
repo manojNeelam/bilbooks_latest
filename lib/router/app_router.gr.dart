@@ -27,6 +27,7 @@ abstract class _$AppRouter extends RootStackRouter {
           refreshCallBack: args.refreshCallBack,
           invoiceDetailResEntity: args.invoiceDetailResEntity,
           startObserveBlocBack: args.startObserveBlocBack,
+          deletedItem: args.deletedItem,
         ),
       );
     },
@@ -169,9 +170,13 @@ abstract class _$AppRouter extends RootStackRouter {
       );
     },
     ClientListPageRoute.name: (routeData) {
+      final args = routeData.argsAs<ClientListPageRouteArgs>();
       return AutoRoutePage<dynamic>(
         routeData: routeData,
-        child: const ClientListPage(),
+        child: ClientListPage(
+          key: args.key,
+          builder: args.builder,
+        ),
       );
     },
     ClientPopupRoute.name: (routeData) {
@@ -703,6 +708,9 @@ abstract class _$AppRouter extends RootStackRouter {
         child: UpdateEmailTemplatePage(
           key: args.key,
           title: args.title,
+          message: args.message,
+          subject: args.subject,
+          type: args.type,
         ),
       );
     },
@@ -760,6 +768,7 @@ class AddNewInvoiceEstimatePageRoute
     required dynamic Function() refreshCallBack,
     required InvoiceDetailResEntity? invoiceDetailResEntity,
     required dynamic Function() startObserveBlocBack,
+    required dynamic Function() deletedItem,
     List<PageRouteInfo>? children,
   }) : super(
           AddNewInvoiceEstimatePageRoute.name,
@@ -771,6 +780,7 @@ class AddNewInvoiceEstimatePageRoute
             refreshCallBack: refreshCallBack,
             invoiceDetailResEntity: invoiceDetailResEntity,
             startObserveBlocBack: startObserveBlocBack,
+            deletedItem: deletedItem,
           ),
           initialChildren: children,
         );
@@ -790,6 +800,7 @@ class AddNewInvoiceEstimatePageRouteArgs {
     required this.refreshCallBack,
     required this.invoiceDetailResEntity,
     required this.startObserveBlocBack,
+    required this.deletedItem,
   });
 
   final Key? key;
@@ -806,9 +817,11 @@ class AddNewInvoiceEstimatePageRouteArgs {
 
   final dynamic Function() startObserveBlocBack;
 
+  final dynamic Function() deletedItem;
+
   @override
   String toString() {
-    return 'AddNewInvoiceEstimatePageRouteArgs{key: $key, invoiceEntity: $invoiceEntity, estimateTitle: $estimateTitle, type: $type, refreshCallBack: $refreshCallBack, invoiceDetailResEntity: $invoiceDetailResEntity, startObserveBlocBack: $startObserveBlocBack}';
+    return 'AddNewInvoiceEstimatePageRouteArgs{key: $key, invoiceEntity: $invoiceEntity, estimateTitle: $estimateTitle, type: $type, refreshCallBack: $refreshCallBack, invoiceDetailResEntity: $invoiceDetailResEntity, startObserveBlocBack: $startObserveBlocBack, deletedItem: $deletedItem}';
   }
 }
 
@@ -1354,16 +1367,46 @@ class ClientDetailPageRouteArgs {
 
 /// generated route for
 /// [ClientListPage]
-class ClientListPageRoute extends PageRouteInfo<void> {
-  const ClientListPageRoute({List<PageRouteInfo>? children})
-      : super(
+class ClientListPageRoute extends PageRouteInfo<ClientListPageRouteArgs> {
+  ClientListPageRoute({
+    Key? key,
+    required void Function(
+      BuildContext,
+      void Function(),
+    ) builder,
+    List<PageRouteInfo>? children,
+  }) : super(
           ClientListPageRoute.name,
+          args: ClientListPageRouteArgs(
+            key: key,
+            builder: builder,
+          ),
           initialChildren: children,
         );
 
   static const String name = 'ClientListPageRoute';
 
-  static const PageInfo<void> page = PageInfo<void>(name);
+  static const PageInfo<ClientListPageRouteArgs> page =
+      PageInfo<ClientListPageRouteArgs>(name);
+}
+
+class ClientListPageRouteArgs {
+  const ClientListPageRouteArgs({
+    this.key,
+    required this.builder,
+  });
+
+  final Key? key;
+
+  final void Function(
+    BuildContext,
+    void Function(),
+  ) builder;
+
+  @override
+  String toString() {
+    return 'ClientListPageRouteArgs{key: $key, builder: $builder}';
+  }
 }
 
 /// generated route for
@@ -3282,12 +3325,18 @@ class UpdateEmailTemplatePageRoute
   UpdateEmailTemplatePageRoute({
     Key? key,
     required String title,
+    required String message,
+    required String subject,
+    required EnumEmailTemplate type,
     List<PageRouteInfo>? children,
   }) : super(
           UpdateEmailTemplatePageRoute.name,
           args: UpdateEmailTemplatePageRouteArgs(
             key: key,
             title: title,
+            message: message,
+            subject: subject,
+            type: type,
           ),
           initialChildren: children,
         );
@@ -3302,15 +3351,24 @@ class UpdateEmailTemplatePageRouteArgs {
   const UpdateEmailTemplatePageRouteArgs({
     this.key,
     required this.title,
+    required this.message,
+    required this.subject,
+    required this.type,
   });
 
   final Key? key;
 
   final String title;
 
+  final String message;
+
+  final String subject;
+
+  final EnumEmailTemplate type;
+
   @override
   String toString() {
-    return 'UpdateEmailTemplatePageRouteArgs{key: $key, title: $title}';
+    return 'UpdateEmailTemplatePageRouteArgs{key: $key, title: $title, message: $message, subject: $subject, type: $type}';
   }
 }
 

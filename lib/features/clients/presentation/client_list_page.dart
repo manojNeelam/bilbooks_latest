@@ -18,12 +18,14 @@ import '../../../core/utils/show_toast.dart';
 import '../../../core/utils/utils.dart';
 import '../../../core/widgets/list_empty_page.dart';
 import '../../../core/widgets/searchbar_widget.dart';
+import '../../../main.dart';
 import '../../more/expenses/presentation/widgets/expenses_sort_page.dart';
 import 'client_sort_page.dart';
 
 @RoutePage()
 class ClientListPage extends StatefulWidget {
-  const ClientListPage({super.key});
+  final ClientListBuilder builder;
+  const ClientListPage({super.key, required this.builder});
 
   @override
   State<ClientListPage> createState() => _ClientListPageState();
@@ -37,10 +39,11 @@ class _ClientListPageState extends State<ClientListPage>
   EnumClientType selectedType = EnumClientType.all;
   EnumClientSortBy selectedClientSortBy = EnumClientSortBy.name;
   EnumOrderBy selectedOrderBy = EnumOrderBy.ascending;
-  ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
   Paging? paging;
   int currentPage = 1;
   bool isFromPagination = false;
+  bool forceFetchRecords = false;
 
   @override
   void initState() {
@@ -82,6 +85,10 @@ class _ClientListPageState extends State<ClientListPage>
         )));
   }
 
+  void _setForceFetch() {
+    forceFetchRecords = true;
+  }
+
   @override
   int numberOfSections() {
     return 1;
@@ -107,6 +114,10 @@ class _ClientListPageState extends State<ClientListPage>
   }
 
   Future<void> _handleRefresh() async {
+    _forceRefreshList();
+  }
+
+  _forceRefreshList() {
     currentPage = 1;
     _getClientList();
   }
@@ -114,8 +125,9 @@ class _ClientListPageState extends State<ClientListPage>
   @override
   Widget build(BuildContext context) {
     //debugPrint("Font Family: ${DefaultTextStyle.of(context).style.fontFamily}");
-
     super.build(context);
+    widget.builder.call(context, _getClientList);
+
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -143,8 +155,7 @@ class _ClientListPageState extends State<ClientListPage>
               )),
           IconButton(
               onPressed: () {
-                AutoRouter.of(context)
-                    .push(NewClientPageRoute(clientRemoved: () {}));
+                _openAddNewClientPage();
               },
               icon: const Icon(
                 Icons.add,
@@ -226,6 +237,14 @@ class _ClientListPageState extends State<ClientListPage>
     );
   }
 
+  void _openAddNewClientPage() {
+    AutoRouter.of(context).push(NewClientPageRoute(refreshClient: () {
+      _forceRefreshList();
+    }, clientRemoved: () {
+      _forceRefreshList();
+    }));
+  }
+
   Widget showEmptyView() {
     return ListEmptyPage(
       buttonTitle: "Create new client",
@@ -233,11 +252,7 @@ class _ClientListPageState extends State<ClientListPage>
       iconName: Icons.people_alt_outlined,
       noDataSubtitle: "Create and manage your contacts, all in one place",
       callBack: () {
-        AutoRouter.of(context).push(NewClientPageRoute(refreshClient: () {
-          _getClientList();
-        }, clientRemoved: () {
-          _getClientList();
-        }));
+        _openAddNewClientPage();
       },
     );
   }
@@ -270,5 +285,5 @@ class _ClientListPageState extends State<ClientListPage>
   }
 
   @override
-  bool get wantKeepAlive => false;
+  bool get wantKeepAlive => true;
 }

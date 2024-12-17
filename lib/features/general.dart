@@ -26,6 +26,9 @@ class General extends StatefulWidget {
 }
 
 class _GeneralState extends State<General> {
+  void Function()? refreshClientList;
+  void Function()? refreshInvoiecList;
+  void Function()? refreshEstimateList;
   late AuthInfoMainDataEntity authInfoMainDataEntity;
   String estimateTitle = "Estimate";
 
@@ -72,10 +75,35 @@ class _GeneralState extends State<General> {
     pages = [
       DashboardPage(
         authInfoMainDataEntity: authInfoMainDataEntity,
+        refreshOtherTabs: () {
+          if (refreshClientList != null) {
+            refreshClientList?.call();
+          }
+
+          if (refreshInvoiecList != null) {
+            refreshInvoiecList?.call();
+          }
+
+          if (refreshEstimateList != null) {
+            refreshEstimateList?.call();
+          }
+        },
       ),
-      ClientListPage(),
-      InvoiceListPage(),
-      EstimateListPage(),
+      ClientListPage(
+        builder: (context, method) {
+          refreshClientList = method;
+        },
+      ),
+      InvoiceListPage(
+        builder: (context, forceRefreshInvoiceList) {
+          refreshInvoiecList = forceRefreshInvoiceList;
+        },
+      ),
+      EstimateListPage(
+        builder: (context, forceRefreshEstimateList) {
+          refreshEstimateList = forceRefreshEstimateList;
+        },
+      ),
       MorePage(
         authInfoMainDataEntity: authInfoMainDataEntity,
       ),

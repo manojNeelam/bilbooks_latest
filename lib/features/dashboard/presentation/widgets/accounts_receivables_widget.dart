@@ -87,44 +87,41 @@ class _AccountsReceivablesState extends State<AccountsReceivables> {
                 SizedBox(
                   height: maxCount() > 0 ? (40.0 * maxCount()) : 30,
                   child: (maxCount() > 0)
-                      ? Flexible(
-                          child: ListView.builder(
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemCount: maxCount(),
-                              itemBuilder: (context, index) {
-                                AccountsReceivableEntity item =
-                                    accountReceivable[index];
-                                return SizedBox(
-                                  height: 45,
-                                  child: Column(
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 10),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Text(
-                                              item.name ?? "",
-                                              style: AppFonts.regularStyle(),
-                                            ),
-                                            Text(
-                                              item.amount ?? "",
-                                              style: AppFonts.mediumStyle(
-                                                  color: AppPallete.red,
-                                                  size: 16),
-                                            )
-                                          ],
+                      ? ListView.builder(
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: maxCount(),
+                          itemBuilder: (context, index) {
+                            AccountsReceivableEntity item =
+                                accountReceivable[index];
+                            return SizedBox(
+                              height: 45,
+                              child: Column(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 10),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          item.name ?? "",
+                                          style: AppFonts.regularStyle(),
                                         ),
-                                      ),
-                                      if (maxCount() > (index + 1))
-                                        const ItemSeparator()
-                                    ],
+                                        Text(
+                                          item.amount ?? "",
+                                          style: AppFonts.mediumStyle(
+                                              color: AppPallete.red, size: 16),
+                                        )
+                                      ],
+                                    ),
                                   ),
-                                );
-                              }),
-                        )
+                                  if (maxCount() > (index + 1))
+                                    const ItemSeparator()
+                                ],
+                              ),
+                            );
+                          })
                       : Text(
                           "No overdue invoices to display",
                           style:

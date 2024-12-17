@@ -28,6 +28,11 @@ import 'package:billbooks_app/features/dashboard/presentation/bloc/overdueinvoic
 import 'package:billbooks_app/features/dashboard/presentation/bloc/salesexpenses_bloc.dart';
 import 'package:billbooks_app/features/dashboard/presentation/bloc/totalincomes_bloc.dart';
 import 'package:billbooks_app/features/dashboard/presentation/bloc/totalreceivable_bloc.dart';
+import 'package:billbooks_app/features/email%20templates/data/datasource/remote/email_template_remotedatasource.dart';
+import 'package:billbooks_app/features/email%20templates/data/repository_impl/email_template_repository_impl.dart';
+import 'package:billbooks_app/features/email%20templates/domain/repository/email_template_repository.dart';
+import 'package:billbooks_app/features/email%20templates/domain/usecase/email_template_usecase.dart';
+import 'package:billbooks_app/features/email%20templates/presentation/bloc/email_templates_bloc.dart';
 import 'package:billbooks_app/features/estimate/data/datasource/estimate_data_source.dart';
 import 'package:billbooks_app/features/estimate/data/repository_impl/estimate_repository_impl.dart';
 import 'package:billbooks_app/features/estimate/domain/repository/estimate_repository.dart';
@@ -132,6 +137,7 @@ Future<void> initDependencies() async {
   _initEstimates();
   _initDashboard();
   _initProfile();
+  _emailTemplate();
 }
 
 void _initCategories() {
@@ -143,6 +149,24 @@ void _initCategories() {
       () => CategoryListUsecase(categoryRepository: serviceLocator()));
   serviceLocator
       .registerLazySingleton(() => CategoryBloc(usecase: serviceLocator()));
+}
+
+void _emailTemplate() {
+  serviceLocator.registerFactory<EmailTemplateRemotedatasource>(() =>
+      EmailTemplateRemotedatasourceImpl(
+          apiClient: serviceLocator<APIClient>()));
+  serviceLocator.registerFactory<EmailTemplateRepository>(() =>
+      EmailTemplateRepositoryImpl(
+          emailTemplateRemotedatasource: serviceLocator()));
+
+  serviceLocator.registerFactory(() =>
+      UpDateEmailTemplateUsecase(emailTemplateRepository: serviceLocator()));
+  serviceLocator.registerFactory(
+      () => EmailTemplateUsecase(emailTemplateRepository: serviceLocator()));
+
+  serviceLocator.registerLazySingleton(() => EmailTemplatesBloc(
+      emailTemplateUsecase: serviceLocator(),
+      upDateEmailTemplateUsecase: serviceLocator()));
 }
 
 void _notification() {
@@ -165,9 +189,12 @@ void _initProfile() {
       () => ProfileRepositoryImpl(profileRemoteDataSource: serviceLocator()));
   serviceLocator.registerFactory(
       () => SelectOrganizationUseCase(profileRepository: serviceLocator()));
+  serviceLocator.registerFactory(
+      () => UpdateProfileUsecase(profileRepository: serviceLocator()));
 
   serviceLocator.registerLazySingleton(() => ProfileBloc(
         selectOrganizationUseCase: serviceLocator(),
+        updateProfileUsecase: serviceLocator(),
       ));
 }
 

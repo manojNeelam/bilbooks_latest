@@ -8,6 +8,7 @@ import 'package:billbooks_app/features/invoice/domain/usecase/invoice_list_useca
 import 'package:billbooks_app/features/invoice/presentation/add_new_invoice_page.dart';
 import 'package:billbooks_app/features/invoice/presentation/bloc/invoice_bloc.dart';
 import 'package:billbooks_app/features/invoice/presentation/widgets/invoice_type_header_widget.dart';
+import 'package:billbooks_app/main.dart';
 import 'package:billbooks_app/router/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -96,7 +97,11 @@ extension EnumInvoiceTypeExtension on EnumInvoiceType {
 
 // ignore: must_be_immutable
 class InvoiceListPage extends StatefulWidget {
-  const InvoiceListPage({super.key});
+  final InvoiceListBuilder builder;
+  const InvoiceListPage({
+    super.key,
+    required this.builder,
+  });
 
   @override
   State<InvoiceListPage> createState() => _InvoiceListPageState();
@@ -225,7 +230,7 @@ class _InvoiceListPageState extends State<InvoiceListPage>
               isIgnoreBlocStates = false;
               _getInvoiceList();
             },
-            estimateTitle: ''));
+            estimateTitle: 'Invoice'));
         // Navigator.of(context).push(MaterialPageRoute(builder: (context) {
         //   return InvoiceDetailPage(
         //     invoiceEntity: item,
@@ -341,6 +346,7 @@ class _InvoiceListPageState extends State<InvoiceListPage>
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    widget.builder(context, _forceRefreshList);
     return Scaffold(
       appBar: AppBar(
         title: const Text("Invoices"),
@@ -416,27 +422,41 @@ class _InvoiceListPageState extends State<InvoiceListPage>
           }
         },
         builder: (context, state) {
-          if (!isIgnoreBlocStates && state is InvoiceListFailureState) {
-            return showEmptyView();
-          }
-          if (!isIgnoreBlocStates && state is InvoiceDetailsLoadingState) {
-            return const LoadingPage(title: "Loading invoice details...");
-          }
-
-          if (!isIgnoreBlocStates && state is InvoiceListLoadingState) {
-            if (!isFromPagination) isLoading = true;
-          }
-          if (!isIgnoreBlocStates && state is InvoiceListSuccessState) {
-            if (currentPage == 1) {
-              invoices = [];
+          if (!isIgnoreBlocStates) {
+            if (state is InvoiceListFailureState) {
+              return showEmptyView();
             }
-            final invoiceList = state.invoiceListMainResEntity.data?.invoices;
-            paging = state.invoiceListMainResEntity.data?.paging;
-            currentPage = paging?.currentpage ?? 0;
-            isFromPagination = false;
-            invoices.addAll(invoiceList ?? []);
-            isLoading = false;
+            if (state is InvoiceDetailsLoadingState) {
+              return const LoadingPage(title: "Loading invoice details...");
+            }
 
+            if (state is InvoiceListLoadingState) {
+              if (!isFromPagination) isLoading = true;
+            }
+            if (state is InvoiceListSuccessState) {
+              if (currentPage == 1) {
+                invoices = [];
+              }
+              final invoiceList = state.invoiceListMainResEntity.data?.invoices;
+              paging = state.invoiceListMainResEntity.data?.paging;
+              currentPage = paging?.currentpage ?? 0;
+              isFromPagination = false;
+              invoices.addAll(invoiceList ?? []);
+              isLoading = false;
+
+              if (invoices.isEmpty) {
+                return showEmptyView();
+              }
+            }
+          }
+
+          // if (isIgnoreBlocStates) {
+          //   if (invoices.isEmpty) {
+          //     return showEmptyView();
+          //   }
+          // }
+
+          if (isLoading == false) {
             if (invoices.isEmpty) {
               return showEmptyView();
             }
@@ -506,14 +526,19 @@ class _InvoiceListPageState extends State<InvoiceListPage>
         startObserveBlocBack: () {
           isIgnoreBlocStates = false;
         },
+        deletedItem: () {},
         refreshCallBack: () {
           isIgnoreBlocStates = false;
         }));
   }
 
-  Future<void> _handleRefresh() async {
+  void _forceRefreshList() {
     currentPage = 1;
     _getInvoiceList();
+  }
+
+  Future<void> _handleRefresh() async {
+    _forceRefreshList();
   }
 
   void _showAddInvoice() {
@@ -523,6 +548,7 @@ class _InvoiceListPageState extends State<InvoiceListPage>
         startObserveBlocBack: () {
           isIgnoreBlocStates = false;
         },
+        deletedItem: () {},
         type: EnumNewInvoiceEstimateType.invoice,
         refreshCallBack: () {
           isIgnoreBlocStates = false;

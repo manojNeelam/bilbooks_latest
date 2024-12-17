@@ -26,7 +26,7 @@ class TotalIncomesMainResModel extends TotalIncomesMainResEntity {
 class TotalIncomesDataModel extends TotalIncomesDataEntity {
   TotalIncomesDataModel({
     bool? success,
-    List<TotalIncomesModel>? data,
+    List<TotalIncomesMainDataModel>? data,
     String? message,
   }) : super(
           data: data,
@@ -39,22 +39,35 @@ class TotalIncomesDataModel extends TotalIncomesDataEntity {
         success: json["success"],
         data: json["data"] == null
             ? []
-            : List<TotalIncomesModel>.from(
-                json["data"]!.map((x) => TotalIncomesModel.fromJson(x))),
+            : List<TotalIncomesMainDataModel>.from(json["data"]!
+                .map((x) => TotalIncomesMainDataModel.fromJson(x))),
         message: json["message"],
+      );
+}
+
+class TotalIncomesMainDataModel extends TotalIncomesMainDataEntity {
+  TotalIncomesMainDataModel({
+    String? currency,
+    TotalIncomesModel? details,
+  }) : super(currency: currency, details: details);
+
+  factory TotalIncomesMainDataModel.fromJson(Map<String, dynamic> json) =>
+      TotalIncomesMainDataModel(
+        currency: json["currency"],
+        details: json["details"] == null
+            ? null
+            : TotalIncomesModel.fromJson(json["details"]),
       );
 }
 
 class TotalIncomesModel extends TotalIncomesEntity {
   TotalIncomesModel({
-    String? currency,
     String? today,
     String? thisWeek,
     String? thisMonth,
     String? thisQuarter,
     String? thisFiscalYear,
   }) : super(
-          currency: currency,
           today: today,
           thisFiscalYear: thisFiscalYear,
           thisMonth: thisMonth,
@@ -64,7 +77,6 @@ class TotalIncomesModel extends TotalIncomesEntity {
 
   factory TotalIncomesModel.fromJson(Map<String, dynamic> json) =>
       TotalIncomesModel(
-        currency: json["currency"],
         today: json["Today"],
         thisWeek: json["This Week"],
         thisMonth: json["This Month"],

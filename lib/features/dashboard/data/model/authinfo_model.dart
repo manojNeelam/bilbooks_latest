@@ -5,6 +5,12 @@
 import 'dart:convert';
 
 import '../../domain/entity/authinfo_entity.dart';
+import '../../domain/entity/column_settings_data.dart';
+import '../../domain/entity/company_data.dart';
+import '../../domain/entity/organization_data.dart';
+import '../../domain/entity/plan_data.dart';
+import '../../domain/entity/session_data.dart';
+import '../../domain/entity/user_auth_data.dart';
 
 AuthInfoMainResModel authInfoMainResModelFromJson(String str) =>
     AuthInfoMainResModel.fromJson(json.decode(str));

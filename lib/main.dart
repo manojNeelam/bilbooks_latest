@@ -1,12 +1,20 @@
 import 'package:billbooks_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:billbooks_app/features/categories/presentation/bloc/category_bloc.dart';
 import 'package:billbooks_app/features/clients/presentation/bloc/client_bloc.dart';
+import 'package:billbooks_app/features/dashboard/domain/entity/authinfo_entity.dart';
+import 'package:billbooks_app/features/dashboard/domain/entity/column_settings_data.dart';
+import 'package:billbooks_app/features/dashboard/domain/entity/company_data.dart';
+import 'package:billbooks_app/features/dashboard/domain/entity/organization_data.dart';
+import 'package:billbooks_app/features/dashboard/domain/entity/plan_data.dart';
+import 'package:billbooks_app/features/dashboard/domain/entity/session_data.dart';
+import 'package:billbooks_app/features/dashboard/domain/entity/user_auth_data.dart';
 import 'package:billbooks_app/features/dashboard/presentation/bloc/accountrecivable_bloc.dart';
 import 'package:billbooks_app/features/dashboard/presentation/bloc/authinfo_bloc.dart';
 import 'package:billbooks_app/features/dashboard/presentation/bloc/overdueinvoice_bloc.dart';
 import 'package:billbooks_app/features/dashboard/presentation/bloc/salesexpenses_bloc.dart';
 import 'package:billbooks_app/features/dashboard/presentation/bloc/totalincomes_bloc.dart';
 import 'package:billbooks_app/features/dashboard/presentation/bloc/totalreceivable_bloc.dart';
+import 'package:billbooks_app/features/email%20templates/presentation/bloc/email_templates_bloc.dart';
 import 'package:billbooks_app/features/estimate/presentation/bloc/estimate_bloc.dart';
 import 'package:billbooks_app/features/general/bloc/general_bloc.dart';
 import 'package:billbooks_app/features/integrations/presentation/bloc/online_payments_bloc.dart';
@@ -23,13 +31,14 @@ import 'package:billbooks_app/router/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localization/flutter_localization.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'core/theme/theme.dart';
 import 'features/invoice/presentation/bloc/invoice_bloc.dart';
 import 'features/item/presentation/bloc/item_bloc.dart';
+import 'package:path_provider/path_provider.dart';
 
 typedef SalesExpensesBuilder = void Function(
     BuildContext context, void Function() updateSalesExepnses);
-
 typedef OverdueInvoiceBuilder = void Function(
     BuildContext context, void Function() updateOverdueInvoice);
 typedef TotalinvoicesBuilder = void Function(
@@ -38,16 +47,37 @@ typedef TotalReceivablesBuilder = void Function(
     BuildContext context, void Function() updateTotalReceivables);
 typedef AccountsReceivablesBuilder = void Function(
     BuildContext context, void Function() updateAccountReceivable);
+typedef ClientListBuilder = void Function(
+    BuildContext context, void Function() forceRefreshClientList);
+typedef InvoiceListBuilder = void Function(
+    BuildContext context, void Function() forceRefreshInvoiceList);
+typedef EstimateListBuilder = void Function(
+    BuildContext context, void Function() forceRefreshEstimateList);
 
 final navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // getting the path of the document in the device for accesing the database
+  final document = await getApplicationDocumentsDirectory();
+  Hive.init(document.path);
+  Hive.registerAdapter(ColumnSettingsEntityAdapter());
+  Hive.registerAdapter(CompanyEntityAdapter());
+  Hive.registerAdapter(OrganizationAuthEntityAdapter());
+  Hive.registerAdapter(PlanEntityAdapter());
+  Hive.registerAdapter(SessionDataEntityAdapter());
+  Hive.registerAdapter(UserAuthEntityAdapter());
+
   await initDependencies();
   runApp(MultiBlocProvider(providers: [
     BlocProvider(
       create: (context) => GeneralBloc(),
     ),
+    BlocProvider(
+        create: (context) => EmailTemplatesBloc(
+              emailTemplateUsecase: serviceLocator(),
+              upDateEmailTemplateUsecase: serviceLocator(),
+            )),
     BlocProvider(
         create: (context) => ProjectBloc(
               projectListUsecase: serviceLocator(),
@@ -133,6 +163,7 @@ void main() async {
     BlocProvider(
         create: (context) => ProfileBloc(
               selectOrganizationUseCase: serviceLocator(),
+              updateProfileUsecase: serviceLocator(),
 
               // totalReceivablesUsecase: serviceLocator()
             )),

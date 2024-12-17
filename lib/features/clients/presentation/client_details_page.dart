@@ -361,27 +361,38 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Text(
-                          (clientEntity.name ?? "").capitalize(),
-                          style: AppFonts.mediumStyle(
-                              color: AppPallete.blueColor, size: 22),
-                        ),
-                        const SizedBox(
-                          height: 5,
-                        ),
-                        Text(
-                          (clientEntity.contactName ?? "").capitalize(),
-                          style: AppFonts.regularStyle(
-                              color: AppPallete.black, size: 16),
-                        ),
-                        const SizedBox(
-                          height: 5,
-                        ),
-                        Text(
-                          clientEntity.contactEmail ?? "",
-                          style: AppFonts.regularStyle(
-                              color: AppPallete.k666666, size: 14),
-                        ),
+                        if ((clientEntity.name ?? "").isNotEmpty)
+                          Text(
+                            ((clientEntity.name ?? "").capitalize()),
+                            style: AppFonts.mediumStyle(
+                                color: AppPallete.blueColor, size: 22),
+                          ),
+                        if ((clientEntity.contactName ?? "").isNotEmpty)
+                          Wrap(
+                            children: [
+                              const SizedBox(
+                                height: 5,
+                              ),
+                              Text(
+                                (clientEntity.contactName ?? ""),
+                                style: AppFonts.regularStyle(
+                                    color: AppPallete.black, size: 16),
+                              ),
+                            ],
+                          ),
+                        if ((clientEntity.contactEmail ?? "").isNotEmpty)
+                          Wrap(
+                            children: [
+                              const SizedBox(
+                                height: 5,
+                              ),
+                              Text(
+                                clientEntity.contactEmail ?? "",
+                                style: AppFonts.regularStyle(
+                                    color: AppPallete.k666666, size: 14),
+                              ),
+                            ],
+                          ),
                         const SizedBox(
                           height: 10,
                         ),
