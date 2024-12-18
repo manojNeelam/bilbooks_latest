@@ -7,6 +7,7 @@ import 'package:billbooks_app/core/utils/utils.dart';
 import 'package:billbooks_app/features/email%20templates/domain/usecase/email_template_usecase.dart';
 import 'package:billbooks_app/features/email%20templates/presentation/bloc/email_templates_bloc.dart';
 import 'package:billbooks_app/features/email%20templates/presentation/email_template_page.dart';
+import 'package:chip_list/chip_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:toastification/toastification.dart';
@@ -33,6 +34,38 @@ class UpdateEmailTemplatePage extends StatefulWidget {
 class _UpdateEmailTemplatePageState extends State<UpdateEmailTemplatePage> {
   TextEditingController subjectController = TextEditingController();
   TextEditingController messageController = TextEditingController();
+  //final List<String> _filters = [];
+  final List<String> invoiceList = [
+    'invoiceList',
+    'List',
+    'inveList',
+    'List',
+    'invoicist',
+    'invoiist',
+    'invist',
+    'ieList',
+    'it',
+    'invoiceList',
+    'List',
+    'inveList',
+    'List',
+    'invoicist',
+    'invoiist',
+    'invist',
+    'ieList',
+    'it',
+    'invoiceList',
+    'List',
+    'inveList',
+    'List',
+    'invoicist',
+    'invoiist',
+    'invist',
+    'ieList',
+    'it',
+  ];
+  int _currentIndex = -1;
+
   @override
   void initState() {
     subjectController.text = widget.subject;
@@ -90,6 +123,9 @@ class _UpdateEmailTemplatePageState extends State<UpdateEmailTemplatePage> {
             }
             return SingleChildScrollView(
               child: Container(
+                constraints: BoxConstraints(
+                    minHeight: MediaQuery.of(context).size.height),
+                //height: MediaQuery.of(context).size.height,
                 color: AppPallete.kF2F2F2,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -153,6 +189,30 @@ class _UpdateEmailTemplatePageState extends State<UpdateEmailTemplatePage> {
                         style: AppFonts.regularStyle(),
                       ),
                     ),
+                    ChipList(
+                        extraOnToggle: (index) {
+                          debugPrint(invoiceList[index]);
+                          _currentIndex = index;
+                          setState(() {});
+
+                          Future.delayed(Duration(milliseconds: 200), () {
+                            _currentIndex = -1;
+                            setState(() {});
+                          });
+                        },
+                        widgetSpacing: 2,
+                        shouldWrap: true,
+                        showCheckmark: false,
+                        listOfChipNames: invoiceList,
+                        style: AppFonts.regularStyle(),
+                        activeTextColorList: [AppPallete.white],
+                        inactiveTextColorList: [AppPallete.blueColor],
+                        activeBgColorList: [AppPallete.blueColor],
+                        inactiveBgColorList: [AppPallete.kF2F2F2],
+                        activeBorderColorList: [AppPallete.blueColor],
+                        inactiveBorderColorList: [AppPallete.blueColor],
+                        borderRadiiList: [10],
+                        listOfChipIndicesCurrentlySelected: [_currentIndex])
                   ],
                 ),
               ),
