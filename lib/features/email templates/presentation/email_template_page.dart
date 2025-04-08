@@ -31,6 +31,22 @@ extension EnumEmailTemplateExtension on EnumEmailTemplate {
     return this == EnumEmailTemplate.thankyou;
   }
 
+  List<String> get emailTemplateList {
+    switch (this) {
+      case EnumEmailTemplate.invoice:
+        return sendInvoiceList;
+
+      case EnumEmailTemplate.estimate:
+        return sendEstimateList;
+
+      case EnumEmailTemplate.remainder:
+        return paymentReminder;
+
+      case EnumEmailTemplate.thankyou:
+        return paymentThankYouList;
+    }
+  }
+
   //Required sendinvoice/sendestimate/paymentreminder/paymentthankyou
   String get emailTemplate {
     switch (this) {
@@ -73,6 +89,80 @@ extension EnumEmailTemplateExtension on EnumEmailTemplate {
     }
   }
 }
+
+final List<String> sendInvoiceList = [
+  'invoice-date',
+  'invoice-number',
+  'po-number',
+  'due-date',
+  'total-amount',
+  'shipping-charge',
+  'balance-due',
+  'overdue-days',
+  'invoice-title',
+  'invoice-notes',
+  'invoice-url',
+  'project-name',
+  'client-name',
+  'client-contact-name',
+  'organization-name',
+  'user-name',
+];
+final List<String> paymentReminder = [
+  'invoice-date',
+  'invoice-number',
+  'po-number',
+  'due-date',
+  'total-amount',
+  'shipping-charge',
+  'balance-due',
+  'overdue-days',
+  'invoice-title',
+  'invoice-notes',
+  'invoice-url',
+  'project-name',
+  'client-name',
+  'client-contact-name',
+  'organization-name',
+  'user-name',
+];
+final List<String> sendEstimateList = [
+  'estimate-date',
+  'estimate-number',
+  'po-number',
+  'expiry-date',
+  'total-amount',
+  'shipping-charge',
+  'estimate-title',
+  'invoice-notes',
+  'invoice-url',
+  'project-name',
+  'client-name',
+  'client-contact-name',
+  'organization-name',
+  'user-name',
+];
+final List<String> paymentThankYouList = [
+  'invoice-date',
+  'invoice-number',
+  'po-number',
+  'due-date',
+  'total-amount',
+  'amount-paid',
+  'balance-due',
+  'invoice-title',
+  'invoice-notes',
+  'invoice-url',
+  'project-name',
+  'payment-date',
+  'payment-received',
+  'payment-method',
+  'payment-refno',
+  'client-name',
+  'client-contact-name',
+  'organization-name',
+  'user-name',
+];
 
 @RoutePage()
 class EmailTemplatePage extends StatefulWidget {
@@ -139,7 +229,10 @@ class _EmailTemplatePageState extends State<EmailTemplatePage> {
                                     message: emailtemplatesEntity
                                             ?.emailMessageSendinvoice ??
                                         "",
-                                    type: EnumEmailTemplate.invoice));
+                                    type: EnumEmailTemplate.invoice,
+                                    refreshPage: () {
+                                      _getEmailTemplates();
+                                    }));
                           case EnumEmailTemplate.estimate:
                             AutoRouter.of(context).push(
                                 UpdateEmailTemplatePageRoute(
@@ -150,7 +243,10 @@ class _EmailTemplatePageState extends State<EmailTemplatePage> {
                                     subject: emailtemplatesEntity
                                             ?.emailSubjectSendestimate ??
                                         "",
-                                    type: EnumEmailTemplate.estimate));
+                                    type: EnumEmailTemplate.estimate,
+                                    refreshPage: () {
+                                      _getEmailTemplates();
+                                    }));
                           case EnumEmailTemplate.remainder:
                             AutoRouter.of(context).push(
                                 UpdateEmailTemplatePageRoute(
@@ -161,7 +257,10 @@ class _EmailTemplatePageState extends State<EmailTemplatePage> {
                                     subject: emailtemplatesEntity
                                             ?.emailSubjectPaymentreminder ??
                                         "",
-                                    type: EnumEmailTemplate.remainder));
+                                    type: EnumEmailTemplate.remainder,
+                                    refreshPage: () {
+                                      _getEmailTemplates();
+                                    }));
                           case EnumEmailTemplate.thankyou:
                             AutoRouter.of(context).push(
                                 UpdateEmailTemplatePageRoute(
@@ -172,7 +271,10 @@ class _EmailTemplatePageState extends State<EmailTemplatePage> {
                                     subject: emailtemplatesEntity
                                             ?.emailSubjectPaymentthankyou ??
                                         "",
-                                    type: EnumEmailTemplate.thankyou));
+                                    type: EnumEmailTemplate.thankyou,
+                                    refreshPage: () {
+                                      _getEmailTemplates();
+                                    }));
                         }
                       },
                       child: EmailTemplateWidget(title: title, desc: desc));

@@ -11,6 +11,24 @@ class InvoiceListItemWidget extends StatelessWidget {
   final InvoiceEntity invoiceEntity;
   const InvoiceListItemWidget({super.key, required this.invoiceEntity});
 
+  Widget getRightBottomWidget() {
+    if (isRecurring()) {
+      return Text(
+        "Active",
+        style: AppFonts.regularStyle(color: AppPallete.greenColor),
+      );
+    } else if (invoiceEntity.dueDaysDisplayText.isNotEmpty) {
+      return CapsuleStatusWidget(
+          title: invoiceEntity.dueDaysDisplayText,
+          backgroundColor: AppPallete.kF2F2F2,
+          textColor: AppPallete.k666666);
+    } else {
+      return SizedBox(
+        height: 20,
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -22,40 +40,35 @@ class InvoiceListItemWidget extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      clientName,
-                      style: AppFonts.regularStyle(),
-                      maxLines: 1,
-                    ),
-                    AppConstants.sepSizeBox5,
-                    Text(
-                      getNo(),
-                      style: AppFonts.regularStyle(
-                          size: 15, color: AppPallete.k666666),
-                      maxLines: 1,
-                    ),
-                    AppConstants.sepSizeBox5,
-                    if (isRecurring())
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
                       Text(
-                        "Active",
-                        style:
-                            AppFonts.regularStyle(color: AppPallete.greenColor),
+                        //"fgfgfgfgf",
+                        clientName,
+                        style: AppFonts.regularStyle(),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                    if (invoiceEntity.dueDaysDisplayText.isNotEmpty)
-                      CapsuleStatusWidget(
-                          title: invoiceEntity.dueDaysDisplayText,
-                          backgroundColor: AppPallete.kF2F2F2,
-                          textColor: AppPallete.k666666)
-                  ],
+                      AppConstants.sepSizeBox5,
+                      Text(
+                        getNo(),
+                        style: AppFonts.regularStyle(
+                            size: 15, color: AppPallete.k666666),
+                        maxLines: 1,
+                      ),
+                      AppConstants.sepSizeBox5,
+                      getRightBottomWidget()
+                    ],
+                  ),
                 ),
+                AppConstants.sizeBoxWidth15,
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Text(
-                      "${invoiceEntity.displayNetTotal}",
+                      invoiceEntity.displayNetTotal,
                       style: AppFonts.mediumStyle(size: 16),
                       maxLines: 1,
                     ),

@@ -252,9 +252,13 @@ class _InvoiceDetailPageState extends State<InvoiceDetailPage>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Text(
-            cientName,
-            style: AppFonts.regularStyle(size: 18),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Text(
+              cientName,
+              style: AppFonts.regularStyle(size: 18),
+              textAlign: TextAlign.center,
+            ),
           ),
           // const SizedBox(
           //   height: 5,

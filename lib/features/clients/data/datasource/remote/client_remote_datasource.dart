@@ -138,7 +138,8 @@ class ClientRemoteDataSourceImpl implements ClientRemoteDataSource {
   Future<ClientDetailsMainResModel> getDetails(
       ClientDetailsReqParams params) async {
     try {
-      Map<String, String> map = {"id": params.id};
+      //page=views
+      Map<String, String> map = {"id": params.id, "page": "views"};
       final response = await apiClient.getRequest(ApiEndPoints.clientDetails,
           queryParameters: map);
       if (response.statusCode == 200) {
@@ -208,6 +209,7 @@ persons:[{"name":"krunal","email":"primaryp@gmail.com","phone":"987654"}]
         "contact_name": params.contactName,
         "name": params.name,
         "persons": personsJsonString,
+        "contact_id": params.contactId,
       };
 
       if (params.id.isNotEmpty) {

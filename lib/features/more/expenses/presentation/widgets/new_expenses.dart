@@ -342,7 +342,7 @@ class _NewExpensesState extends State<NewExpenses> {
                     ),
                   AppConstants.sizeBoxHeight10,
                   InPutSwitchWidget(
-                    title: 'Recurrings',
+                    title: 'Recurring',
                     context: context,
                     isRecurringOn: recurrings,
                     showDivider: false,

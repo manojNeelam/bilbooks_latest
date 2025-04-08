@@ -83,12 +83,14 @@ class _OrganizationProfilePageState extends State<OrganizationProfilePage> {
     final String response =
         await rootBundle.loadString('assets/files/languages.json');
     languages = languageMainDataModelFromJson(response).data?.language ?? [];
+
     selectedLanguage = languages.firstWhereOrNull((returnedLanguage) {
       if (returnedLanguage.name?.toLowerCase() == "english") {
         return true;
       }
       return false;
     });
+
     _reRenderUI();
   }
 

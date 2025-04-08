@@ -59,7 +59,7 @@ class MorePage extends StatelessWidget with SectionAdapterMixin {
           enumMoreScreen: EnumMoreScreen.faq),
       MoreItemModel(
           name: "Contact Us",
-          imageName: Assets.assetsImagesIcCall,
+          imageName: Assets.assetsImagesIcContactUs,
           enumMoreScreen: EnumMoreScreen.contactus),
       MoreItemModel(
           name: "Rate Our app",

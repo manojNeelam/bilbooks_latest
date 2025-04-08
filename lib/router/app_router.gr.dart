@@ -711,6 +711,7 @@ abstract class _$AppRouter extends RootStackRouter {
           message: args.message,
           subject: args.subject,
           type: args.type,
+          refreshPage: args.refreshPage,
         ),
       );
     },
@@ -3328,6 +3329,7 @@ class UpdateEmailTemplatePageRoute
     required String message,
     required String subject,
     required EnumEmailTemplate type,
+    required void Function()? refreshPage,
     List<PageRouteInfo>? children,
   }) : super(
           UpdateEmailTemplatePageRoute.name,
@@ -3337,6 +3339,7 @@ class UpdateEmailTemplatePageRoute
             message: message,
             subject: subject,
             type: type,
+            refreshPage: refreshPage,
           ),
           initialChildren: children,
         );
@@ -3354,6 +3357,7 @@ class UpdateEmailTemplatePageRouteArgs {
     required this.message,
     required this.subject,
     required this.type,
+    required this.refreshPage,
   });
 
   final Key? key;
@@ -3366,9 +3370,11 @@ class UpdateEmailTemplatePageRouteArgs {
 
   final EnumEmailTemplate type;
 
+  final void Function()? refreshPage;
+
   @override
   String toString() {
-    return 'UpdateEmailTemplatePageRouteArgs{key: $key, title: $title, message: $message, subject: $subject, type: $type}';
+    return 'UpdateEmailTemplatePageRouteArgs{key: $key, title: $title, message: $message, subject: $subject, type: $type, refreshPage: $refreshPage}';
   }
 }
 

@@ -94,10 +94,14 @@ class _OverdueInvoceWidgetState extends State<OverdueInvoceWidget> {
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
                                       children: [
-                                        Text(
-                                          invoice.clientName ?? "",
-                                          style: AppFonts.regularStyle(),
+                                        Expanded(
+                                          child: Text(
+                                            invoice.clientName ?? "",
+                                            style: AppFonts.regularStyle(),
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
                                         ),
+                                        AppConstants.sizeBoxWidth15,
                                         Text(
                                           invoice.balance ?? "",
                                           style: AppFonts.mediumStyle(

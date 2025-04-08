@@ -54,7 +54,7 @@ class _GeneralState extends State<General> {
   loadData() {
     items = [
       const BottomNavigationBarItem(
-        icon: Icon(Icons.dashboard_outlined),
+        icon: Icon(Icons.home_outlined),
         label: "Home",
       ),
       const BottomNavigationBarItem(
@@ -62,11 +62,11 @@ class _GeneralState extends State<General> {
         label: "Clients",
       ),
       const BottomNavigationBarItem(
-          icon: Icon(Icons.note_add_outlined), label: 'Invoices'),
+          icon: Icon(Icons.notes_outlined), label: 'Invoices'),
       BottomNavigationBarItem(
-          icon: Icon(Icons.note_outlined), label: estimateTitle),
+          icon: Icon(Icons.file_copy_outlined), label: estimateTitle),
       const BottomNavigationBarItem(
-          icon: Icon(Icons.more_horiz_outlined), label: 'More'),
+          icon: Icon(Icons.more_horiz_rounded), label: 'More'),
     ];
   }
 

@@ -169,7 +169,7 @@ class _InvoiceListPageState extends State<InvoiceListPage>
   @override
   Widget getItem(BuildContext context, IndexPath indexPath) {
     final item = isLoading
-        ? InvoiceEntity()
+        ? InvoiceEntity.mock
         : invoices[indexPath.item]; //?? InvoiceEntity();
     return GestureDetector(
       child: SwipeActionCell(
@@ -469,6 +469,7 @@ class _InvoiceListPageState extends State<InvoiceListPage>
                 Expanded(
                   child: Skeletonizer(
                       enabled: isLoading,
+                      //child: Text("data"),
                       child: SectionListView.builder(
                         adapter: this,
                         controller: _scrollController,

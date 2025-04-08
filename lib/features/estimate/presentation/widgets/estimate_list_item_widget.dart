@@ -10,6 +10,19 @@ class EstimateListItemWidget extends StatelessWidget {
   final InvoiceEntity estimateEntity;
   const EstimateListItemWidget({super.key, required this.estimateEntity});
 
+  Widget getLeftSideBottomWidget() {
+    if (dueDays().isNotEmpty) {
+      return CapsuleStatusWidget(
+          title: dueDays(),
+          backgroundColor: AppPallete.kF2F2F2,
+          textColor: AppPallete.k666666);
+    }
+
+    return SizedBox(
+      height: 20,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -21,29 +34,29 @@ class EstimateListItemWidget extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      estimateEntity.clientName ?? "",
-                      style: AppFonts.regularStyle(),
-                      maxLines: 1,
-                    ),
-                    AppConstants.sepSizeBox5,
-                    Text(
-                      "#${estimateEntity.no ?? "-"}",
-                      style: AppFonts.regularStyle(
-                          size: 15, color: AppPallete.k666666),
-                      maxLines: 1,
-                    ),
-                    AppConstants.sepSizeBox5,
-                    if (dueDays().isNotEmpty)
-                      CapsuleStatusWidget(
-                          title: dueDays(),
-                          backgroundColor: AppPallete.kF2F2F2,
-                          textColor: AppPallete.k666666)
-                  ],
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        estimateEntity.clientName ?? "",
+                        style: AppFonts.regularStyle(),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      AppConstants.sepSizeBox5,
+                      Text(
+                        "#${estimateEntity.no ?? "-"}",
+                        style: AppFonts.regularStyle(
+                            size: 15, color: AppPallete.k666666),
+                        maxLines: 1,
+                      ),
+                      AppConstants.sepSizeBox5,
+                      getLeftSideBottomWidget(),
+                    ],
+                  ),
                 ),
+                AppConstants.sizeBoxWidth15,
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [

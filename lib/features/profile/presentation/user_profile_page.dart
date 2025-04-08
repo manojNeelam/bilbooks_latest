@@ -13,6 +13,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_section_list/flutter_section_list.dart';
 
+import '../../../core/utils/utils.dart';
+import '../../../core/widgets/app_alert_widget.dart';
 import '../../dashboard/domain/entity/authinfo_entity.dart';
 import '../../dashboard/domain/entity/session_data.dart';
 
@@ -97,6 +99,24 @@ class _UserProfilePageState extends State<UserProfilePage>
     );
   }
 
+  void _showConfirmLogoutAlert(context) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AppAlertWidget(
+            title: "Are you sure?",
+            message: "Please confirm if you want to logout.",
+            onTapDelete: () async {
+              AutoRouter.of(context).maybePop();
+              await Utils.clearAll();
+              AutoRouter.of(context).pushAndPopUntil(const LoginPageRoute(),
+                  predicate: (_) => false);
+            },
+            alertType: EnumAppAlertType.logout,
+          );
+        });
+  }
+
   @override
   bool shouldExistSectionHeader(int section) {
     return true;
@@ -155,7 +175,9 @@ class _UserProfilePageState extends State<UserProfilePage>
                         width: 1,
                       ),
                       TextButton(
-                          onPressed: () async {},
+                          onPressed: () async {
+                            _showConfirmLogoutAlert(context);
+                          },
                           child: Text(
                             "Logout",
                             style: AppFonts.regularStyle(color: AppPallete.red),

@@ -164,9 +164,10 @@ class _EstimateListPageState extends State<EstimateListPage>
     final item = isLoading
         ? InvoiceEntity(
             clientName: "Test Name",
-            nettotal: "100",
+            nettotal: "1000",
             date: "DDMMYYYY",
-            status: "Status comes here")
+            status: "Status comes here",
+            no: "123123123")
         : estimates[indexPath.item];
     return GestureDetector(
       child: SwipeActionCell(

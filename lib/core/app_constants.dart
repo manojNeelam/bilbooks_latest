@@ -5,6 +5,9 @@ import 'package:intl/intl.dart';
 import 'widgets/item_separator.dart';
 
 class AppConstants {
+  static const termsofService = "https://www.billbooks.com/terms-of-service/";
+  static const privacyPolicy = "https://www.billbooks.com/privacy-policy/";
+
   static const horizotal16 = EdgeInsets.symmetric(horizontal: 16);
 
   static const horizontalVerticalPadding =
@@ -42,6 +45,9 @@ class AppConstants {
   );
 
   static const sizeBoxHeight15 = SizedBox(
+    height: 15,
+  );
+  static const authFieldVerticalPadding = SizedBox(
     height: 15,
   );
 

@@ -85,7 +85,7 @@ class _AccountsReceivablesState extends State<AccountsReceivables> {
                 ),
                 AppConstants.sizeBoxHeight10,
                 SizedBox(
-                  height: maxCount() > 0 ? (40.0 * maxCount()) : 30,
+                  height: maxCount() > 0 ? (45.0 * maxCount()) : 30,
                   child: (maxCount() > 0)
                       ? ListView.builder(
                           physics: const NeverScrollableScrollPhysics(),
@@ -104,10 +104,14 @@ class _AccountsReceivablesState extends State<AccountsReceivables> {
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
                                       children: [
-                                        Text(
-                                          item.name ?? "",
-                                          style: AppFonts.regularStyle(),
+                                        Expanded(
+                                          child: Text(
+                                            item.name ?? "",
+                                            style: AppFonts.regularStyle(),
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
                                         ),
+                                        AppConstants.sizeBoxWidth15,
                                         Text(
                                           item.amount ?? "",
                                           style: AppFonts.mediumStyle(

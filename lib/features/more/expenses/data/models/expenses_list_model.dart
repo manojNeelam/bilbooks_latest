@@ -43,10 +43,11 @@ class ExpensesListDataModel extends ExpensesListDataEntity {
   factory ExpensesListDataModel.fromJson(Map<String, dynamic> json) =>
       ExpensesListDataModel(
         success: json["success"],
-        statusCount: json["status_count"] == null
-            ? []
-            : List<StatusCountDataModel>.from(json["status_count"]!
-                .map((x) => StatusCountDataModel.fromJson(x))),
+        statusCount: [],
+        //json["status_count"] == null
+        //    ? []
+        //  : List<StatusCountDataModel>.from(json["status_count"]!
+        //    .map((x) => StatusCountDataModel.fromJson(x))),
         paging: json["paging"] == null
             ? null
             : PagingModel.fromJson(json["paging"]),

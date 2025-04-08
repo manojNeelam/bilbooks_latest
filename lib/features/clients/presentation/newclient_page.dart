@@ -183,14 +183,15 @@ class _NewClientPageState extends State<NewClientPage> {
   }
 
   String getClientId() {
-    final persons = clientEntity?.persons ?? [];
-    final index = persons.indexWhere((element) {
-      return (element.primary ?? false) == true;
-    });
-    if (index >= 0) {
-      return persons[index].id ?? "";
-    }
-    return "";
+    return widget.clientEntity?.contactId ?? "";
+    // final persons = widget.clientEntity?.persons ?? [];
+    // final index = persons.indexWhere((element) {
+    //   return (element.primary ?? false) == true;
+    // });
+    // if (index >= 0) {
+    //   return persons[index].id ?? "";
+    // }
+    // return "";
   }
 
   String get currencyDisplayValue {
@@ -334,6 +335,7 @@ class _NewClientPageState extends State<NewClientPage> {
                       title: LocaleData.companyNameTitle.getString(context),
                       controller: companyNameController,
                       hintText: "Client Or Company",
+                      textCapitalization: TextCapitalization.words,
                       onChanged: (val) {
                         _validateClientForm();
                       },
@@ -342,6 +344,7 @@ class _NewClientPageState extends State<NewClientPage> {
                       title: LocaleData.primaryContactTitle.getString(context),
                       controller: primaryContactController,
                       hintText: "Contact Name",
+                      textCapitalization: TextCapitalization.words,
                       onChanged: (val) {
                         _validateClientForm();
                       },

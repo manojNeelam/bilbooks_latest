@@ -48,7 +48,7 @@ class InvoiceLineitemWidget extends StatelessWidget {
                   textColor: AppPallete.k666666),
               AppConstants.sizeBoxWidth5,
               Text(
-                "x\$${itemListEntity.rate}",
+                "x  \$${itemListEntity.rate}",
                 style:
                     AppFonts.regularStyle(color: AppPallete.k666666, size: 14),
               ),

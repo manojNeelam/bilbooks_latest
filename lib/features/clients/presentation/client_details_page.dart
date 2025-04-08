@@ -25,6 +25,7 @@ import '../../../core/models/language_model.dart';
 import '../../../core/widgets/app_alert_widget.dart';
 import '../../../core/widgets/section_header_widget.dart';
 import '../../../router/app_router.dart';
+import '../domain/entities/client_details_entity.dart';
 import 'Models/client_currencies.dart';
 
 @RoutePage()
@@ -47,6 +48,7 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
   List<CurrencyModel> currencies = [];
   String langName = "";
   String currencyName = "";
+  ClientDetailsDataEntity? clientDetailsDataEntity;
 
   void dismissPopup(context) {
     AutoRouter.of(context).maybePop();
@@ -118,6 +120,7 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
     _loadLanguages();
     _loadCurrencies();
 
+    getClientDetails();
     super.initState();
   }
 
@@ -228,6 +231,34 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
     }
   }
 
+  String get getInvoiceTotalCount {
+    if (clientDetailsDataEntity?.invoices != null) {
+      return "${clientDetailsDataEntity?.invoices?.length ?? "0"}";
+    }
+    return "0";
+  }
+
+  String get getEstimateTotalCount {
+    if (clientDetailsDataEntity?.estimates != null) {
+      return "${clientDetailsDataEntity?.estimates?.length ?? "0"}";
+    }
+    return "0";
+  }
+
+  String get getProjectTotalCount {
+    if (clientDetailsDataEntity?.projects != null) {
+      return "${clientDetailsDataEntity?.projects?.length ?? "0"}";
+    }
+    return "0";
+  }
+
+  String get getExpensesTotalCount {
+    if (clientDetailsDataEntity?.expenses != null) {
+      return "${clientDetailsDataEntity?.expenses?.length ?? "0"}";
+    }
+    return "0";
+  }
+
   String getClientAddress() {
     final address = clientEntity.address ?? "";
     if (address.isNotEmpty) {
@@ -316,6 +347,7 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
               getClientDetails();
             }
             if (state is ClientDetailsSuccessState) {
+              clientDetailsDataEntity = state.clientDetailsMainResEntity.data;
               final clientObj = state.clientDetailsMainResEntity.data?.client;
               debugPrint("Name: (${clientObj?.name ?? ""}");
               if (clientObj != null) {
@@ -362,24 +394,40 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         if ((clientEntity.name ?? "").isNotEmpty)
-                          Text(
-                            ((clientEntity.name ?? "").capitalize()),
-                            style: AppFonts.mediumStyle(
-                                color: AppPallete.blueColor, size: 22),
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 16.0),
+                            child: Text(
+                              ((clientEntity.name ?? "").capitalize()),
+                              style: AppFonts.mediumStyle(
+                                  color: AppPallete.blueColor, size: 22),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              textAlign: TextAlign.center,
+                            ),
                           ),
+                        AppConstants.sizeBoxHeight10,
                         if ((clientEntity.contactName ?? "").isNotEmpty)
                           Wrap(
                             children: [
                               const SizedBox(
                                 height: 5,
                               ),
-                              Text(
-                                (clientEntity.contactName ?? ""),
-                                style: AppFonts.regularStyle(
-                                    color: AppPallete.black, size: 16),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 16.0),
+                                child: Text(
+                                  (clientEntity.contactName ?? ""),
+                                  style: AppFonts.regularStyle(
+                                      color: AppPallete.black, size: 16),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  textAlign: TextAlign.center,
+                                ),
                               ),
                             ],
                           ),
+                        AppConstants.sizeBoxHeight10,
                         if ((clientEntity.contactEmail ?? "").isNotEmpty)
                           Wrap(
                             children: [
@@ -394,7 +442,7 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
                             ],
                           ),
                         const SizedBox(
-                          height: 10,
+                          height: 15,
                         ),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -571,12 +619,15 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Column(
                       children: [
-                        activities(context, title: "Invoices", value: "0"),
-                        activities(context, title: "Entimates", value: "0"),
-                        activities(context, title: "Expenses", value: "0"),
+                        activities(context,
+                            title: "Invoices", value: getInvoiceTotalCount),
+                        activities(context,
+                            title: "Estimates", value: getEstimateTotalCount),
+                        activities(context,
+                            title: "Expenses", value: getExpensesTotalCount),
                         activities(context,
                             title: "Projects",
-                            value: "0",
+                            value: getProjectTotalCount,
                             showSeparator: false),
                       ],
                     ),
@@ -708,19 +759,23 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        personEntity.name ?? "",
-                        style: AppFonts.regularStyle(),
-                      ),
-                      Text(
-                        personEntity.email ?? "",
-                        style: AppFonts.regularStyle(
-                            color: AppPallete.k666666, size: 14),
-                      ),
-                    ],
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          personEntity.name ?? "",
+                          style: AppFonts.regularStyle(),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        Text(
+                          personEntity.email ?? "",
+                          style: AppFonts.regularStyle(
+                              color: AppPallete.k666666, size: 14),
+                        ),
+                      ],
+                    ),
                   ),
                   if ((personEntity.primary ?? false) == true)
                     const CapsuleStatusWidget(

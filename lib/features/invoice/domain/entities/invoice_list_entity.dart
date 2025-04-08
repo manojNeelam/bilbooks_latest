@@ -189,6 +189,20 @@ class InvoiceEntity {
     this.taxes,
     this.emailtoClientstaff,
   });
+  static InvoiceEntity get mock {
+    return InvoiceEntity(
+      id: "TEST",
+      no: "123123",
+      clientName: "Test Name",
+      status: "recurring",
+      dateYmd: DateTime.now(),
+      frequency: "12",
+      howmany: "12",
+      overdueDays: "12",
+      subtotal: "123",
+      nettotal: "1233",
+    );
+  }
 
   String get dueDaysDisplayText {
     final days = overdueDays ?? "";
@@ -201,36 +215,37 @@ class InvoiceEntity {
   Color get invoiceStatusColor {
     final status = this.status ?? "";
     if (status.toLowerCase() == "draft") {
-      return AppPallete.k666666;
+      return AppPallete.draftColor128;
     } else if (status.toLowerCase() == "paid" ||
         status.toLowerCase() == "invoiced") {
       return AppPallete.greenColor;
     } else if (status.toLowerCase() == "overdue" ||
         status.toLowerCase() == "expired") {
-      return AppPallete.red;
+      return AppPallete.expireBannerColor;
     } else if (status.toLowerCase() == "sent" ||
         status.toLowerCase() == "partial") {
-      return AppPallete.orangeColor;
+      return AppPallete.orangeBannerColor;
     } else if (status.toLowerCase() == "recurring") {
-      return AppPallete.blueColor;
+      return AppPallete.purpleColor;
     }
     return AppPallete.k666666;
   }
 
   Color get statusColor {
-    final status = this.status ?? "";
-    if (status.toLowerCase() == "draft") {
-      return AppPallete.borderColor;
-    } else if (status.toLowerCase() == "paid" ||
-        status.toLowerCase() == "invoiced") {
-      return AppPallete.greenColor;
-    } else if (status.toLowerCase() == "overdue" ||
-        status.toLowerCase() == "expired") {
-      return AppPallete.red;
-    } else if (status.toLowerCase() == "sent") {
-      return AppPallete.orangeColor;
-    }
-    return AppPallete.k666666;
+    return invoiceStatusColor;
+    // final status = this.status ?? "";
+    // if (status.toLowerCase() == "draft") {
+    //   return AppPallete.draftColor128;
+    // } else if (status.toLowerCase() == "paid" ||
+    //     status.toLowerCase() == "invoiced") {
+    //   return AppPallete.greenColor;
+    // } else if (status.toLowerCase() == "overdue" ||
+    //     status.toLowerCase() == "expired") {
+    //   return AppPallete.expireBannerColor;
+    // } else if (status.toLowerCase() == "sent") {
+    //   return AppPallete.orangeBannerColor;
+    // }
+    // return AppPallete.k666666;
   }
 }
 

@@ -3,11 +3,13 @@ import 'package:billbooks_app/core/app_constants.dart';
 import 'package:billbooks_app/core/utils/show_toast.dart';
 import 'package:billbooks_app/core/utils/utils.dart';
 import 'package:billbooks_app/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:toastification/toastification.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/models/country_model.dart';
 import '../../../../core/models/language_model.dart';
 import '../../../../core/theme/app_fonts.dart';
@@ -77,7 +79,7 @@ class _SignUpPageState extends State<SignUpPage> {
                       state.res.data?.message ??
                           "Successfully registered user.",
                       ToastificationType.success);
-                  AutoRouter.of(context).maybePop();
+                  dismiss();
                 }
               },
               builder: (context, state) {
@@ -94,7 +96,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         children: [
                           const AuthHeader(),
                           Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            padding: const EdgeInsets.symmetric(horizontal: 30),
                             child: Form(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -103,19 +105,19 @@ class _SignUpPageState extends State<SignUpPage> {
                                     height: 25,
                                   ),
                                   Text(
-                                    "Register with us!",
+                                    "New Sign Up",
                                     style: AppFonts.mediumStyle(
                                         color: AppPallete.textColor, size: 24),
                                     textAlign: TextAlign.center,
                                   ),
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
+                                  AppConstants.authFieldVerticalPadding,
                                   AuthField(
                                     hintText: "Company Name",
                                     controller: companyNameController,
+                                    textCapitalization:
+                                        TextCapitalization.words,
                                     inputAction: TextInputAction.next,
-                                    inputType: TextInputType.name,
+                                    inputType: TextInputType.text,
                                     onChanged: (val) {
                                       validateFields();
                                     },
@@ -124,14 +126,14 @@ class _SignUpPageState extends State<SignUpPage> {
                                       color: AppPallete.borderColor,
                                     ),
                                   ),
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
+                                  AppConstants.authFieldVerticalPadding,
                                   AuthField(
                                     hintText: "Full Name",
                                     controller: nameController,
+                                    textCapitalization:
+                                        TextCapitalization.words,
                                     inputAction: TextInputAction.next,
-                                    inputType: TextInputType.name,
+                                    inputType: TextInputType.text,
                                     onChanged: (val) {
                                       validateFields();
                                     },
@@ -140,9 +142,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                       color: AppPallete.borderColor,
                                     ),
                                   ),
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
+                                  AppConstants.authFieldVerticalPadding,
                                   AuthField(
                                     hintText: "Email Address",
                                     controller: emailAddressController,
@@ -156,9 +156,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                       color: AppPallete.borderColor,
                                     ),
                                   ),
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
+                                  AppConstants.authFieldVerticalPadding,
                                   PasswordField(
                                     controller: passwordController,
                                     onChanged: (val) {
@@ -166,9 +164,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                     },
                                     hint: "Password",
                                   ),
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
+                                  AppConstants.authFieldVerticalPadding,
                                   AuthDropDownWidget(
                                     value: (selectedCountry == null)
                                         ? ""
@@ -179,9 +175,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                       _showCountryPopup();
                                     },
                                   ),
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
+                                  AppConstants.authFieldVerticalPadding,
                                   AuthDropDownWidget(
                                     value: (selectedLanguage == null)
                                         ? ""
@@ -192,9 +186,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                       _showLanguagePopup();
                                     },
                                   ),
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
+                                  AppConstants.authFieldVerticalPadding,
                                   RichText(
                                       text: TextSpan(
                                           text:
@@ -203,14 +195,30 @@ class _SignUpPageState extends State<SignUpPage> {
                                           children: [
                                         TextSpan(
                                             text: "Terms of Service",
+                                            recognizer: TapGestureRecognizer()
+                                              ..onTap = () {
+                                                _launchURL(AppConstants
+                                                    .termsofService);
+                                                // "https://www.billbooks.com/terms-of-service/";
+                                                // print('Privacy "');
+                                              },
                                             style: AppFonts.regularStyle(
-                                                color: AppPallete.blueColor)),
+                                                    color: AppPallete.blueColor)
+                                                .copyWith(height: 1.4)),
                                         TextSpan(
                                             text: " and ",
                                             style: AppFonts.regularStyle(
                                                 color: AppPallete.textColor)),
                                         TextSpan(
                                             text: "Privacy Policy",
+                                            recognizer: TapGestureRecognizer()
+                                              ..onTap = () {
+                                                _launchURL(
+                                                    AppConstants.privacyPolicy);
+
+                                                // "https://www.billbooks.com/privacy-policy/";
+                                                // print('Privacy Policy"');
+                                              },
                                             style: AppFonts.regularStyle(
                                                 color: AppPallete.blueColor)),
                                       ])),
@@ -250,26 +258,55 @@ class _SignUpPageState extends State<SignUpPage> {
                                   const SizedBox(
                                     height: 25,
                                   ),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        "Already have an account.",
-                                        style: AppFonts.regularStyle(),
-                                      ),
-                                      AppConstants.sizeBoxWidth10,
-                                      GestureDetector(
-                                        onTap: () {
-                                          AutoRouter.of(context).maybePop();
-                                        },
-                                        child: Text(
-                                          "Login",
+                                  RichText(
+                                      textAlign: TextAlign.center,
+                                      text: TextSpan(children: [
+                                        TextSpan(
+                                          text:
+                                              "Already have a Billbooks Account?",
+                                          style: AppFonts.regularStyle(),
+                                        ),
+                                        TextSpan(
+                                          text: "\nLogin",
                                           style: AppFonts.regularStyle(
                                               color: AppPallete.blueColor),
+                                          recognizer: TapGestureRecognizer()
+                                            ..onTap = () {
+                                              dismiss();
+                                            },
                                         ),
-                                      )
-                                    ],
-                                  ),
+                                        TextSpan(
+                                          text: " here",
+                                          style: AppFonts.regularStyle(),
+                                        )
+                                      ])),
+                                  // Column(
+                                  //   mainAxisAlignment: MainAxisAlignment.center,
+                                  //   crossAxisAlignment:
+                                  //       CrossAxisAlignment.center,
+                                  //   children: [
+                                  //     Text(
+                                  //       //Already have a Billbooks Account? Login here
+                                  //       "Already have a Billbooks Account?",
+                                  //       style: AppFonts.regularStyle(),
+                                  //     ),
+                                  //     //AppConstants.sizeBoxWidth10,
+                                  //     GestureDetector(
+                                  //       onTap: () {
+                                  //         AutoRouter.of(context).maybePop();
+                                  //       },
+                                  //       child: Text(
+                                  //         "\nLogin",
+                                  //         style: AppFonts.regularStyle(
+                                  //             color: AppPallete.blueColor),
+                                  //       ),
+                                  //     ),
+                                  //     Text(
+                                  //       " here",
+                                  //       style: AppFonts.regularStyle(),
+                                  //     ),
+                                  //   ],
+                                  // ),
                                 ],
                               ),
                             ),
@@ -326,6 +363,13 @@ class _SignUpPageState extends State<SignUpPage> {
     final String response =
         await rootBundle.loadString('assets/files/countries.json');
     countries = countryMainDataModelFromJson(response).country ?? [];
+    selectedCountry = countries.firstWhereOrNull((returnedCountry) {
+      if (returnedCountry.countryId == "244") {
+        return true;
+      }
+      return false;
+    });
+    _reRenderUI();
   }
 
   void _showCountryPopup() {
@@ -347,12 +391,14 @@ class _SignUpPageState extends State<SignUpPage> {
     final String response =
         await rootBundle.loadString('assets/files/languages.json');
     languages = languageMainDataModelFromJson(response).data?.language ?? [];
+
     selectedLanguage = languages.firstWhere((returnedLanguage) {
       if (returnedLanguage.name?.toLowerCase() == "english") {
         return true;
       }
       return false;
     });
+    _reRenderUI();
   }
 
   void _showLanguagePopup() {
@@ -368,6 +414,18 @@ class _SignUpPageState extends State<SignUpPage> {
                 _reRenderUI();
               });
         });
+  }
+
+  _launchURL(String url) async {
+    if (await canLaunchUrl(Uri.parse(url))) {
+      await launchUrl(Uri.parse(url));
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
+  dismiss() {
+    AutoRouter.of(context).maybePop();
   }
 
   _reRenderUI() {

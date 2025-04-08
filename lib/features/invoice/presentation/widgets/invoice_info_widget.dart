@@ -87,11 +87,8 @@ class InvoiceInfoWidget extends StatelessWidget {
                       ),
                       AppConstants.sepSizeBox5,
                       Text(
-                        (invoiceRequestModel.status ?? "DRAFT").toUpperCase(),
-                        style: AppFonts.regularStyle(
-                            color: invoiceRequestModel.status == null
-                                ? AppPallete.k666666
-                                : invoiceStatusColor),
+                        (statusTitle).toUpperCase(),
+                        style: AppFonts.regularStyle(color: statusColor),
                       ),
                     ],
                   ),
@@ -112,6 +109,23 @@ class InvoiceInfoWidget extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Color get statusColor {
+    if (type == EnumNewInvoiceEstimateType.duplicateEstimate ||
+        type == EnumNewInvoiceEstimateType.duplicateInvoice) {
+      return AppPallete.draftColor128;
+    }
+    return invoiceStatusColor ?? AppPallete.draftColor128;
+  }
+
+  String get statusTitle {
+    if (type == EnumNewInvoiceEstimateType.duplicateEstimate ||
+        type == EnumNewInvoiceEstimateType.duplicateInvoice) {
+      return "DRAFT";
+    }
+
+    return invoiceRequestModel.status ?? "DRAFT";
   }
 
   bool isInvoice() {

@@ -146,16 +146,19 @@ class _ShippingAddressPageState extends State<ShippingAddressPage> {
                   controller: addressController,
                   title: 'Street Address',
                   hintText: 'Tap to Enter',
+                  textCapitalization: TextCapitalization.words,
                   isRequired: false,
                 ),
                 NewInputViewWidget(
                     title: "City/Suburb",
                     hintText: "City/Suburb",
+                    textCapitalization: TextCapitalization.words,
                     isRequired: false,
                     controller: cityController),
                 NewInputViewWidget(
                     title: "State/Country",
                     hintText: "State/Country",
+                    textCapitalization: TextCapitalization.words,
                     isRequired: false,
                     controller: stateController),
                 NewInputViewWidget(

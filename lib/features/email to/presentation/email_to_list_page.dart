@@ -11,7 +11,7 @@ class EmailToListPage extends StatelessWidget with SectionAdapterMixin {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Email To"),
+        title: const Text(""),
       ),
       body: SectionListView.builder(adapter: this),
     );

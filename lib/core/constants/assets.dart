@@ -30,6 +30,10 @@ class Assets {
   /// assets/images/ic_call.png
   static const String assetsImagesIcCall = "assets/images/ic_call.png";
 
+  /// Assets for assetsImagesIcContactUs
+  /// assets/images/ic_contact_us.png
+  static const String assetsImagesIcContactUs = "assets/images/ic_contact_us.png";
+
   /// Assets for assetsImagesIcExpenses
   /// assets/images/ic_expenses.png
   static const String assetsImagesIcExpenses = "assets/images/ic_expenses.png";

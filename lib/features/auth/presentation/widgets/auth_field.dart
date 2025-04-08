@@ -9,24 +9,28 @@ class AuthField extends StatelessWidget {
   TextEditingController controller;
   TextInputType inputType;
   TextInputAction inputAction;
+  TextCapitalization textCapitalization;
   final Function(String) onChanged;
+
   Widget prefixIcon;
 
-  AuthField({
-    Key? key,
-    required this.hintText,
-    required this.controller,
-    required this.inputType,
-    required this.inputAction,
-    required this.prefixIcon,
-    required this.onChanged,
-  }) : super(key: key);
+  AuthField(
+      {Key? key,
+      required this.hintText,
+      required this.controller,
+      required this.inputType,
+      required this.inputAction,
+      required this.prefixIcon,
+      required this.onChanged,
+      this.textCapitalization = TextCapitalization.none})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
       controller: controller,
       textInputAction: inputAction,
+      textCapitalization: textCapitalization,
       keyboardType: inputType,
       style: AppFonts.regularStyle(),
       onChanged: onChanged,

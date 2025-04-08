@@ -10,11 +10,13 @@ class NewInputViewWidget extends StatelessWidget {
   final String hintText;
   final TextEditingController controller;
   final bool showDivider;
+
   final TextInputType inputType;
   final TextInputAction inputAction;
   final Function(String?)? onChanged;
   final bool isBold;
   final bool isHideImage;
+  final TextCapitalization textCapitalization;
 
   const NewInputViewWidget(
       {Key? key,
@@ -27,7 +29,8 @@ class NewInputViewWidget extends StatelessWidget {
       this.showDivider = true,
       this.inputType = TextInputType.text,
       this.inputAction = TextInputAction.next,
-      this.onChanged})
+      this.onChanged,
+      this.textCapitalization = TextCapitalization.none})
       : super(key: key);
 
   @override
@@ -84,7 +87,7 @@ class NewInputViewWidget extends StatelessWidget {
                     keyboardType: inputType,
                     textInputAction: inputAction,
                     controller: controller,
-                    textCapitalization: TextCapitalization.sentences,
+                    textCapitalization: textCapitalization,
                     style: isBold
                         ? AppFonts.mediumStyle(size: 16)
                         : AppFonts.regularStyle(),

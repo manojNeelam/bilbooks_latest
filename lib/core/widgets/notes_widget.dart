@@ -29,6 +29,7 @@ class NotesWidget extends StatelessWidget {
           TextFormField(
             controller: controller,
             style: AppFonts.regularStyle(),
+            textCapitalization: TextCapitalization.sentences,
             minLines: 2,
             maxLines: 4,
             textInputAction: TextInputAction.newline,

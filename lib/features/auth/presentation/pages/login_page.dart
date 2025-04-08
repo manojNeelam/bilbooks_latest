@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:billbooks_app/core/app_constants.dart';
 import 'package:billbooks_app/core/theme/app_fonts.dart';
 import 'package:billbooks_app/core/theme/app_pallete.dart';
+import 'package:billbooks_app/core/utils/hive_functions.dart';
 import 'package:billbooks_app/core/utils/show_toast.dart';
 import 'package:billbooks_app/core/utils/utils.dart';
 import 'package:billbooks_app/core/widgets/loading_page.dart';
@@ -73,6 +74,10 @@ class _LoginPageState extends State<LoginPage> {
                       itemTitle: columnSettingsEntity?.columnItemsTitle,
                       hideRate: columnSettingsEntity?.hideColumnRate);
               Utils.saveColumnSettings(columnSettingsPref);
+              if (state.user.data?.sessionData != null) {
+                HiveFunctions.saveUserSessionData(
+                    state.user.data!.sessionData!);
+              }
 
               if (token != null) {
                 Utils.saveToken(token);
@@ -103,7 +108,7 @@ class _LoginPageState extends State<LoginPage> {
                     children: [
                       const AuthHeader(),
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        padding: const EdgeInsets.symmetric(horizontal: 30),
                         child: Form(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.center,
@@ -111,15 +116,15 @@ class _LoginPageState extends State<LoginPage> {
                               const SizedBox(
                                 height: 25,
                               ),
-                              Text(
-                                LocaleData.welcomeBack.getString(context),
-                                style: AppFonts.mediumStyle(
-                                    color: AppPallete.textColor, size: 24),
-                                textAlign: TextAlign.center,
-                              ),
+                              // Text(
+                              //   LocaleData.welcomeBack.getString(context),
+                              //   style: AppFonts.mediumStyle(
+                              //       color: AppPallete.textColor, size: 24),
+                              //   textAlign: TextAlign.center,
+                              // ),
                               AppConstants.sizeBoxHeight10,
                               Text(
-                                "Login to continue with billbooks.",
+                                "Login to continue with Billbooks.",
                                 style: AppFonts.regularStyle(),
                               ),
                               const SizedBox(
@@ -138,9 +143,7 @@ class _LoginPageState extends State<LoginPage> {
                                   color: AppPallete.borderColor,
                                 ),
                               ),
-                              const SizedBox(
-                                height: 10,
-                              ),
+                              AppConstants.authFieldVerticalPadding,
                               PasswordField(
                                 controller: passwordController,
                                 onChanged: (val) {
@@ -182,20 +185,25 @@ class _LoginPageState extends State<LoginPage> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Text(
-                                    "Need an account?",
+                                    //"Need an account?",
+                                    "New to Billbooks?",
                                     style: AppFonts.regularStyle(),
                                   ),
-                                  AppConstants.sizeBoxWidth10,
+                                  //AppConstants.sizeBoxWidth10,
                                   GestureDetector(
                                     onTap: () {
                                       AutoRouter.of(context)
                                           .push(SignUpPageRoute());
                                     },
                                     child: Text(
-                                      "Sign Up",
+                                      " Sign Up",
                                       style: AppFonts.regularStyle(
                                           color: AppPallete.blueColor),
                                     ),
+                                  ),
+                                  Text(
+                                    " here",
+                                    style: AppFonts.regularStyle(),
                                   ),
                                 ],
                               ),

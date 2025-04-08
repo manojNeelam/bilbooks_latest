@@ -19,12 +19,15 @@ class UpdateEmailTemplatePage extends StatefulWidget {
   final EnumEmailTemplate type;
   final String title;
   final String subject, message;
-  const UpdateEmailTemplatePage(
-      {super.key,
-      required this.title,
-      required this.message,
-      required this.subject,
-      required this.type});
+  final void Function()? refreshPage;
+  const UpdateEmailTemplatePage({
+    super.key,
+    required this.title,
+    required this.message,
+    required this.subject,
+    required this.type,
+    required this.refreshPage,
+  });
 
   @override
   State<UpdateEmailTemplatePage> createState() =>
@@ -32,45 +35,102 @@ class UpdateEmailTemplatePage extends StatefulWidget {
 }
 
 class _UpdateEmailTemplatePageState extends State<UpdateEmailTemplatePage> {
+  FocusNode? messageFocusNode;
+  FocusNode? subjectFocusNode;
+
   TextEditingController subjectController = TextEditingController();
   TextEditingController messageController = TextEditingController();
+
   //final List<String> _filters = [];
-  final List<String> invoiceList = [
-    'invoiceList',
-    'List',
-    'inveList',
-    'List',
-    'invoicist',
-    'invoiist',
-    'invist',
-    'ieList',
-    'it',
-    'invoiceList',
-    'List',
-    'inveList',
-    'List',
-    'invoicist',
-    'invoiist',
-    'invist',
-    'ieList',
-    'it',
-    'invoiceList',
-    'List',
-    'inveList',
-    'List',
-    'invoicist',
-    'invoiist',
-    'invist',
-    'ieList',
-    'it',
-  ];
+  // final List<String> sendInvoiceList = [
+  //   'invoice-date',
+  //   'invoice-number',
+  //   'po-number',
+  //   'due-date',
+  //   'total-amount',
+  //   'shipping-charge',
+  //   'balance-due',
+  //   'overdue-days',
+  //   'invoice-title',
+  //   'invoice-notes',
+  //   'invoice-url',
+  //   'project-name',
+  //   'client-name',
+  //   'client-contact-name',
+  //   'organization-name',
+  //   'user-name',
+  // ];
+  // final List<String> paymentReminder = [
+  //   'invoice-date',
+  //   'invoice-number',
+  //   'po-number',
+  //   'due-date',
+  //   'total-amount',
+  //   'shipping-charge',
+  //   'balance-due',
+  //   'overdue-days',
+  //   'invoice-title',
+  //   'invoice-notes',
+  //   'invoice-url',
+  //   'project-name',
+  //   'client-name',
+  //   'client-contact-name',
+  //   'organization-name',
+  //   'user-name',
+  // ];
+  // final List<String> sendEstimateList = [
+  //   'estimate-date',
+  //   'estimate-number',
+  //   'po-number',
+  //   'expiry-date',
+  //   'total-amount',
+  //   'shipping-charge',
+  //   'estimate-title',
+  //   'invoice-notes',
+  //   'invoice-url',
+  //   'project-name',
+  //   'client-name',
+  //   'client-contact-name',
+  //   'organization-name',
+  //   'user-name',
+  // ];
+  // final List<String> paymentThankYouList = [
+  //   'invoice-date',
+  //   'invoice-number',
+  //   'po-number',
+  //   'due-date',
+  //   'total-amount',
+  //   'amount-paid',
+  //   'balance-due',
+  //   'invoice-title',
+  //   'invoice-notes',
+  //   'invoice-url',
+  //   'project-name',
+  //   'payment-date',
+  //   'payment-received',
+  //   'payment-method',
+  //   'payment-refno',
+  //   'client-name',
+  //   'client-contact-name',
+  //   'organization-name',
+  //   'user-name',
+  // ];
   int _currentIndex = -1;
 
   @override
   void initState() {
+    messageFocusNode = FocusNode();
+    subjectFocusNode = FocusNode();
     subjectController.text = widget.subject;
     messageController.text = widget.message;
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    messageFocusNode?.dispose();
+    subjectFocusNode?.dispose();
+    super.dispose();
   }
 
   @override
@@ -107,6 +167,9 @@ class _UpdateEmailTemplatePageState extends State<UpdateEmailTemplatePage> {
                   state.updateEmailTemplateEntity.data?.message ??
                       "Email templates saved successfully",
                   ToastificationType.success);
+              if (widget.refreshPage != null) {
+                widget.refreshPage!();
+              }
               AutoRouter.of(context).maybePop();
             }
             if (state is UpdateEmailTemplatesErrorState) {
@@ -143,6 +206,7 @@ class _UpdateEmailTemplatePageState extends State<UpdateEmailTemplatePage> {
                       padding: AppConstants.horizotal16,
                       child: TextField(
                         controller: subjectController,
+                        focusNode: subjectFocusNode,
                         style: AppFonts.regularStyle(),
                         decoration: InputDecoration(
                             hintText: "Subject",
@@ -168,6 +232,7 @@ class _UpdateEmailTemplatePageState extends State<UpdateEmailTemplatePage> {
                       padding: AppConstants.horizotal16,
                       child: TextField(
                         controller: messageController,
+                        focusNode: messageFocusNode,
                         minLines: 8,
                         maxLines: 12,
                         style: AppFonts.regularStyle(),
@@ -189,30 +254,51 @@ class _UpdateEmailTemplatePageState extends State<UpdateEmailTemplatePage> {
                         style: AppFonts.regularStyle(),
                       ),
                     ),
-                    ChipList(
-                        extraOnToggle: (index) {
-                          debugPrint(invoiceList[index]);
-                          _currentIndex = index;
-                          setState(() {});
-
-                          Future.delayed(Duration(milliseconds: 200), () {
-                            _currentIndex = -1;
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      child: ChipList(
+                          //padding: EdgeInsets.all(10),
+                          extraOnToggle: (index) {
+                            debugPrint(sendInvoiceList[index]);
+                            _currentIndex = index;
                             setState(() {});
-                          });
-                        },
-                        widgetSpacing: 2,
-                        shouldWrap: true,
-                        showCheckmark: false,
-                        listOfChipNames: invoiceList,
-                        style: AppFonts.regularStyle(),
-                        activeTextColorList: [AppPallete.white],
-                        inactiveTextColorList: [AppPallete.blueColor],
-                        activeBgColorList: [AppPallete.blueColor],
-                        inactiveBgColorList: [AppPallete.kF2F2F2],
-                        activeBorderColorList: [AppPallete.blueColor],
-                        inactiveBorderColorList: [AppPallete.blueColor],
-                        borderRadiiList: [10],
-                        listOfChipIndicesCurrentlySelected: [_currentIndex])
+
+                            if (messageFocusNode!.hasFocus) {
+                              debugPrint("Message is active");
+                              final selection = messageController.selection;
+                              final offset = selection.baseOffset;
+                              messageController.value = messageController.value
+                                  .replaced(TextRange.collapsed(offset),
+                                      " [${sendInvoiceList[index]}] ");
+                            }
+                            if (subjectFocusNode!.hasFocus) {
+                              debugPrint("Subject is active");
+                              final selection = subjectController.selection;
+                              final offset = selection.baseOffset;
+                              subjectController.value = subjectController.value
+                                  .replaced(TextRange.collapsed(offset),
+                                      " [${sendInvoiceList[index]}] ");
+                            }
+
+                            Future.delayed(Duration(milliseconds: 200), () {
+                              _currentIndex = -1;
+                              setState(() {});
+                            });
+                          },
+                          widgetSpacing: 2,
+                          shouldWrap: true,
+                          showCheckmark: false,
+                          listOfChipNames: widget.type.emailTemplateList,
+                          style: AppFonts.regularStyle(),
+                          activeTextColorList: [AppPallete.white],
+                          inactiveTextColorList: [AppPallete.blueColor],
+                          activeBgColorList: [AppPallete.blueColor],
+                          inactiveBgColorList: [AppPallete.kF2F2F2],
+                          activeBorderColorList: [AppPallete.blueColor],
+                          inactiveBorderColorList: [AppPallete.blueColor],
+                          borderRadiiList: [10],
+                          listOfChipIndicesCurrentlySelected: [_currentIndex]),
+                    )
                   ],
                 ),
               ),

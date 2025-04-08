@@ -204,18 +204,21 @@ class EmailToItemWidget extends StatelessWidget {
                         : AppPallete.borderColor,
                   ),
                   AppConstants.sizeBoxWidth10,
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        name,
-                        style: AppFonts.regularStyle(),
-                      ),
-                      Text(
-                        email,
-                        style: AppFonts.regularStyle(),
-                      )
-                    ],
+                  Flexible(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          name,
+                          maxLines: 2,
+                          style: AppFonts.regularStyle(),
+                        ),
+                        Text(
+                          email,
+                          style: AppFonts.regularStyle(),
+                        )
+                      ],
+                    ),
                   )
                 ],
               ),

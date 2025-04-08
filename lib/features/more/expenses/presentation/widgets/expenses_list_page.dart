@@ -165,7 +165,14 @@ class _ExpensesListPageState extends State<ExpensesListPage>
         ? ExpenseEntity(
             clientName: "Client Name",
             amount: "1000",
-            projectName: "Project Name")
+            projectName: "Project Name",
+            categoryName: "Test category name",
+            vendor: "Test Vendor",
+            refno: "123123",
+            frequencyName: "Frequency Name",
+            howmany: "123",
+            dateYmd: DateTime.now(),
+            status: "Non-Billable")
         : expensesList[indexPath.item];
     return GestureDetector(
       child: SwipeActionCell(

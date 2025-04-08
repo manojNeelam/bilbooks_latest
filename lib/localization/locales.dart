@@ -71,7 +71,7 @@ mixin LocaleData {
     emailAddress: "Email Address ",
     password: "Password",
     rememberMe: "Remember me",
-    forgotPassword: "Reset Password ?",
+    forgotPassword: "Reset Password",
     login: "Login",
     registerWithUs: "Register with us!",
     alreadyHaveAnAccount: "Already have an account.",

@@ -99,7 +99,9 @@ class _AddNewLineItemPageState extends State<AddNewLineItemPage> {
       qtyController.text = (updateItem.qty ?? 0).toString();
       rateController.text = (updateItem.rate ?? 0).toString();
       //dateController.text = (updateItem.date ?? DateTime.now());
-      discountController.text = (updateItem.discountValue ?? 0).toString();
+      if (updateItem.discountValue != null) {
+        discountController.text = (updateItem.discountValue).toString();
+      }
       isPercentage = (updateItem.discountType ?? "") == "0" ? true : false;
       selectedTaxes = updateItem.taxes;
       selectedItem = ItemListEntity(
@@ -112,7 +114,7 @@ class _AddNewLineItemPageState extends State<AddNewLineItemPage> {
       debugPrint("No Update Item");
       qtyController.text = "1";
       rateController.text = "0.00";
-      discountController.text = "0.00";
+      //discountController.text = "0.00";
     }
   }
 
@@ -129,7 +131,7 @@ class _AddNewLineItemPageState extends State<AddNewLineItemPage> {
 
           descController.text = selectedItem?.description ?? "";
           rateController.text = selectedItem?.rate ?? "";
-          qtyController.text = selectedItem?.unit ?? "";
+          qtyController.text = "1";
           selectedTaxes = selectedItem?.taxes;
 
           debugPrint("Taxes");
