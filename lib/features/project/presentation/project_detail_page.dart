@@ -445,6 +445,9 @@ class _ProjectDetailPageState extends State<ProjectDetailPage> {
           refreshListPage = true;
           _getProjectDetails();
         },
+        popBack: () {
+          removeObservingBloc = false;
+        },
         deletedProject: () {
           removeObservingBloc = false;
           debugPrint("_openUpdateProjectScreen");

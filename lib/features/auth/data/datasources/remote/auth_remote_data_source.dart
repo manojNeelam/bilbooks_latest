@@ -47,9 +47,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
             message: "Invalid status code ${response.statusCode}");
       }
 
-      debugPrint(response.data);
-
-      final resModel = userFromJson(response.data);
+      final resModel = UserModel.fromJson(response.data);
       if (resModel.data?.success != true) {
         throw ApiException(
             message:

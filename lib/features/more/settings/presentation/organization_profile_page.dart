@@ -558,22 +558,26 @@ class OrganizationInfoWidget extends StatelessWidget {
             title: 'Company Name',
             hintText: 'Company Name',
             controller: companyNameController,
+            textCapitalization: TextCapitalization.words,
           ),
           NewMultilineInputWidget(
               title: "Street Address",
               hintText: "Tap to Enter",
               isRequired: false,
+              textCapitalization: TextCapitalization.words,
               controller: streetaddressController),
           NewInputViewWidget(
             title: 'City/Suburb',
             hintText: 'City/Suburb',
             controller: cityController,
+            textCapitalization: TextCapitalization.words,
             isRequired: false,
           ),
           NewInputViewWidget(
             title: 'State/Country',
             hintText: 'State/Country',
             controller: stateController,
+            textCapitalization: TextCapitalization.words,
           ),
           NewInputViewWidget(
             title: 'Postal/Zipcode',

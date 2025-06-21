@@ -225,6 +225,7 @@ class _ExpensesListPageState extends State<ExpensesListPage>
           controller: searchController,
           hintText: "Search Expenses",
           capsuleText: "${expensesList.length} Expenses",
+          selectedMenuItem: selectedAllTimes,
           onSelectedMenuItem: (val, displayName, startDate, endDate) {
             selectedAllTimes = val;
             allTimesDisplayName = displayName;

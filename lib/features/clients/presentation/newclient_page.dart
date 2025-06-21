@@ -42,11 +42,13 @@ class NewClientPage extends StatefulWidget {
   final ClientEntity? clientEntity;
   final Function() clientRemoved;
   final Function()? refreshClient;
+  final Function()? onPopBack;
   const NewClientPage({
     Key? key,
     this.clientEntity,
     this.refreshClient,
     required this.clientRemoved,
+    required this.onPopBack,
   }) : super(key: key);
 
   @override
@@ -216,6 +218,7 @@ class _NewClientPageState extends State<NewClientPage> {
         widget.refreshClient!();
       }
     }
+    widget.onPopBack?.call();
     AutoRouter.of(context).maybePop();
   }
 

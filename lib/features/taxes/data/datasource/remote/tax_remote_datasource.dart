@@ -26,7 +26,7 @@ class TaxRemoteDatasourceImpl implements TaxRemoteDatasource {
     try {
       final response = await apiClient.getRequest(ApiEndPoints.taxList);
       if (response.statusCode == 200) {
-        final resModel = taxListResModelFromJson(response.data);
+        final resModel = TaxListResModel.fromJson(response.data);
         if (resModel.data?.success != true) {
           throw ApiException(
               message:
@@ -55,7 +55,7 @@ class TaxRemoteDatasourceImpl implements TaxRemoteDatasource {
       final response = await apiClient.postRequest(
           path: ApiEndPoints.addTax, body: formData);
       if (response.statusCode == 200) {
-        final resModel = taxAddMainResModelFromJson(response.data);
+        final resModel = TaxAddMainResModel.fromJson(response.data);
         debugPrint("Tax: ${resModel.success ?? ""}");
         debugPrint("Success");
         if (resModel.data?.success != true) {
@@ -83,7 +83,7 @@ class TaxRemoteDatasourceImpl implements TaxRemoteDatasource {
       final response = await apiClient.deleteRequest(
           path: ApiEndPoints.deleteTax, queryParameters: map);
       if (response.statusCode == 200) {
-        final resModel = taxDeleteMainResDataModelFromJson(response.data);
+        final resModel = TaxDeleteMainResModel.fromJson(response.data);
         if (resModel.data?.success != true) {
           throw ApiException(
               message:

@@ -171,6 +171,7 @@ class _ProjectPopupState extends State<ProjectPopup> with SectionAdapterMixin {
     AutoRouter.of(context).push(AddProjectPageRoute(
         clientEntity: widget.selectedClient,
         deletedProject: () {},
+        popBack: () {},
         updatedProject: () {
           _getProjectList();
         }));

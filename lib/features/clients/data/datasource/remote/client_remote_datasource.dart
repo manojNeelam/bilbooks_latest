@@ -55,8 +55,7 @@ class ClientRemoteDataSourceImpl implements ClientRemoteDataSource {
       debugPrint("ClientRemoteDataSourceImpl ");
       debugPrint(response.statusCode.toString());
       if (response.statusCode == 200) {
-        final resModel =
-            ClientResponseModel.fromJson(jsonDecode(response.data));
+        final resModel = ClientResponseModel.fromJson(response.data);
         if (resModel.data?.success != true) {
           throw ApiException(
               message:
@@ -85,7 +84,7 @@ class ClientRemoteDataSourceImpl implements ClientRemoteDataSource {
       final response = await apiClient.deleteRequest(
           path: ApiEndPoints.deleteClient, queryParameters: reqPrams);
       if (response.statusCode == 200) {
-        final resModel = deleteClientMainDataModelFromJson(response.data);
+        final resModel = DeleteClientMainDataModel.fromJson(response.data);
         if (resModel.data?.success != true) {
           throw ApiException(
               message:
@@ -116,7 +115,7 @@ class ClientRemoteDataSourceImpl implements ClientRemoteDataSource {
 
       final response = await apiClient.postRequest(path: path, body: reqPrams);
       if (response.statusCode == 200) {
-        final resModel = updateClientMainDataModelFromJson(response.data);
+        final resModel = UpdateClientMainDataModel.fromJson(response.data);
         if (resModel.data?.success != true) {
           throw ApiException(
               message:
@@ -143,7 +142,7 @@ class ClientRemoteDataSourceImpl implements ClientRemoteDataSource {
       final response = await apiClient.getRequest(ApiEndPoints.clientDetails,
           queryParameters: map);
       if (response.statusCode == 200) {
-        final resModel = clientDetailsMainResModelFromJson(response.data);
+        final resModel = ClientDetailsMainResModel.fromJson(response.data);
         if (resModel.data?.success != true) {
           throw ApiException(
               message:
@@ -225,7 +224,7 @@ persons:[{"name":"krunal","email":"primaryp@gmail.com","phone":"987654"}]
         body: reqPrams,
       );
       if (response.statusCode == 200) {
-        final resModel = clientAddMainResModelFromJson(response.data);
+        final resModel = ClientAddMainResModel.fromJson(response.data);
         if (resModel.data?.success != true) {
           throw ApiException(
               message:

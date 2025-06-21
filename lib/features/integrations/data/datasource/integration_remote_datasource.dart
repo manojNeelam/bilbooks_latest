@@ -39,7 +39,7 @@ class OnlinePaymentsRemoteDatasourceImpl
       debugPrint("OnlinePaymentMainResponseModel ");
       debugPrint(response.statusCode.toString());
       if (response.statusCode == 200) {
-        final resModel = onlinePaymentMainResponseModelFromJson(response.data);
+        final resModel = OnlinePaymentMainResponseModel.fromJson(response.data);
         if (resModel.data?.success != true) {
           throw ApiException(message: "Request failed please try again!");
         }
@@ -73,7 +73,8 @@ class OnlinePaymentsRemoteDatasourceImpl
       debugPrint("UpdateOnlinePaymentMainResModel paypal");
       debugPrint(response.statusCode.toString());
       if (response.statusCode == 200) {
-        final resModel = updateOrganizationMainResModelFromJson(response.data);
+        final resModel =
+            UpdateOnlinePaymentMainResModel.fromJson(response.data);
         if (resModel.data?.success != true) {
           throw ApiException(message: "Request failed please try again!");
         }
@@ -105,7 +106,8 @@ class OnlinePaymentsRemoteDatasourceImpl
       debugPrint("UpdateOnlinePaymentMainResModel authorize");
       debugPrint(response.statusCode.toString());
       if (response.statusCode == 200) {
-        final resModel = updateOrganizationMainResModelFromJson(response.data);
+        final resModel =
+            UpdateOnlinePaymentMainResModel.fromJson(response.data);
         if (resModel.data?.success != true) {
           throw ApiException(message: "Request failed please try again!");
         }
@@ -144,7 +146,8 @@ pg_braintree_privatekey:wer
       debugPrint("UpdateOnlinePaymentMainResModel braintree");
       debugPrint(response.statusCode.toString());
       if (response.statusCode == 200) {
-        final resModel = updateOrganizationMainResModelFromJson(response.data);
+        final resModel =
+            UpdateOnlinePaymentMainResModel.fromJson(response.data);
         if (resModel.data?.success != true) {
           throw ApiException(message: "Request failed please try again!");
         }
@@ -176,7 +179,8 @@ pg_braintree_privatekey:wer
       debugPrint("UpdateOnlinePaymentMainResModel 2co");
       debugPrint(response.statusCode.toString());
       if (response.statusCode == 200) {
-        final resModel = updateOrganizationMainResModelFromJson(response.data);
+        final resModel =
+            UpdateOnlinePaymentMainResModel.fromJson(response.data);
         if (resModel.data?.success != true) {
           throw ApiException(message: "Request failed please try again!");
         }
@@ -208,7 +212,8 @@ pg_braintree_privatekey:wer
       debugPrint("UpdateOnlinePaymentMainResModel stripe");
       debugPrint(response.statusCode.toString());
       if (response.statusCode == 200) {
-        final resModel = updateOrganizationMainResModelFromJson(response.data);
+        final resModel =
+            UpdateOnlinePaymentMainResModel.fromJson(response.data);
         if (resModel.data?.success != true) {
           throw ApiException(message: "Request failed please try again!");
         }

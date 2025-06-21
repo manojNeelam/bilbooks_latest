@@ -3,9 +3,11 @@ import 'package:billbooks_app/core/app_constants.dart';
 import 'package:billbooks_app/core/theme/app_fonts.dart';
 import 'package:billbooks_app/core/theme/app_pallete.dart';
 import 'package:billbooks_app/core/utils/utils.dart';
+import 'package:billbooks_app/features/dashboard/presentation/widgets/trial_expired_popup.dart';
 import 'package:billbooks_app/router/app_router.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../domain/entity/authinfo_entity.dart';
 import 'widgets/accounts_receivables_widget.dart';
 import 'widgets/overdue_invoce_widget.dart';
@@ -39,7 +41,40 @@ class _DashboardPageState extends State<DashboardPage>
   void initState() {
     authInfoMainDataEntity = widget.authInfoMainDataEntity;
     planName = _getPlanName();
+    _checkTrialStatus();
     super.initState();
+  }
+
+  Future<void> _checkTrialStatus() async {
+    // Simulate API call
+    await Future.delayed(Duration(seconds: 1));
+
+    bool isTrialExpired = true; // Replace with real check from API response
+
+    if (isTrialExpired) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return TrialExpiredPopup(
+              onOpenUrl: (p0) {
+                AutoRouter.of(context).canPop();
+                openLink(p0);
+              },
+            );
+          },
+        );
+      });
+    }
+  }
+
+  Future<void> openLink(String urlString) async {
+    final Uri callLaunchUri = Uri.parse(urlString);
+    if (await canLaunchUrl(callLaunchUri)) {
+      launchUrl(callLaunchUri);
+    } else {
+      debugPrint("Unable to launch sms");
+    }
   }
 
   String _getPlanName() {

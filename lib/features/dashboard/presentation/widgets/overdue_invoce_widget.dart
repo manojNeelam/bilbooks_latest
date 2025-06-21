@@ -153,6 +153,7 @@ class _OverdueInvoceWidgetState extends State<OverdueInvoceWidget> {
           }
           return const SizedBox(
             height: 300,
+            width: 400,
           );
         },
       ),

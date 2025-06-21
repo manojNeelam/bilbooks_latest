@@ -3,6 +3,7 @@ import 'package:billbooks_app/core/app_constants.dart';
 import 'package:billbooks_app/core/theme/app_fonts.dart';
 import 'package:billbooks_app/core/theme/app_pallete.dart';
 import 'package:billbooks_app/core/utils/show_toast.dart';
+import 'package:billbooks_app/core/utils/utils.dart';
 import 'package:billbooks_app/core/widgets/input_dropdown_view.dart';
 import 'package:billbooks_app/core/widgets/new_inputview_widget.dart';
 import 'package:billbooks_app/features/clients/domain/entities/client_list_entity.dart';
@@ -24,12 +25,14 @@ class AddProjectPage extends StatefulWidget {
   final ClientEntity? clientEntity;
   final Function() deletedProject;
   final Function() updatedProject;
+  final Function() popBack;
   final ProjectEntity? projectEntity;
   const AddProjectPage(
       {super.key,
       this.projectEntity,
       required this.deletedProject,
       required this.updatedProject,
+      required this.popBack,
       this.clientEntity});
 
   @override
@@ -111,6 +114,7 @@ class _AddProjectPageState extends State<AddProjectPage> {
         ],
         leading: IconButton(
             onPressed: () {
+              widget.popBack();
               Navigator.of(context).pop();
             },
             icon: const Icon(
@@ -154,80 +158,88 @@ class _AddProjectPageState extends State<AddProjectPage> {
           if (state is DeleteProjectLoadingState) {
             return const LoadingPage(title: "Deleting project...");
           }
-          return Column(
-            children: [
-              AppConstants.sizeBoxHeight10,
-              NewInputViewWidget(
-                title: "Project Name",
-                hintText: "Project Name",
-                isRequired: true,
-                showDivider: true,
-                controller: projectNameController,
-                onChanged: (val) {
-                  validateForm();
-                },
-              ),
-              NewInputViewWidget(
-                title: "Description",
-                hintText: "Tap to enter",
-                isRequired: false,
-                showDivider: false,
-                inputType: TextInputType.text,
-                inputAction: TextInputAction.done,
-                controller: descController,
-                onChanged: (val) {},
-              ),
-              AppConstants.sizeBoxHeight10,
-              InputDropdownView(
-                  title: "Client",
+          return GestureDetector(
+            onTap: () {
+              Utils.hideKeyboard();
+            },
+            child: Column(
+              children: [
+                AppConstants.sizeBoxHeight10,
+                NewInputViewWidget(
+                  title: "Project Name",
+                  hintText: "Project Name",
                   isRequired: true,
+                  showDivider: true,
+                  controller: projectNameController,
+                  textCapitalization: TextCapitalization.words,
+                  onChanged: (val) {
+                    validateForm();
+                  },
+                ),
+                NewInputViewWidget(
+                  title: "Description",
+                  hintText: "Tap to enter",
+                  isRequired: false,
                   showDivider: false,
-                  isDisabled: isClientDisabled,
-                  defaultText: "Tap to select",
-                  value: selectedClient?.name ?? "Tap to select",
-                  dropDownImageName: Icons.chevron_right,
-                  onPress: () {
-                    AutoRouter.of(context).push(ClientPopupRoute(
-                        selectedClient: selectedClient,
-                        onSelectClient: (client) {
-                          debugPrint("Client Name: ${client?.name ?? ""}");
-                          debugPrint(
-                              "Client Client Id: ${client?.clientId ?? ""}");
-                          debugPrint("Client Id : ${client?.id ?? ""}");
-                          selectedClient = client;
-                          rerenderUI();
-                        }));
-                  }),
-              AppConstants.sizeBoxHeight10,
-              if (isEdit())
+                  inputType: TextInputType.text,
+                  inputAction: TextInputAction.done,
+                  controller: descController,
+                  textCapitalization: TextCapitalization.sentences,
+                  onChanged: (val) {},
+                ),
+                AppConstants.sizeBoxHeight10,
                 InputDropdownView(
-                    title: "Status",
-                    isRequired: false,
+                    title: "Client",
+                    isRequired: true,
                     showDivider: false,
-                    defaultText: "Tap to Select",
-                    value: selectedStatus ?? "",
+                    isDisabled: isClientDisabled,
+                    defaultText: "Tap to select",
+                    value: selectedClient?.name ?? "Tap to select",
+                    dropDownImageName: Icons.chevron_right,
                     onPress: () {
-                      _showStatusPopup();
+                      AutoRouter.of(context).push(ClientPopupRoute(
+                          selectedClient: selectedClient,
+                          onSelectClient: (client) {
+                            debugPrint("Client Name: ${client?.name ?? ""}");
+                            debugPrint(
+                                "Client Client Id: ${client?.clientId ?? ""}");
+                            debugPrint("Client Id : ${client?.id ?? ""}");
+                            selectedClient = client;
+                            rerenderUI();
+                          }));
                     }),
-              if (isEdit()) AppConstants.sizeBoxHeight10,
-              if (isEdit())
-                Container(
-                  width: MediaQuery.of(context).size.width,
-                  color: AppPallete.white,
-                  child: Column(
-                    children: [
-                      TextButton(
-                          onPressed: () {
-                            _showDeleteProjectAlert(context);
-                          },
-                          child: Text(
-                            "Delete",
-                            style: AppFonts.regularStyle(color: AppPallete.red),
-                          ))
-                    ],
-                  ),
-                )
-            ],
+                AppConstants.sizeBoxHeight10,
+                if (isEdit())
+                  InputDropdownView(
+                      title: "Status",
+                      isRequired: false,
+                      showDivider: false,
+                      defaultText: "Tap to Select",
+                      value: selectedStatus ?? "",
+                      onPress: () {
+                        _showStatusPopup();
+                      }),
+                if (isEdit()) AppConstants.sizeBoxHeight10,
+                if (isEdit())
+                  Container(
+                    width: MediaQuery.of(context).size.width,
+                    color: AppPallete.white,
+                    child: Column(
+                      children: [
+                        TextButton(
+                            onPressed: () {
+                              _showDeleteProjectAlert(context);
+                            },
+                            child: Text(
+                              "Delete",
+                              style:
+                                  AppFonts.regularStyle(color: AppPallete.red),
+                            ))
+                      ],
+                    ),
+                  )
+              ],
+            ),
           );
         },
       ),

@@ -72,6 +72,10 @@ class _AddTaxPageState extends State<AddTaxPage> {
             showToastification(
                 context, state.errorMessage, ToastificationType.error);
           }
+          if (state is TaxDeleteErrorState) {
+            showToastification(
+                context, state.errorMessage, ToastificationType.error);
+          }
           if (state is SuccessDeleteTax) {
             showToastification(context, "Tax deleted successfully.",
                 ToastificationType.success);
@@ -107,6 +111,7 @@ class _AddTaxPageState extends State<AddTaxPage> {
                   title: "Tax Name",
                   hintText: "Tax Name",
                   controller: taxNameController,
+                  textCapitalization: TextCapitalization.words,
                   onChanged: (name) {
                     validateTaxName(name);
                   },

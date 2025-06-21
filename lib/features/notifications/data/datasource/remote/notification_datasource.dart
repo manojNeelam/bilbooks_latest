@@ -22,7 +22,7 @@ class NotificationRemoteDatasourceImpl implements NotificationRemoteDatasource {
       final response = await apiClient.getRequest(ApiEndPoints.latestactivity);
       if (response.statusCode == 200) {
         final resDataModel =
-            notificationMainResponseModelFromJson(response.data);
+            NotificationMainResponseModel.fromJson(response.data);
         return resDataModel;
       } else {
         throw ApiException(

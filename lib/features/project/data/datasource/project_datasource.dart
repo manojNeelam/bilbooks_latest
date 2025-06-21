@@ -51,7 +51,7 @@ status:active
       final response = await apiClient.getRequest(ApiEndPoints.projects,
           queryParameters: queryParameters);
       if (response.statusCode == 200) {
-        final resModel = projectMainResModelFromJson(response.data);
+        final resModel = ProjectMainResModel.fromJson(response.data);
         if (resModel.data?.success != true) {
           throw ApiException(
               message:
@@ -87,7 +87,8 @@ status:active
       final response = await apiClient.postRequest(
           path: ApiEndPoints.addProjects, body: reqPrams);
       if (response.statusCode == 200) {
-        final resModel = addProjectMainResponseDataModelFromJson(response.data);
+        final resModel =
+            AddProjectMainResponseDataModel.fromJson(response.data);
         if (resModel.data?.success != true) {
           throw ApiException(
               message:
@@ -115,7 +116,7 @@ status:active
       final response = await apiClient.deleteRequest(
           path: ApiEndPoints.deleteProject, queryParameters: reqPrams);
       if (response.statusCode == 200) {
-        final resModel = projectDeleteMainDataModelFromJson(response.data);
+        final resModel = ProjectDeleteMainDataModel.fromJson(response.data);
         if (resModel.data?.success != true) {
           throw ApiException(
               message:
@@ -147,7 +148,7 @@ status:active
       final response = await apiClient.postRequest(path: path, body: reqPrams);
       if (response.statusCode == 200) {
         final resModel =
-            projectStatusUpdateMainDataModelFromJson(response.data);
+            ProjectStatusUpdateMainDataModel.fromJson(response.data);
         debugPrint("ProjectStatusUpdateMainDataModel resModel: $resModel");
         if (resModel.data?.success != true) {
           throw ApiException(
@@ -174,7 +175,7 @@ status:active
       final response = await apiClient.getRequest(ApiEndPoints.projectDetails,
           queryParameters: body);
       if (response.statusCode == 200) {
-        final resModel = projectDetailMainResDataModelFromJson(response.data);
+        final resModel = ProjectDetailMainResDataModel.fromJson(response.data);
         if (resModel.data?.success != true) {
           throw ApiException(
               message:

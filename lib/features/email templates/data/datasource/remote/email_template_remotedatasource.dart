@@ -33,7 +33,7 @@ class EmailTemplateRemotedatasourceImpl
       debugPrint("EmailTemplateMainResponseModel ");
       debugPrint(response.statusCode.toString());
       if (response.statusCode == 200) {
-        final resModel = emailTemplateMainResponseModelFromJson(response.data);
+        final resModel = EmailTemplateMainResponseModel.fromJson(response.data);
         if (resModel.data?.success != true) {
           throw ApiException(message: "Request failed please try again!");
         }
@@ -96,7 +96,7 @@ email_message_paymentthankyou:
       debugPrint(response.statusCode.toString());
       if (response.statusCode == 200) {
         final resModel =
-            updateEmailTemplateMainResponseModelFromJson(response.data);
+            UpdateEmailTemplateMainResponseModel.fromJson(response.data);
         if (resModel.data?.success != true) {
           throw ApiException(message: "Request failed please try again!");
         }

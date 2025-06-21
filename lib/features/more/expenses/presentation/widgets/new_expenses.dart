@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:billbooks_app/core/app_constants.dart';
 import 'package:billbooks_app/core/utils/show_toast.dart';
+import 'package:billbooks_app/core/utils/utils.dart';
 import 'package:billbooks_app/core/widgets/date_picker_widget.dart';
 import 'package:billbooks_app/core/widgets/loading_page.dart';
 import 'package:billbooks_app/core/widgets/repeat_every_popup_widget.dart';
@@ -168,6 +169,18 @@ class _NewExpensesState extends State<NewExpenses> {
           TextButton(
               onPressed: () {
                 //createReq();
+                if (selectedCategoryEntity == null ||
+                    selectedCategoryEntity?.id == null) {
+                  showToastification(context, "Please select a category",
+                      ToastificationType.error);
+                  return;
+                }
+
+                if (amountController.text.isEmpty) {
+                  showToastification(
+                      context, "Please enter amount", ToastificationType.error);
+                  return;
+                }
                 context
                     .read<ExpensesBloc>()
                     .add(AddExpensesEvent(params: createReq()));
@@ -231,204 +244,211 @@ class _NewExpensesState extends State<NewExpenses> {
           if (state is DeleteExpensesLoadingState) {
             return const LoadingPage(title: "Deleting expenses...");
           }
-
           return SafeArea(
-            child: SingleChildScrollView(
-              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-              child: Column(
-                children: [
-                  AppConstants.sizeBoxHeight10,
-                  InputDropdownView(
-                      title: "Date",
-                      defaultText: "date",
-                      isRequired: true,
-                      showDropdownIcon: false,
-                      value: getSelectedDateAsString(formatter: "dd MMM yyyy"),
-                      onPress: () async {
-                        final date = await buildMaterialDatePicker(
-                            context, DateTime.now());
-                        selectedDate = date;
-                        rerenderUI();
-                      }),
-                  InputDropdownView(
-                    dropDownImageName: Icons.chevron_right,
-                    title: 'Category',
-                    value: selectedCategoryEntity?.name ?? "",
-                    defaultText:
-                        selectedCategoryEntity?.name ?? "Tap to Select",
-                    onPress: () {
-                      AutoRouter.of(context).push(CategoryListPageRoute(
-                          categoryEntity: selectedCategoryEntity,
-                          onSelectCategory: (category) {
-                            selectedCategoryEntity = category;
-                            rerenderUI();
-                          }));
-                    },
-                  ),
-                  NewInputViewWidget(
-                      isRequired: true,
-                      title: "Amount",
-                      hintText: "0.00",
-                      inputType:
-                          const TextInputType.numberWithOptions(decimal: true),
-                      inputAction: TextInputAction.next,
-                      controller: amountController),
-                  NewInputViewWidget(
-                    isRequired: false,
-                    title: 'Vendor Name',
-                    hintText: 'Vendor Name',
-                    controller: vendorController,
-                  ),
-                  NewInputViewWidget(
-                    isRequired: false,
-                    title: 'Reference #',
-                    hintText: 'Reference #',
-                    controller: referenceController,
-                  ),
-                  NotesWidget(
-                    controller: notesController,
-                    title: 'Notes',
-                    hintText: 'Tap to Enter',
-                  ),
-                  AppConstants.sizeBoxHeight10,
-                  InputDropdownView(
-                    title: 'Client',
-                    dropDownImageName: Icons.chevron_right,
-                    isRequired: false,
-                    defaultText: 'Tap to select',
-                    showDivider: selectedClient != null,
-                    value: selectedClient?.name ?? "",
-                    onPress: () {
-                      AutoRouter.of(context).push(ClientPopupRoute(
-                          selectedClient: selectedClient,
-                          onSelectClient: (client) {
-                            selectedClient = client;
-                            rerenderUI();
-                          }));
-                    },
-                  ),
-                  if (selectedClient != null)
-                    Column(
-                      children: [
-                        InPutSwitchWidget(
-                          title: 'Billable',
-                          context: context,
-                          isRecurringOn: billables,
-                          showDivider: true,
-                          onChanged: (p1) {
-                            billables = p1;
-                            rerenderUI();
-                          },
-                        ),
-                        InputDropdownView(
-                          title: 'Project',
-                          isRequired: false,
-                          dropDownImageName: Icons.chevron_right,
-                          defaultText: 'Tap to select',
-                          showDivider: false,
-                          value: selectedProject?.name ?? "",
-                          onPress: () {
-                            AutoRouter.of(context).push(ProjectPopupRoute(
-                                selectedClient: selectedClient,
-                                clientId: selectedClient?.clientId,
-                                selectedProject: selectedProject,
-                                onSelectProject: (project) {
-                                  selectedProject = project;
-                                  rerenderUI();
-                                }));
-                          },
-                        ),
-                      ],
+            child: GestureDetector(
+              onTap: () {
+                Utils.hideKeyboard();
+              },
+              child: SingleChildScrollView(
+                keyboardDismissBehavior:
+                    ScrollViewKeyboardDismissBehavior.onDrag,
+                child: Column(
+                  children: [
+                    AppConstants.sizeBoxHeight10,
+                    InputDropdownView(
+                        title: "Date",
+                        defaultText: "date",
+                        isRequired: true,
+                        showDropdownIcon: false,
+                        value:
+                            getSelectedDateAsString(formatter: "dd MMM yyyy"),
+                        onPress: () async {
+                          final date = await buildMaterialDatePicker(
+                              context, DateTime.now());
+                          selectedDate = date;
+                          rerenderUI();
+                        }),
+                    InputDropdownView(
+                      dropDownImageName: Icons.chevron_right,
+                      title: 'Category',
+                      value: selectedCategoryEntity?.name ?? "",
+                      defaultText:
+                          selectedCategoryEntity?.name ?? "Tap to Select",
+                      onPress: () {
+                        AutoRouter.of(context).push(CategoryListPageRoute(
+                            categoryEntity: selectedCategoryEntity,
+                            onSelectCategory: (category) {
+                              selectedCategoryEntity = category;
+                              rerenderUI();
+                            }));
+                      },
                     ),
-                  AppConstants.sizeBoxHeight10,
-                  InPutSwitchWidget(
-                    title: 'Recurring',
-                    context: context,
-                    isRecurringOn: recurrings,
-                    showDivider: false,
-                    onChanged: (p1) {
-                      recurrings = p1;
-                      rerenderUI();
-                    },
-                  ),
-                  if (recurrings)
-                    Column(children: [
-                      const ItemSeparator(),
-                      InputDropdownView(
-                          title: "Repeat Every",
-                          defaultText:
-                              selectedRepeatEvery?.label ?? "Tap to Select",
-                          showDivider: false,
-                          isRequired: false,
-                          value: selectedRepeatEvery?.label ?? "",
-                          onPress: () {
-                            print("On press dropdown");
-                            _showRepeatEveryPopup();
-                          }),
-                      const SectionHeaderWidget(title: "How Many?"),
-                      InPutSwitchWidget(
-                          title: "Infinite",
-                          showDivider: true,
-                          context: context,
-                          isRecurringOn: isInfinite,
-                          onChanged: (val) {
-                            isInfinite = val;
-                            debugPrint("Infinite: $val");
-                            rerenderUI();
-                          }),
-                      if (!isInfinite)
-                        NewInputViewWidget(
-                          title: 'Remaining',
-                          hintText: "Remaining",
-                          isRequired: false,
-                          showDivider: false,
-                          controller: remainingController,
-                          inputType: TextInputType.number,
-                          inputAction: TextInputAction.done,
-                        ),
-                      if (isEdit) AppConstants.sizeBoxHeight10,
-                    ]),
-                  if (isEdit) AppConstants.sizeBoxHeight10,
-                  if (isEdit)
-                    Container(
-                      width: MediaQuery.of(context).size.width,
-                      color: AppPallete.white,
-                      child: Column(
+                    NewInputViewWidget(
+                        isRequired: true,
+                        title: "Amount",
+                        hintText: "0.00",
+                        inputType: const TextInputType.numberWithOptions(
+                            decimal: true),
+                        inputAction: TextInputAction.next,
+                        controller: amountController),
+                    NewInputViewWidget(
+                      isRequired: false,
+                      title: 'Vendor Name',
+                      hintText: 'Vendor Name',
+                      controller: vendorController,
+                      textCapitalization: TextCapitalization.words,
+                    ),
+                    NewInputViewWidget(
+                      isRequired: false,
+                      title: 'Reference #',
+                      hintText: 'Reference #',
+                      controller: referenceController,
+                    ),
+                    NotesWidget(
+                      controller: notesController,
+                      title: 'Notes',
+                      hintText: 'Tap to Enter',
+                    ),
+                    AppConstants.sizeBoxHeight10,
+                    InputDropdownView(
+                      title: 'Client',
+                      dropDownImageName: Icons.chevron_right,
+                      isRequired: false,
+                      defaultText: 'Tap to select',
+                      showDivider: selectedClient != null,
+                      value: selectedClient?.name ?? "",
+                      onPress: () {
+                        AutoRouter.of(context).push(ClientPopupRoute(
+                            selectedClient: selectedClient,
+                            onSelectClient: (client) {
+                              selectedClient = client;
+                              rerenderUI();
+                            }));
+                      },
+                    ),
+                    if (selectedClient != null)
+                      Column(
                         children: [
-                          TextButton(
-                              onPressed: () {
-                                showDialog(
-                                    context: context,
-                                    builder: (BuildContext context) {
-                                      return AppAlertWidget(
-                                        title: "Delete Expense",
-                                        message:
-                                            "Are you sure you want to delete this expense?",
-                                        onTapDelete: () {
-                                          debugPrint("on tap delete item");
-                                          AutoRouter.of(context).maybePop();
-
-                                          context.read<ExpensesBloc>().add(
-                                              DeleteExpenseEvent(
-                                                  params:
-                                                      DeleteExpenseReqParams(
-                                                          id: widget
-                                                                  .expenseEntity
-                                                                  ?.id ??
-                                                              "")));
-                                        },
-                                      );
-                                    });
-                              },
-                              child: Text(
-                                "Delete",
-                                style: AppFonts.regularStyle(
-                                    color: AppPallete.red),
-                              ))
+                          InPutSwitchWidget(
+                            title: 'Billable',
+                            context: context,
+                            isRecurringOn: billables,
+                            showDivider: true,
+                            onChanged: (p1) {
+                              billables = p1;
+                              rerenderUI();
+                            },
+                          ),
+                          InputDropdownView(
+                            title: 'Project',
+                            isRequired: false,
+                            dropDownImageName: Icons.chevron_right,
+                            defaultText: 'Tap to select',
+                            showDivider: false,
+                            value: selectedProject?.name ?? "",
+                            onPress: () {
+                              AutoRouter.of(context).push(ProjectPopupRoute(
+                                  selectedClient: selectedClient,
+                                  clientId: selectedClient?.clientId,
+                                  selectedProject: selectedProject,
+                                  onSelectProject: (project) {
+                                    selectedProject = project;
+                                    rerenderUI();
+                                  }));
+                            },
+                          ),
                         ],
                       ),
-                    )
-                ],
+                    AppConstants.sizeBoxHeight10,
+                    InPutSwitchWidget(
+                      title: 'Recurring',
+                      context: context,
+                      isRecurringOn: recurrings,
+                      showDivider: false,
+                      onChanged: (p1) {
+                        recurrings = p1;
+                        rerenderUI();
+                      },
+                    ),
+                    if (recurrings)
+                      Column(children: [
+                        const ItemSeparator(),
+                        InputDropdownView(
+                            title: "Repeat Every",
+                            defaultText:
+                                selectedRepeatEvery?.label ?? "Tap to Select",
+                            showDivider: false,
+                            isRequired: false,
+                            value: selectedRepeatEvery?.label ?? "",
+                            onPress: () {
+                              print("On press dropdown");
+                              _showRepeatEveryPopup();
+                            }),
+                        const SectionHeaderWidget(title: "How Many?"),
+                        InPutSwitchWidget(
+                            title: "Infinite",
+                            showDivider: true,
+                            context: context,
+                            isRecurringOn: isInfinite,
+                            onChanged: (val) {
+                              isInfinite = val;
+                              debugPrint("Infinite: $val");
+                              rerenderUI();
+                            }),
+                        if (!isInfinite)
+                          NewInputViewWidget(
+                            title: 'Remaining',
+                            hintText: "Remaining",
+                            isRequired: false,
+                            showDivider: false,
+                            controller: remainingController,
+                            inputType: TextInputType.number,
+                            inputAction: TextInputAction.done,
+                          ),
+                        if (isEdit) AppConstants.sizeBoxHeight10,
+                      ]),
+                    if (isEdit) AppConstants.sizeBoxHeight10,
+                    if (isEdit)
+                      Container(
+                        width: MediaQuery.of(context).size.width,
+                        color: AppPallete.white,
+                        child: Column(
+                          children: [
+                            TextButton(
+                                onPressed: () {
+                                  showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return AppAlertWidget(
+                                          title: "Delete Expense",
+                                          message:
+                                              "Are you sure you want to delete this expense?",
+                                          onTapDelete: () {
+                                            debugPrint("on tap delete item");
+                                            AutoRouter.of(context).maybePop();
+
+                                            context.read<ExpensesBloc>().add(
+                                                DeleteExpenseEvent(
+                                                    params:
+                                                        DeleteExpenseReqParams(
+                                                            id: widget
+                                                                    .expenseEntity
+                                                                    ?.id ??
+                                                                "")));
+                                          },
+                                        );
+                                      });
+                                },
+                                child: Text(
+                                  "Delete",
+                                  style: AppFonts.regularStyle(
+                                      color: AppPallete.red),
+                                ))
+                          ],
+                        ),
+                      )
+                  ],
+                ),
               ),
             ),
           );

@@ -78,8 +78,8 @@ class _ClientPopupState extends State<ClientPopup> with SectionAdapterMixin {
         actions: [
           IconButton(
               onPressed: () {
-                AutoRouter.of(context)
-                    .push(NewClientPageRoute(clientRemoved: () {}));
+                AutoRouter.of(context).push(
+                    NewClientPageRoute(onPopBack: () {}, clientRemoved: () {}));
               },
               icon: const Icon(
                 Icons.add,
@@ -162,7 +162,8 @@ class _ClientPopupState extends State<ClientPopup> with SectionAdapterMixin {
       iconName: Icons.people_alt_outlined,
       noDataSubtitle: "Create and manage your contacts, all in one place",
       callBack: () {
-        AutoRouter.of(context).push(NewClientPageRoute(clientRemoved: () {}));
+        AutoRouter.of(context)
+            .push(NewClientPageRoute(onPopBack: () {}, clientRemoved: () {}));
       },
     );
   }

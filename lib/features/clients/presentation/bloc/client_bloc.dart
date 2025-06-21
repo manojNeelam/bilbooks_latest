@@ -44,8 +44,6 @@ class ClientBloc extends Bloc<ClientEvent, ClientState> {
       emit(DeleteClientLoadingState());
       final response =
           await _deleteClientUseCase.call(event.deleteClientParams);
-      debugPrint(response.toString());
-      debugPrint("DeleteClientUseCase success $response");
       response.fold(
           (l) => emit(DeleteClientErrorState(errorMessage: l.message)),
           (r) => emit(DeleteClientSuccessState(deleteClientMainResEntity: r)));

@@ -46,7 +46,8 @@ class DashboardRemoteDatasourceImpl implements DashboardRemoteDatasource {
       debugPrint("AccountsReceivablesMainResModel ");
       debugPrint(response.statusCode.toString());
       if (response.statusCode == 200) {
-        final resModel = accountsReceivablesMainResModelFromJson(response.data);
+        final resModel =
+            AccountsReceivablesMainResModel.fromJson(response.data);
         if (resModel.data?.success != true) {
           throw ApiException(
               message:
@@ -76,7 +77,7 @@ class DashboardRemoteDatasourceImpl implements DashboardRemoteDatasource {
       debugPrint("OverdueInvoiceMainResModel ");
       debugPrint(response.statusCode.toString());
       if (response.statusCode == 200) {
-        final resModel = overdueInvoiceMainResModelFromJson(response.data);
+        final resModel = OverdueInvoiceMainResModel.fromJson(response.data);
         if (resModel.data?.success != true) {
           throw ApiException(
               message:
@@ -116,7 +117,7 @@ class DashboardRemoteDatasourceImpl implements DashboardRemoteDatasource {
       debugPrint("SalesExpensesMainResModel ");
       debugPrint(response.statusCode.toString());
       if (response.statusCode == 200) {
-        final resModel = salesExpensesMainResModelFromJson(response.data);
+        final resModel = SalesExpensesMainResModel.fromJson(response.data);
         if (resModel.data?.success != true) {
           throw ApiException(
               message:
@@ -143,8 +144,6 @@ class DashboardRemoteDatasourceImpl implements DashboardRemoteDatasource {
 
       final response = await apiClient.getRequest(ApiEndPoints.totalincomes,
           queryParameters: queryParameters);
-      debugPrint("TotalIncomesMainResModel ");
-      debugPrint(response.statusCode.toString());
       if (response.statusCode == 200) {
         final resModel = totalIncomesMainResModelFromJson(response.data);
         if (resModel.data?.success != true) {
@@ -202,9 +201,8 @@ class DashboardRemoteDatasourceImpl implements DashboardRemoteDatasource {
 
       final response = await apiClient.getRequest(ApiEndPoints.authInfo,
           queryParameters: queryParameters);
-      debugPrint(response.statusCode.toString());
       if (response.statusCode == 200) {
-        final resModel = authInfoMainResModelFromJson(response.data);
+        final resModel = AuthInfoMainResModel.fromJson(response.data);
         if (resModel.data?.success != true) {
           throw ApiException(
               message:

@@ -21,7 +21,7 @@ class CategoryRemoteDatasourceImpl implements CategoryRemoteDatasource {
       final response = await apiClient.getRequest(ApiEndPoints.categories,
           queryParameters: map);
       if (response.statusCode == 200) {
-        final resModel = categoryListMainResModelFromJson(response.data);
+        final resModel = CategoryListMainResModel.fromJson(response.data);
         if (resModel.data?.success != true) {
           throw ApiException(
               message:

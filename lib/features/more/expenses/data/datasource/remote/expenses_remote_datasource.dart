@@ -46,7 +46,7 @@ class ExpensesRemoteDatasourceImpl implements ExpensesRemoteDatasource {
       final response = await apiClient.getRequest(ApiEndPoints.expenses,
           queryParameters: queryParameters);
       if (response.statusCode == 200) {
-        final resModel = expensesListMainResModelFromJson(response.data);
+        final resModel = ExpensesListMainResModel.fromJson(response.data);
         if (resModel.data?.success != true) {
           throw ApiException(
               message:
@@ -94,7 +94,7 @@ class ExpensesRemoteDatasourceImpl implements ExpensesRemoteDatasource {
       final response = await apiClient.postRequest(
           path: ApiEndPoints.addExpenses, body: body);
       if (response.statusCode == 200) {
-        final resModel = addExpensesMainResModelFromJson(response.data);
+        final resModel = AddExpensesMainResModel.fromJson(response.data);
         if (resModel.data?.success != true) {
           throw ApiException(
               message:
@@ -122,7 +122,7 @@ class ExpensesRemoteDatasourceImpl implements ExpensesRemoteDatasource {
       final response = await apiClient.deleteRequest(
           path: ApiEndPoints.deleteExpenses, queryParameters: reqPrams);
       if (response.statusCode == 200) {
-        final resModel = deleteExpensesMainResModelFromJson(response.data);
+        final resModel = DeleteExpensesMainResModel.fromJson(response.data);
         if (resModel.data?.success != true) {
           throw ApiException(
               message:

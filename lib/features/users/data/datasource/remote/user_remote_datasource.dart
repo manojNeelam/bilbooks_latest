@@ -17,8 +17,7 @@ class UserRemoteDatasourceImp implements UserRemoteDatasource {
     try {
       final response = await apiClient.getRequest(ApiEndPoints.users);
       if (response.statusCode == 200) {
-        final resModel = usersMainResModelFromJson(response.data);
-        debugPrint("Resmodel ${resModel.data?.message ?? "NO MSG"}");
+        final resModel = UsersMainResModel.fromJson(response.data);
         if (resModel.data?.success != true) {
           throw ApiException(
               message:

@@ -80,6 +80,7 @@ abstract class _$AppRouter extends RootStackRouter {
           projectEntity: args.projectEntity,
           deletedProject: args.deletedProject,
           updatedProject: args.updatedProject,
+          popBack: args.popBack,
           clientEntity: args.clientEntity,
         ),
       );
@@ -423,6 +424,7 @@ abstract class _$AppRouter extends RootStackRouter {
           clientEntity: args.clientEntity,
           refreshClient: args.refreshClient,
           clientRemoved: args.clientRemoved,
+          onPopBack: args.onPopBack,
         ),
       );
     },
@@ -447,6 +449,7 @@ abstract class _$AppRouter extends RootStackRouter {
           itemListEntity: args.itemListEntity,
           refreshPage: args.refreshPage,
           isFromDuplicate: args.isFromDuplicate,
+          popBack: args.popBack,
         ),
       );
     },
@@ -1005,6 +1008,7 @@ class AddProjectPageRoute extends PageRouteInfo<AddProjectPageRouteArgs> {
     ProjectEntity? projectEntity,
     required dynamic Function() deletedProject,
     required dynamic Function() updatedProject,
+    required dynamic Function() popBack,
     ClientEntity? clientEntity,
     List<PageRouteInfo>? children,
   }) : super(
@@ -1014,6 +1018,7 @@ class AddProjectPageRoute extends PageRouteInfo<AddProjectPageRouteArgs> {
             projectEntity: projectEntity,
             deletedProject: deletedProject,
             updatedProject: updatedProject,
+            popBack: popBack,
             clientEntity: clientEntity,
           ),
           initialChildren: children,
@@ -1031,6 +1036,7 @@ class AddProjectPageRouteArgs {
     this.projectEntity,
     required this.deletedProject,
     required this.updatedProject,
+    required this.popBack,
     this.clientEntity,
   });
 
@@ -1042,11 +1048,13 @@ class AddProjectPageRouteArgs {
 
   final dynamic Function() updatedProject;
 
+  final dynamic Function() popBack;
+
   final ClientEntity? clientEntity;
 
   @override
   String toString() {
-    return 'AddProjectPageRouteArgs{key: $key, projectEntity: $projectEntity, deletedProject: $deletedProject, updatedProject: $updatedProject, clientEntity: $clientEntity}';
+    return 'AddProjectPageRouteArgs{key: $key, projectEntity: $projectEntity, deletedProject: $deletedProject, updatedProject: $updatedProject, popBack: $popBack, clientEntity: $clientEntity}';
   }
 }
 
@@ -2335,6 +2343,7 @@ class NewClientPageRoute extends PageRouteInfo<NewClientPageRouteArgs> {
     ClientEntity? clientEntity,
     dynamic Function()? refreshClient,
     required dynamic Function() clientRemoved,
+    required dynamic Function()? onPopBack,
     List<PageRouteInfo>? children,
   }) : super(
           NewClientPageRoute.name,
@@ -2343,6 +2352,7 @@ class NewClientPageRoute extends PageRouteInfo<NewClientPageRouteArgs> {
             clientEntity: clientEntity,
             refreshClient: refreshClient,
             clientRemoved: clientRemoved,
+            onPopBack: onPopBack,
           ),
           initialChildren: children,
         );
@@ -2359,6 +2369,7 @@ class NewClientPageRouteArgs {
     this.clientEntity,
     this.refreshClient,
     required this.clientRemoved,
+    required this.onPopBack,
   });
 
   final Key? key;
@@ -2369,9 +2380,11 @@ class NewClientPageRouteArgs {
 
   final dynamic Function() clientRemoved;
 
+  final dynamic Function()? onPopBack;
+
   @override
   String toString() {
-    return 'NewClientPageRouteArgs{key: $key, clientEntity: $clientEntity, refreshClient: $refreshClient, clientRemoved: $clientRemoved}';
+    return 'NewClientPageRouteArgs{key: $key, clientEntity: $clientEntity, refreshClient: $refreshClient, clientRemoved: $clientRemoved, onPopBack: $onPopBack}';
   }
 }
 
@@ -2431,6 +2444,7 @@ class NewItemPageRoute extends PageRouteInfo<NewItemPageRouteArgs> {
     ItemListEntity? itemListEntity,
     dynamic Function()? refreshPage,
     required bool isFromDuplicate,
+    required dynamic Function() popBack,
     List<PageRouteInfo>? children,
   }) : super(
           NewItemPageRoute.name,
@@ -2439,6 +2453,7 @@ class NewItemPageRoute extends PageRouteInfo<NewItemPageRouteArgs> {
             itemListEntity: itemListEntity,
             refreshPage: refreshPage,
             isFromDuplicate: isFromDuplicate,
+            popBack: popBack,
           ),
           initialChildren: children,
         );
@@ -2455,6 +2470,7 @@ class NewItemPageRouteArgs {
     this.itemListEntity,
     this.refreshPage,
     required this.isFromDuplicate,
+    required this.popBack,
   });
 
   final Key? key;
@@ -2465,9 +2481,11 @@ class NewItemPageRouteArgs {
 
   final bool isFromDuplicate;
 
+  final dynamic Function() popBack;
+
   @override
   String toString() {
-    return 'NewItemPageRouteArgs{key: $key, itemListEntity: $itemListEntity, refreshPage: $refreshPage, isFromDuplicate: $isFromDuplicate}';
+    return 'NewItemPageRouteArgs{key: $key, itemListEntity: $itemListEntity, refreshPage: $refreshPage, isFromDuplicate: $isFromDuplicate, popBack: $popBack}';
   }
 }
 

@@ -114,11 +114,11 @@ class APIClient {
       var response = await dio.delete(path,
           queryParameters: queryParameters, options: options);
       debugPrint("==========Api Response ==========");
-      debugPrint("Status Code: ${response.statusCode.toString()}");
-      debugPrint("Data: ${response.data}");
-      //log("Data: ${response.data}");
+      // debugPrint("Status Code: ${response.statusCode.toString()}");
+      // debugPrint("Data: ${response.data}");
+      // //log("Data: ${response.data}");
 
-      debugPrint(response.data);
+      // debugPrint(response.data);
       return response;
     } on DioException catch (e) {
       // The request was made and the server responded with a status code

@@ -96,6 +96,7 @@ class _ItemListState extends State<ItemList> with SectionAdapterMixin {
   Paging? paging;
   int currentPage = 1;
   bool isFromPagination = false;
+  bool ignoreBlockListener = false;
 
   @override
   void initState() {
@@ -186,6 +187,10 @@ class _ItemListState extends State<ItemList> with SectionAdapterMixin {
           ],
         ),
         body: BlocConsumer<ItemBloc, ItemState>(listener: (context, state) {
+          if (ignoreBlockListener) {
+            return;
+          }
+
           if (state is ErrorDeleteItemState) {
             showToastification(
                 context, state.errorMessage, ToastificationType.error);
@@ -226,19 +231,20 @@ class _ItemListState extends State<ItemList> with SectionAdapterMixin {
             _getItemList();
           }
         }, builder: (context, state) {
-          if (state is DeleteItemLoadingState) {
+          if (state is DeleteItemLoadingState && ignoreBlockListener == false) {
             return const LoadingPage(title: "Deleting item..");
           }
-          if (state is ItemActiveLoadingState) {
+          if (state is ItemActiveLoadingState && ignoreBlockListener == false) {
             return const LoadingPage(title: "Marking active...");
           }
-          if (state is ItemInActiveLoadingState) {
+          if (state is ItemInActiveLoadingState &&
+              ignoreBlockListener == false) {
             return const LoadingPage(title: "Marking inactive...");
           }
-          if (state is LoadingState) {
+          if (state is LoadingState && ignoreBlockListener == false) {
             if (!isFromPagination) isLoading = true;
           }
-          if (state is SuccessState) {
+          if (state is SuccessState && ignoreBlockListener == false) {
             if (currentPage == 1) {
               itemList = [];
             }
@@ -363,10 +369,15 @@ class _ItemListState extends State<ItemList> with SectionAdapterMixin {
   }
 
   void openAddNewItem(ItemListEntity? item, bool isFromDuplicate) {
+    ignoreBlockListener = true;
     AutoRouter.of(context).push(NewItemPageRoute(
         isFromDuplicate: isFromDuplicate,
         itemListEntity: item,
+        popBack: () {
+          ignoreBlockListener = false;
+        },
         refreshPage: () {
+          ignoreBlockListener = false;
           _getItemList();
         }));
   }

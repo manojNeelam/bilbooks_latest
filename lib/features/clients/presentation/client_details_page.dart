@@ -64,6 +64,7 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
 
   void showActiveInactiveAlert() {
     Timer(const Duration(milliseconds: 500), () {
+      removeObservingBloc = false;
       _showActiveInactiveDialog();
     });
   }
@@ -305,6 +306,9 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
                       removeObservingBloc = false;
                       isRefreshPreviousScreen = true;
                       getClientDetails();
+                    },
+                    onPopBack: () {
+                      removeObservingBloc = false;
                     },
                     clientRemoved: () {
                       debugPrint("clientRemoved");

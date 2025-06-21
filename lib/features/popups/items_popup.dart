@@ -198,6 +198,7 @@ class _ItemsPopupState extends State<ItemsPopup> with SectionAdapterMixin {
     AutoRouter.of(context).push(NewItemPageRoute(
         isFromDuplicate: isFromDuplicate,
         itemListEntity: item,
+        popBack: () {},
         refreshPage: () {
           _getItemList();
         }));

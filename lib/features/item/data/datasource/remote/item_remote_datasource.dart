@@ -39,7 +39,7 @@ class ItemRemoteDatasourceImpl implements ItemRemoteDatasource {
       final response = await apiClient.getRequest(ApiEndPoints.itemList,
           queryParameters: queryParams);
       if (response.statusCode == 200) {
-        final resDataModel = itemsResponseDataModelFromJson(response.data);
+        final resDataModel = ItemsResponseDataModel.fromJson(response.data);
         return resDataModel;
       } else {
         throw ApiException(
@@ -58,7 +58,7 @@ class ItemRemoteDatasourceImpl implements ItemRemoteDatasource {
       final response =
           await apiClient.postRequest(path: ApiEndPoints.addItem, body: body);
       if (response.statusCode == 200) {
-        final resModel = addItemMainResModelFromJson(response.data);
+        final resModel = AddItemMainResModel.fromJson(response.data);
         return resModel;
       } else {
         throw ApiException(
@@ -77,7 +77,7 @@ class ItemRemoteDatasourceImpl implements ItemRemoteDatasource {
       final response = await apiClient.deleteRequest(
           path: ApiEndPoints.deleteItem, queryParameters: map);
       if (response.statusCode == 200) {
-        final resModel = deleteItemMainResDataModelFromJson(response.data);
+        final resModel = DeleteItemMainResDataModel.fromJson(response.data);
         debugPrint("Item Removed Response: ${resModel.success ?? ""}");
         debugPrint("Success");
         return resModel;
@@ -101,7 +101,7 @@ class ItemRemoteDatasourceImpl implements ItemRemoteDatasource {
       final response = await apiClient.postRequest(
           path: ApiEndPoints.itemActive, body: formData);
       if (response.statusCode == 200) {
-        final resModel = itemActiveMainResModelFromJson(response.data);
+        final resModel = ItemActiveMainResModel.fromJson(response.data);
         return resModel;
       } else {
         throw ApiException(
@@ -121,7 +121,7 @@ class ItemRemoteDatasourceImpl implements ItemRemoteDatasource {
       final response = await apiClient.postRequest(
           path: ApiEndPoints.itemInActive, body: formData);
       if (response.statusCode == 200) {
-        final resModel = itemInActiveMainResModelFromJson(response.data);
+        final resModel = ItemInActiveMainResModel.fromJson(response.data);
         return resModel;
       } else {
         throw ApiException(

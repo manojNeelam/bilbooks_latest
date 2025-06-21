@@ -238,11 +238,14 @@ class _ClientListPageState extends State<ClientListPage>
   }
 
   void _openAddNewClientPage() {
-    AutoRouter.of(context).push(NewClientPageRoute(refreshClient: () {
-      _forceRefreshList();
-    }, clientRemoved: () {
-      _forceRefreshList();
-    }));
+    AutoRouter.of(context).push(NewClientPageRoute(
+        refreshClient: () {
+          _forceRefreshList();
+        },
+        onPopBack: () {},
+        clientRemoved: () {
+          _forceRefreshList();
+        }));
   }
 
   Widget showEmptyView() {

@@ -58,7 +58,8 @@ class OrganizationRemoteDatasourceImpl implements OrganizationRemoteDatasource {
       debugPrint("OrganizationDetailsMainResModel ");
       debugPrint(response.statusCode.toString());
       if (response.statusCode == 200) {
-        final resModel = organizationDetailsMainResModelFromJson(response.data);
+        final resModel =
+            OrganizationDetailsMainResModel.fromJson(response.data);
         if (resModel.data?.success != true) {
           throw ApiException(
               message:
@@ -105,7 +106,7 @@ class OrganizationRemoteDatasourceImpl implements OrganizationRemoteDatasource {
       debugPrint("UpdateOrganizationMainResEntity ");
       debugPrint(response.statusCode.toString());
       if (response.statusCode == 200) {
-        final resModel = updateOrganizationMainResModelFromJson(response.data);
+        final resModel = UpdateOrganizationMainResModel.fromJson(response.data);
         if (resModel.data?.success != true) {
           throw ApiException(
               message:
@@ -131,10 +132,9 @@ class OrganizationRemoteDatasourceImpl implements OrganizationRemoteDatasource {
       FormData formData = FormData.fromMap(map);
       final response = await apiClient.postRequest(
           path: ApiEndPoints.preferences, body: formData);
-      debugPrint("PreferenceUpdateMainResModel ");
       debugPrint(response.statusCode.toString());
       if (response.statusCode == 200) {
-        final resModel = preferenceUpdateMainResModelFromJson(response.data);
+        final resModel = PreferenceUpdateMainResModel.fromJson(response.data);
         if (resModel.data?.success != true) {
           throw ApiException(
               message:
@@ -162,7 +162,7 @@ class OrganizationRemoteDatasourceImpl implements OrganizationRemoteDatasource {
       debugPrint("PreferenceMainResModel ");
       debugPrint(response.statusCode.toString());
       if (response.statusCode == 200) {
-        final resModel = preferenceMainResModelFromJson(response.data);
+        final resModel = PreferenceMainResModel.fromJson(response.data);
         if (resModel.data?.success != true) {
           throw ApiException(message: "Request failed please try again!");
         }
@@ -206,7 +206,7 @@ class OrganizationRemoteDatasourceImpl implements OrganizationRemoteDatasource {
       debugPrint("PreferenceUpdateMainResModel Column");
       debugPrint(response.statusCode.toString());
       if (response.statusCode == 200) {
-        final resModel = preferenceUpdateMainResModelFromJson(response.data);
+        final resModel = PreferenceUpdateMainResModel.fromJson(response.data);
         if (resModel.data?.success != true) {
           throw ApiException(
               message:
@@ -249,7 +249,7 @@ estimate_notes:
       debugPrint("PreferenceUpdateMainResModel Estimate");
       debugPrint(response.statusCode.toString());
       if (response.statusCode == 200) {
-        final resModel = preferenceUpdateMainResModelFromJson(response.data);
+        final resModel = PreferenceUpdateMainResModel.fromJson(response.data);
         if (resModel.data?.success != true) {
           throw ApiException(
               message:
@@ -291,7 +291,7 @@ estimate_notes:
       debugPrint("PreferenceUpdateMainResModel general");
       debugPrint(response.statusCode.toString());
       if (response.statusCode == 200) {
-        final resModel = preferenceUpdateMainResModelFromJson(response.data);
+        final resModel = PreferenceUpdateMainResModel.fromJson(response.data);
         if (resModel.data?.success != true) {
           throw ApiException(
               message:
@@ -328,7 +328,7 @@ estimate_notes:
       debugPrint("PreferenceUpdateMainResModel General");
       debugPrint(response.statusCode.toString());
       if (response.statusCode == 200) {
-        final resModel = preferenceUpdateMainResModelFromJson(response.data);
+        final resModel = PreferenceUpdateMainResModel.fromJson(response.data);
         if (resModel.data?.success != true) {
           throw ApiException(
               message:

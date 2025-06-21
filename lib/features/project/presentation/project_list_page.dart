@@ -285,6 +285,7 @@ class _ProjectListPageState extends State<ProjectListPage>
   void _openAddProjectScreen() {
     AutoRouter.of(context).push(AddProjectPageRoute(
         deletedProject: () {},
+        popBack: () {},
         updatedProject: () {
           currentPage = 1;
           _getProjectList();

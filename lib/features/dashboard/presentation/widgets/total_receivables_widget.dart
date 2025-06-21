@@ -98,6 +98,23 @@ class _TotalReceivablesWidgetState extends State<TotalReceivablesWidget> {
                 height: 100,
                 child: LoadingPage(title: "Loading total receivables..."));
           }
+          if (state is TotalReceivablesErrorState) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Total Receivables'.toUpperCase(),
+                  textAlign: TextAlign.left,
+                  style: AppFonts.regularStyle(),
+                ),
+                Text(
+                  state.errorMessage,
+                  style: AppFonts.regularStyle(),
+                ),
+              ],
+            );
+          }
+
           if (state is TotalReceivablesSuccessState) {
             return Column(
               children: [
@@ -145,6 +162,7 @@ class _TotalReceivablesWidgetState extends State<TotalReceivablesWidget> {
           }
           return const SizedBox(
             height: 100,
+            width: 400,
           );
         },
       ),
