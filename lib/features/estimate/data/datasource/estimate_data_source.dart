@@ -61,7 +61,7 @@ class EstimateDataSourceImpl implements EstimateDataSource {
       debugPrint("EstimateListMainResModel ");
       debugPrint(response.statusCode.toString());
       if (response.statusCode == 200) {
-        final resModel = estimateListMainResModelFromJson(response.data);
+        final resModel = EstimateListMainResModel.fromJson(response.data);
         debugPrint("length1: ${resModel.data?.estimates?.length}");
         if (resModel.data?.success != true) {
           throw ApiException(

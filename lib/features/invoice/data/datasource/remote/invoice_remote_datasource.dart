@@ -100,7 +100,7 @@ class InvoiceRemoteDatasourceImpl implements InvoiceRemoteDatasource {
       debugPrint("InvoiceRemoteDatasourceImpl ");
       debugPrint(response.statusCode.toString());
       if (response.statusCode == 200) {
-        final resModel = invoiceDetailsResponseModelFromJson(response.data);
+        final resModel = InvoiceDetailsResponseModel.fromJson(response.data);
         //debugPrint("resModel: ${resModel.data?.taxes?.first.name.toString()}");
         return resModel;
       } else {
@@ -149,7 +149,7 @@ class InvoiceRemoteDatasourceImpl implements InvoiceRemoteDatasource {
       debugPrint("InvoiceListMainResModelImpl ");
       debugPrint(response.data.toString());
       if (response.statusCode == 200) {
-        final resModel = invoiceListMainResModelFromJson(response.data);
+        final resModel = InvoiceListMainResModel.fromJson(response.data);
         if (resModel.data?.success != true) {
           throw ApiException(
               message:
@@ -422,11 +422,8 @@ late_fee:90
 
       final response = await apiClient.postRequest(path: path, body: body);
       debugPrint("Response came");
-
-      debugPrint(response.data);
-
       if (response.statusCode == 200) {
-        final resModel = addInvoiceMainResModelFromJson(response.data);
+        final resModel = AddInvoiceMainResModel.fromJson(response.data);
         if (resModel.data?.success != true) {
           throw ApiException(
               message:
@@ -452,7 +449,7 @@ late_fee:90
       debugPrint("PaymentListMainResModel ");
       debugPrint(response.data.toString());
       if (response.statusCode == 200) {
-        final resModel = paymentListMainResModelFromJson(response.data);
+        final resModel = PaymentListMainResModel.fromJson(response.data);
         if (resModel.data?.success != true) {
           throw ApiException(
               message:
@@ -481,7 +478,7 @@ late_fee:90
       debugPrint("PaymentDetailMainResModel ");
       debugPrint(response.data.toString());
       if (response.statusCode == 200) {
-        final resModel = paymentDetailMainResModelFromJson(response.data);
+        final resModel = PaymentDetailMainResModel.fromJson(response.data);
         if (resModel.data?.success != true) {
           throw ApiException(
               message:
@@ -509,7 +506,7 @@ late_fee:90
       final response = await apiClient.postRequest(
           path: ApiEndPoints.invoiceVoid, body: body);
       if (response.statusCode == 200) {
-        final resModel = invoiceVoidMainResModelFromJson(response.data);
+        final resModel = InvoiceVoidMainResModel.fromJson(response.data);
         return resModel;
       } else {
         throw ApiException(
@@ -529,7 +526,7 @@ late_fee:90
       final response = await apiClient.postRequest(
           path: ApiEndPoints.invoiceUnVoid, body: body);
       if (response.statusCode == 200) {
-        final resModel = invoiceUnVoidMainResModelFromJson(response.data);
+        final resModel = InvoiceUnVoidMainResModel.fromJson(response.data);
         return resModel;
       } else {
         throw ApiException(
@@ -553,7 +550,7 @@ late_fee:90
           : ApiEndPoints.estimateMarkAsSent;
       final response = await apiClient.postRequest(path: path, body: body);
       if (response.statusCode == 200) {
-        final resModel = invoiceMarkAsSendMainResModelFromJson(response.data);
+        final resModel = InvoiceMarksendMainResModel.fromJson(response.data);
         return resModel;
       } else {
         throw ApiException(
@@ -577,7 +574,7 @@ late_fee:90
       final response =
           await apiClient.deleteRequest(path: path, queryParameters: reqPrams);
       if (response.statusCode == 200) {
-        final resModel = invoiceDeleteMainResModelFromJson(response.data);
+        final resModel = InvoiceDeleteMainResModel.fromJson(response.data);
         if (resModel.data?.success != true) {
           throw ApiException(
               message:
@@ -605,7 +602,7 @@ late_fee:90
       final response = await apiClient.getRequest(ApiEndPoints.clientStaff,
           queryParameters: reqPrams);
       if (response.statusCode == 200) {
-        final resModel = clientStaffMainResModelFromJson(response.data);
+        final resModel = ClientStaffMainResModel.fromJson(response.data);
         if (resModel.data?.success != true) {
           throw ApiException(
               message:
@@ -634,7 +631,7 @@ late_fee:90
       final response = await apiClient.getRequest(params.pageType.path,
           queryParameters: reqPrams);
       if (response.statusCode == 200) {
-        final resModel = getDocumentMainResModelFromJson(response.data);
+        final resModel = GetDocumentMainResModel.fromJson(response.data);
         if (resModel.data?.success != true) {
           throw ApiException(
               message:
@@ -662,7 +659,8 @@ late_fee:90
       final response = await apiClient.deleteRequest(
           path: ApiEndPoints.deletePayment, queryParameters: reqPrams);
       if (response.statusCode == 200) {
-        final resModel = deletePaymentMethodMainResModelFromJson(response.data);
+        final resModel =
+            DeletePaymentMethodMainResModel.fromJson(response.data);
         if (resModel.data?.success != true) {
           throw ApiException(
               message:
@@ -701,7 +699,7 @@ late_fee:90
       final response = await apiClient.postRequest(
           path: ApiEndPoints.addPayment, body: body);
       if (response.statusCode == 200) {
-        final resModel = addPaymentMethodMainResModelFromJson(response.data);
+        final resModel = AddPaymentMethodMainResModel.fromJson(response.data);
         if (resModel.data?.success != true) {
           throw ApiException(
               message:
@@ -752,7 +750,7 @@ subject:Payment received - Thanks
       final response = await apiClient.postRequest(
           path: ApiEndPoints.getDocuments, body: body);
       if (response.statusCode == 200) {
-        final resModel = sendDocumentMainResModelFromJson(response.data);
+        final resModel = SendDocumentMainResModel.fromJson(response.data);
         if (resModel.data?.success != true) {
           throw ApiException(
               message:

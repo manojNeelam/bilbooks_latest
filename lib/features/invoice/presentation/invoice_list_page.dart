@@ -126,6 +126,7 @@ class _InvoiceListPageState extends State<InvoiceListPage>
   bool isFromPagination = false;
   String? startDateReqParams;
   String? endDateReqParams;
+  bool isFromAddNewInvoice = false;
 
   @override
   void initState() {
@@ -224,7 +225,9 @@ class _InvoiceListPageState extends State<InvoiceListPage>
             invoiceEntity: item,
             type: EnumNewInvoiceEstimateType.invoice,
             startObserveBlocBack: () {
+              isFromAddNewInvoice = true;
               isIgnoreBlocStates = false;
+              setState(() {});
             },
             refreshList: () {
               isIgnoreBlocStates = false;
@@ -450,17 +453,17 @@ class _InvoiceListPageState extends State<InvoiceListPage>
             }
           }
 
+          if (isLoading == false && isFromAddNewInvoice) {
+            if (invoices.isEmpty) {
+              return showEmptyView();
+            }
+          }
+
           // if (isIgnoreBlocStates) {
           //   if (invoices.isEmpty) {
           //     return showEmptyView();
           //   }
           // }
-
-          if (isLoading == false) {
-            if (invoices.isEmpty) {
-              return showEmptyView();
-            }
-          }
 
           return RefreshIndicator.adaptive(
             onRefresh: _handleRefresh,
@@ -509,7 +512,9 @@ class _InvoiceListPageState extends State<InvoiceListPage>
         paymentEntity: null,
         emailList: item.emailtoClientstaff ?? [],
         startObserveBlocBack: () {
+          isFromAddNewInvoice = true;
           isIgnoreBlocStates = false;
+          setState(() {});
         },
         refreshPage: () {
           isIgnoreBlocStates = false;
@@ -525,7 +530,9 @@ class _InvoiceListPageState extends State<InvoiceListPage>
         invoiceEntity: item,
         type: EnumNewInvoiceEstimateType.duplicateInvoice,
         startObserveBlocBack: () {
+          isFromAddNewInvoice = true;
           isIgnoreBlocStates = false;
+          setState(() {});
         },
         deletedItem: () {},
         refreshCallBack: () {
@@ -547,7 +554,9 @@ class _InvoiceListPageState extends State<InvoiceListPage>
     AutoRouter.of(context).push(AddNewInvoiceEstimatePageRoute(
         invoiceDetailResEntity: null,
         startObserveBlocBack: () {
+          isFromAddNewInvoice = true;
           isIgnoreBlocStates = false;
+          setState(() {});
         },
         deletedItem: () {},
         type: EnumNewInvoiceEstimateType.invoice,
