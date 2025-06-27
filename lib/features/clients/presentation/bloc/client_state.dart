@@ -12,7 +12,7 @@ final class ClientError extends ClientState {
 }
 
 final class ClientSuccess extends ClientState {
-  ClientResDataEntity? clientResDataEntity;
+  ClientResDataEntity? clientResDataEntity; //1st
   ClientSuccess({required this.clientResDataEntity});
 }
 

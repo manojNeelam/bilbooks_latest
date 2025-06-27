@@ -46,7 +46,7 @@ extension EnumReportsTypeExtension on EnumReportsType {
         );
       case EnumReportsType.outstandings:
         return (
-          "Outstandings Reports ",
+          "Outstandings Report ",
           "Find out which clients have the most \noutstanding.",
           Assets.assetsImagesIcReportsOutstanding
         );

@@ -3,12 +3,25 @@ import 'package:billbooks_app/core/app_constants.dart';
 import 'package:billbooks_app/core/theme/app_pallete.dart';
 import 'package:billbooks_app/core/widgets/input_dropdown_view.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/widgets/generate_report_button_widget.dart';
+import 'bloc/reports_bloc.dart';
+import 'model/invoice_report_model.dart' show InvoiceReportReqPrarams;
 
 @RoutePage()
-class ReportInvoicePage extends StatelessWidget {
+class ReportInvoicePage extends StatefulWidget {
   const ReportInvoicePage({super.key});
+
+  @override
+  State<ReportInvoicePage> createState() => _ReportInvoicePageState();
+}
+
+class _ReportInvoicePageState extends State<ReportInvoicePage> {
+  _getInvoiceReports() {
+    context.read<ReportsBloc>().add(
+        GetInvoiceReports(invoiceReportReqPrarams: InvoiceReportReqPrarams()));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,9 +59,21 @@ class ReportInvoicePage extends StatelessWidget {
             ),
             AppConstants.sizeBoxHeight10,
             //AppConstants.sizeBoxHeight15,
-            GenerateReportButtonWidget(
-              onpressed: () {},
-              title: "Generate Report",
+            BlocConsumer<ReportsBloc, ReportsState>(
+              listener: (context, state) {
+                if (state is InvoiceReportSuccessState) {
+                  debugPrint(
+                      "Length : ${state.invoiceReportMainResEntity.data?.data?.length}");
+                }
+              },
+              builder: (context, state) {
+                return GenerateReportButtonWidget(
+                  onpressed: () {
+                    _getInvoiceReports();
+                  },
+                  title: "Generate Report",
+                );
+              },
             )
           ],
         ),

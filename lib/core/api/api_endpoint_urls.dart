@@ -95,4 +95,8 @@ class ApiEndPoints {
   static const String selectorganization = "settings/selectorganization";
   static const String emailTemplates = "settings/emailtemplates";
   static const String updateEmailTemplates = "settings/emailtemplates";
+
+  //Reports
+  static const String invoiceReport = "reports/invoices";
+  static const String outstandingReport = "reports/invoices";
 }

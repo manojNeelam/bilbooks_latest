@@ -33,14 +33,14 @@ class ReportItemSalesPage extends StatelessWidget {
             ),
             InputDropdownView(
               isRequired: false,
-              title: "Client",
+              title: "Item",
               defaultText: "Tap to select",
               onPress: () {},
               dropDownImageName: Icons.chevron_right,
             ),
             InputDropdownView(
               isRequired: false,
-              title: "Status",
+              title: "Invoice Status",
               defaultText: "All",
               onPress: () {},
             ),

@@ -33,7 +33,7 @@ class ReportExpensesPage extends StatelessWidget {
             ),
             InputDropdownView(
               isRequired: false,
-              title: "Client",
+              title: "Category",
               defaultText: "Tap to select",
               onPress: () {},
               dropDownImageName: Icons.chevron_right,

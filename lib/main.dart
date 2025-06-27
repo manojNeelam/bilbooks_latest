@@ -19,6 +19,7 @@ import 'package:billbooks_app/features/estimate/presentation/bloc/estimate_bloc.
 import 'package:billbooks_app/features/general/bloc/general_bloc.dart';
 import 'package:billbooks_app/features/integrations/presentation/bloc/online_payments_bloc.dart';
 import 'package:billbooks_app/features/more/expenses/presentation/bloc/expenses_bloc.dart';
+import 'package:billbooks_app/features/more/reports/presentation/bloc/reports_bloc.dart';
 import 'package:billbooks_app/features/more/settings/presentation/bloc/organization_bloc.dart';
 import 'package:billbooks_app/features/notifications/bloc/notification_bloc.dart';
 import 'package:billbooks_app/features/profile/presentation/bloc/profile_bloc.dart';
@@ -72,6 +73,11 @@ void main() async {
   runApp(MultiBlocProvider(providers: [
     BlocProvider(
       create: (context) => GeneralBloc(),
+    ),
+    BlocProvider(
+      create: (context) => ReportsBloc(
+          invoiceReportsUsecase: serviceLocator(),
+          outstandingReportUsecase: serviceLocator()),
     ),
     BlocProvider(
         create: (context) => EmailTemplatesBloc(
