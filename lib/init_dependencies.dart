@@ -76,6 +76,11 @@ import 'package:billbooks_app/features/more/expenses/domain/usecase/delete_expen
 import 'package:billbooks_app/features/more/expenses/domain/usecase/expenses_list_usecase.dart';
 import 'package:billbooks_app/features/more/expenses/domain/usecase/new_expenses_usecase.dart';
 import 'package:billbooks_app/features/more/expenses/presentation/bloc/expenses_bloc.dart';
+import 'package:billbooks_app/features/more/reports/data/datasource/remote/reports_remote_datasource.dart';
+import 'package:billbooks_app/features/more/reports/data/repository/reports_repository_impl.dart';
+import 'package:billbooks_app/features/more/reports/domain/repository/report_repository.dart';
+import 'package:billbooks_app/features/more/reports/domain/usecase/invoice_reports_usecase.dart';
+import 'package:billbooks_app/features/more/reports/presentation/bloc/reports_bloc.dart';
 import 'package:billbooks_app/features/more/settings/data/remote/organization_remote_datasource.dart';
 import 'package:billbooks_app/features/more/settings/domain/repository/organization_repository.dart';
 import 'package:billbooks_app/features/more/settings/domain/usecase/organization_list_usecase.dart';
@@ -119,6 +124,7 @@ import 'features/creditnotes/domain/usecase/get_credit_notes_usecase.dart';
 import 'features/integrations/data/repositories/online_payment_repository_impl.dart';
 import 'features/invoice/domain/usecase/add_payment_usecase.dart';
 import 'features/item/data/repository/item_repository_impl.dart';
+import 'features/more/reports/domain/usecase/outstanding_report_usecase.dart';
 import 'features/more/settings/data/repository/organization_repositoryimpl.dart';
 import 'features/more/settings/domain/usecase/update_preference_estimate_usecase.dart';
 
@@ -143,6 +149,7 @@ Future<void> initDependencies() async {
   _initDashboard();
   _initProfile();
   _emailTemplate();
+  _initReports();
   _initCreditNotes();
 }
 
@@ -195,6 +202,22 @@ void _notification() {
       () => NotificationListUsercase(notificationRepository: serviceLocator()));
   serviceLocator.registerLazySingleton(
       () => NotificationBloc(notificationListUsercase: serviceLocator()));
+}
+
+void _initReports() {
+  serviceLocator.registerFactory<ReportsRemoteDatasource>(
+      () => ReportsRemoteDatasourceImpl(serviceLocator<APIClient>()));
+  serviceLocator.registerFactory<ReportRepository>(
+      () => ReportsRepositoryImpl(serviceLocator()));
+  serviceLocator.registerFactory(() => InvoiceReportsUsecase(serviceLocator()));
+
+  serviceLocator.registerFactory(
+      () => OutstandingReportUsecase(reportRepository: serviceLocator()));
+
+  serviceLocator.registerLazySingleton(() => ReportsBloc(
+        invoiceReportsUsecase: serviceLocator(),
+        outstandingReportUsecase: serviceLocator(),
+      ));
 }
 
 void _initProfile() {
