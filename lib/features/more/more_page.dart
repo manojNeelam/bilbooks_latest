@@ -19,7 +19,7 @@ class MorePage extends StatelessWidget with SectionAdapterMixin {
   final AuthInfoMainDataEntity authInfoMainDataEntity;
   MorePage({super.key, required this.authInfoMainDataEntity});
 
-  List<MoreSectionModel> moreList = [
+  final List<MoreSectionModel> moreList = [
     //First
     MoreSectionModel(title: "", isShowSection: false, items: [
       MoreItemModel(
@@ -34,6 +34,10 @@ class MorePage extends StatelessWidget with SectionAdapterMixin {
           name: "Projects",
           imageName: Assets.assetsImagesIcProject,
           enumMoreScreen: EnumMoreScreen.projects),
+      MoreItemModel(
+          name: "Credit Notes",
+          imageName: Assets.assetsImagesIcProject,
+          enumMoreScreen: EnumMoreScreen.creditnotes),
       MoreItemModel(
           name: "Reports",
           imageName: Assets.assetsImagesIcReports,
@@ -164,6 +168,9 @@ class MorePage extends StatelessWidget with SectionAdapterMixin {
           case EnumMoreScreen.projects:
             debugPrint("Tapped projects");
             AutoRouter.of(context).push(ProjectListPageRoute());
+          case EnumMoreScreen.creditnotes:
+            debugPrint("Tapped Credit Notes");
+            AutoRouter.of(context).push(CreditNotesListPageRoute());
           case EnumMoreScreen.reports:
             debugPrint("Tapped reports");
             AutoRouter.of(context).push(const MoreReportsPageRoute());
@@ -294,6 +301,7 @@ enum EnumMoreScreen {
   expenses,
   items,
   projects,
+  creditnotes,
   reports,
   settings,
   logout,
@@ -313,6 +321,7 @@ extension EnumMoreScreenExtension on EnumMoreScreen {
       case EnumMoreScreen.expenses ||
             EnumMoreScreen.items ||
             EnumMoreScreen.projects ||
+            EnumMoreScreen.creditnotes ||
             EnumMoreScreen.logout ||
             EnumMoreScreen.reports ||
             EnumMoreScreen.settings:

@@ -13,6 +13,10 @@ import 'package:billbooks_app/features/clients/domain/repository/client_reposito
 import 'package:billbooks_app/features/clients/domain/usecase/add_client_usecase.dart';
 import 'package:billbooks_app/features/clients/domain/usecase/client_usecase.dart';
 import 'package:billbooks_app/features/clients/presentation/bloc/client_bloc.dart';
+import 'package:billbooks_app/features/creditnotes/data/datasource/credit_note_datasource.dart';
+import 'package:billbooks_app/features/creditnotes/data/repository/credit_note_repository_impl.dart';
+import 'package:billbooks_app/features/creditnotes/domain/repository/credit_note_repository.dart';
+import 'package:billbooks_app/features/creditnotes/presentation/bloc/creditnote_bloc.dart';
 import 'package:billbooks_app/features/dashboard/data/remote/datasource/dashboard_remote_datasource.dart';
 import 'package:billbooks_app/features/dashboard/data/repository_impl/dashboard_repository_impl.dart';
 import 'package:billbooks_app/features/dashboard/domain/repository/dashboard_repository.dart';
@@ -111,6 +115,7 @@ import 'package:get_it/get_it.dart';
 
 import 'features/categories/data/repository/category_repository_impl.dart';
 import 'features/categories/domain/repository/category_repository.dart';
+import 'features/creditnotes/domain/usecase/get_credit_notes_usecase.dart';
 import 'features/integrations/data/repositories/online_payment_repository_impl.dart';
 import 'features/invoice/domain/usecase/add_payment_usecase.dart';
 import 'features/item/data/repository/item_repository_impl.dart';
@@ -138,6 +143,17 @@ Future<void> initDependencies() async {
   _initDashboard();
   _initProfile();
   _emailTemplate();
+  _initCreditNotes();
+}
+
+void _initCreditNotes() {
+  serviceLocator.registerFactory<CreditNoteRemoteDataSource>(
+      () => CreditNoteRemoteDataSourceImpl(serviceLocator<APIClient>()));
+  serviceLocator.registerFactory<CreditNoteRepository>(
+      () => CreditNoteRepositoryImpl(serviceLocator()));
+  serviceLocator.registerFactory(() => GetCreditNotesUsecase(serviceLocator()));
+  serviceLocator.registerLazySingleton(
+      () => CreditnoteBloc(fetchCreditNotes: serviceLocator()));
 }
 
 void _initCategories() {

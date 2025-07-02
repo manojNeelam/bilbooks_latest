@@ -1,6 +1,7 @@
 import 'package:billbooks_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:billbooks_app/features/categories/presentation/bloc/category_bloc.dart';
 import 'package:billbooks_app/features/clients/presentation/bloc/client_bloc.dart';
+import 'package:billbooks_app/features/creditnotes/presentation/bloc/creditnote_bloc.dart';
 import 'package:billbooks_app/features/dashboard/domain/entity/authinfo_entity.dart';
 import 'package:billbooks_app/features/dashboard/domain/entity/column_settings_data.dart';
 import 'package:billbooks_app/features/dashboard/domain/entity/company_data.dart';
@@ -70,6 +71,9 @@ void main() async {
 
   await initDependencies();
   runApp(MultiBlocProvider(providers: [
+    BlocProvider(
+      create: (context) => CreditnoteBloc(fetchCreditNotes: serviceLocator()),
+    ),
     BlocProvider(
       create: (context) => GeneralBloc(),
     ),

@@ -206,6 +206,12 @@ abstract class _$AppRouter extends RootStackRouter {
         ),
       );
     },
+    CreditNotesListPageRoute.name: (routeData) {
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: const CreditNotesListPage(),
+      );
+    },
     EmailTemplatePageRoute.name: (routeData) {
       return AutoRoutePage<dynamic>(
         routeData: routeData,
@@ -1525,6 +1531,20 @@ class ClientSortPageRouteArgs {
   String toString() {
     return 'ClientSortPageRouteArgs{key: $key, callBack: $callBack, selectedOrderBy: $selectedOrderBy, selectedType: $selectedType, selectedClientSortBy: $selectedClientSortBy}';
   }
+}
+
+/// generated route for
+/// [CreditNotesListPage]
+class CreditNotesListPageRoute extends PageRouteInfo<void> {
+  const CreditNotesListPageRoute({List<PageRouteInfo>? children})
+      : super(
+          CreditNotesListPageRoute.name,
+          initialChildren: children,
+        );
+
+  static const String name = 'CreditNotesListPageRoute';
+
+  static const PageInfo<void> page = PageInfo<void>(name);
 }
 
 /// generated route for

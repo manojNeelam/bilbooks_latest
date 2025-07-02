@@ -1,15 +1,10 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:awesome_bottom_bar/awesome_bottom_bar.dart';
-import 'package:billbooks_app/core/constants/assets.dart';
 import 'package:billbooks_app/core/theme/app_pallete.dart';
 import 'package:billbooks_app/features/clients/presentation/client_list_page.dart';
 import 'package:billbooks_app/features/dashboard/domain/entity/authinfo_entity.dart';
-import 'package:billbooks_app/features/estimate/presentation/bloc/estimate_bloc.dart';
 import 'package:billbooks_app/features/invoice/presentation/invoice_list_page.dart';
-import 'package:feather_icons/feather_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/svg.dart';
 
 import 'dashboard/presentation/dashboard_page.dart';
 import 'estimate/presentation/estimate_list_page.dart';
