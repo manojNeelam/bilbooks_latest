@@ -73,7 +73,10 @@ void main() async {
   await initDependencies();
   runApp(MultiBlocProvider(providers: [
     BlocProvider(
-      create: (context) => CreditnoteBloc(fetchCreditNotes: serviceLocator()),
+      create: (context) => CreditnoteBloc(
+          fetchCreditNotes: serviceLocator(),
+          fetchCreditNoteDetail: serviceLocator(),
+          addCreditNote: serviceLocator()),
     ),
     BlocProvider(
       create: (context) => GeneralBloc(),

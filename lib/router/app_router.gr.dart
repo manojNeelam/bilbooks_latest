@@ -16,9 +16,14 @@ abstract class _$AppRouter extends RootStackRouter {
   @override
   final Map<String, PageFactory> pagesMap = {
     AddCreateNotePageRoute.name: (routeData) {
+      final args = routeData.argsAs<AddCreateNotePageRouteArgs>();
       return AutoRoutePage<dynamic>(
         routeData: routeData,
-        child: const AddCreateNotePage(),
+        child: AddCreateNotePage(
+          key: args.key,
+          screenType: args.screenType,
+          creditNoteId: args.creditNoteId,
+        ),
       );
     },
     AddNewInvoiceEstimatePageRoute.name: (routeData) {
@@ -774,16 +779,45 @@ abstract class _$AppRouter extends RootStackRouter {
 
 /// generated route for
 /// [AddCreateNotePage]
-class AddCreateNotePageRoute extends PageRouteInfo<void> {
-  const AddCreateNotePageRoute({List<PageRouteInfo>? children})
-      : super(
+class AddCreateNotePageRoute extends PageRouteInfo<AddCreateNotePageRouteArgs> {
+  AddCreateNotePageRoute({
+    Key? key,
+    required CreditNoteScreenType screenType,
+    String creditNoteId = "0",
+    List<PageRouteInfo>? children,
+  }) : super(
           AddCreateNotePageRoute.name,
+          args: AddCreateNotePageRouteArgs(
+            key: key,
+            screenType: screenType,
+            creditNoteId: creditNoteId,
+          ),
           initialChildren: children,
         );
 
   static const String name = 'AddCreateNotePageRoute';
 
-  static const PageInfo<void> page = PageInfo<void>(name);
+  static const PageInfo<AddCreateNotePageRouteArgs> page =
+      PageInfo<AddCreateNotePageRouteArgs>(name);
+}
+
+class AddCreateNotePageRouteArgs {
+  const AddCreateNotePageRouteArgs({
+    this.key,
+    required this.screenType,
+    this.creditNoteId = "0",
+  });
+
+  final Key? key;
+
+  final CreditNoteScreenType screenType;
+
+  final String creditNoteId;
+
+  @override
+  String toString() {
+    return 'AddCreateNotePageRouteArgs{key: $key, screenType: $screenType, creditNoteId: $creditNoteId}';
+  }
 }
 
 /// generated route for

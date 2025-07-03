@@ -11,31 +11,30 @@ CreditNoteDetailsMainResModel creditNoteDetailsMainResModelFromJson(
     CreditNoteDetailsMainResModel.fromJson(json.decode(str));
 
 class CreditNoteDetailsMainResModel extends CreditNoteDetailsMainResEntity {
-  int? success;
-  Data? data;
-
   CreditNoteDetailsMainResModel({
-    this.success,
-    this.data,
-  });
+    int? success,
+    CreditNoteDetailDataModel? data,
+  }) : super(success: success, data: data);
 
   factory CreditNoteDetailsMainResModel.fromJson(Map<String, dynamic> json) =>
       CreditNoteDetailsMainResModel(
         success: json["success"],
-        data: json["data"] == null ? null : Data.fromJson(json["data"]),
+        data: json["data"] == null
+            ? null
+            : CreditNoteDetailDataModel.fromJson(json["data"]),
       );
 }
 
 class CreditNoteDetailDataModel extends CreditNoteDetailDataEntity {
-  bool? success;
-  String? message;
-  CreditNotesDetailModel? creditNotes;
-
   CreditNoteDetailDataModel({
-    this.success,
-    this.message,
-    this.creditNotes,
-  });
+    bool? success,
+    String? message,
+    CreditNotesDetailModel? creditNotes,
+  }) : super(
+          success: success,
+          message: message,
+          creditNotes: creditNotes,
+        );
 
   factory CreditNoteDetailDataModel.fromJson(Map<String, dynamic> json) =>
       CreditNoteDetailDataModel(
@@ -71,6 +70,23 @@ class CreditNotesDetailModel extends CreditNotesDetailEntity {
   }) : super(
           creditNoteId: creditNoteId,
           organizationId: organizationId,
+          noteNo: noteNo,
+          invoiceId: invoiceId,
+          clientId: clientId,
+          currency: currency,
+          projectId: projectId,
+          description: description,
+          amount: amount,
+          status: status,
+          expiryDate: expiryDate,
+          createdBy: createdBy,
+          dateCreated: dateCreated,
+          modifiedBy: modifiedBy,
+          dateModified: dateModified,
+          no: no,
+          clientName: clientName,
+          projectName: projectName,
+          days: days,
         );
 
   factory CreditNotesDetailModel.fromJson(Map<String, dynamic> json) =>

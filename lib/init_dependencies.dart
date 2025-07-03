@@ -16,6 +16,7 @@ import 'package:billbooks_app/features/clients/presentation/bloc/client_bloc.dar
 import 'package:billbooks_app/features/creditnotes/data/datasource/credit_note_datasource.dart';
 import 'package:billbooks_app/features/creditnotes/data/repository/credit_note_repository_impl.dart';
 import 'package:billbooks_app/features/creditnotes/domain/repository/credit_note_repository.dart';
+import 'package:billbooks_app/features/creditnotes/domain/usecase/add_credit_note_usecase.dart';
 import 'package:billbooks_app/features/creditnotes/presentation/bloc/creditnote_bloc.dart';
 import 'package:billbooks_app/features/dashboard/data/remote/datasource/dashboard_remote_datasource.dart';
 import 'package:billbooks_app/features/dashboard/data/repository_impl/dashboard_repository_impl.dart';
@@ -159,8 +160,15 @@ void _initCreditNotes() {
   serviceLocator.registerFactory<CreditNoteRepository>(
       () => CreditNoteRepositoryImpl(serviceLocator()));
   serviceLocator.registerFactory(() => GetCreditNotesUsecase(serviceLocator()));
-  serviceLocator.registerLazySingleton(
-      () => CreditnoteBloc(fetchCreditNotes: serviceLocator()));
+  serviceLocator
+      .registerFactory(() => GetCreditNoteDetailUsecase(serviceLocator()));
+  serviceLocator.registerFactory(() => AddCreditNoteUsecase(serviceLocator()));
+
+  serviceLocator.registerLazySingleton(() => CreditnoteBloc(
+        fetchCreditNotes: serviceLocator(),
+        fetchCreditNoteDetail: serviceLocator(),
+        addCreditNote: serviceLocator(),
+      ));
 }
 
 void _initCategories() {

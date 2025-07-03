@@ -20,6 +20,7 @@ import '../../../core/widgets/list_count_header_widget.dart';
 import '../../../core/widgets/list_empty_page.dart';
 import '../../../core/widgets/list_empty_search_page.dart';
 import '../../clients/domain/entities/client_list_entity.dart';
+import 'add_create_note_page.dart';
 import 'bloc/creditnote_bloc.dart';
 import 'widgets/creditnote_list_item_widget.dart';
 
@@ -211,11 +212,19 @@ class _CreditNotesListPageState extends State<CreditNotesListPage>
           SwipeAction(
               closeOnTap: true,
               style: AppFonts.regularStyle(color: AppPallete.white),
-              title: "Duplicate",
+              title: "Unused",
               onTap: (CompletionHandler handler) async {
                 await handler(false);
               },
-              color: AppPallete.borderColor)
+              color: AppPallete.blueColor),
+          SwipeAction(
+              closeOnTap: true,
+              style: AppFonts.regularStyle(color: AppPallete.white),
+              title: "Void",
+              onTap: (CompletionHandler handler) async {
+                await handler(false);
+              },
+              color: AppPallete.orangeBannerColor)
         ],
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -225,11 +234,13 @@ class _CreditNotesListPageState extends State<CreditNotesListPage>
         ),
       ),
       onTap: () {
-        //AutoRouter.of(context).push(CategoryListPageRoute());
-
-        // Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-        //   return InvoiceDetailPage(); //edit
-        // }));
+        if (item.creditNoteId == null || item.creditNoteId!.isEmpty) {
+          showToastification(
+              context, "Credit Note not found", ToastificationType.error);
+          return;
+        }
+        _showAddCreditNoteScreen(
+            type: CreditNoteScreenType.edit, id: item.creditNoteId ?? "0");
       },
     );
   }
@@ -311,7 +322,10 @@ class _CreditNotesListPageState extends State<CreditNotesListPage>
     );
   }
 
-  _showAddCreditNoteScreen() {
-    AutoRouter.of(context).push(AddCreateNotePageRoute());
+  _showAddCreditNoteScreen(
+      {String id = "0",
+      CreditNoteScreenType type = CreditNoteScreenType.create}) {
+    AutoRouter.of(context)
+        .push(AddCreateNotePageRoute(screenType: type, creditNoteId: id));
   }
 }
