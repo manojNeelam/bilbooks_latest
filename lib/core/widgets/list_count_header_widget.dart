@@ -277,6 +277,7 @@ class ListCountHeader extends StatefulWidget {
   final Function(EnumAllTimes, String, String startDate, String endDate)
       onSelectedMenuItem;
   final Function()? dismissKeyboard;
+  final bool isShowAllTime;
 
   const ListCountHeader({
     super.key,
@@ -287,6 +288,7 @@ class ListCountHeader extends StatefulWidget {
     required this.onSubmitted,
     required this.onSelectedMenuItem,
     required this.dismissKeyboard,
+    this.isShowAllTime = true,
   });
 
   @override
@@ -389,56 +391,62 @@ class _ListCountHeaderState extends State<ListCountHeader> {
               )
             ],
           ),
-          AppConstants.sizeBoxHeight15,
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              CustomPopupMenu(
-                position: PreferredPosition.bottom,
-                arrowSize: 20,
-                arrowColor: AppPallete.white,
-                menuBuilder: () {
-                  return PopOverContentWidget(
-                    menuItems: menuItems,
-                    selectedItem: selectedItem,
-                    onSelectItem: (val) {
-                      debugPrint(val.title);
-                      debugPrint("Formatted Date: ${val.displayName.$3}");
-                      selectedItem = val;
-                      widget.onSelectedMenuItem(
-                        val,
-                        val.displayName.$3,
-                        val.displayName.$1,
-                        val.displayName.$2,
-                      );
-                      _controller.hideMenu();
-                    },
-                  );
-                },
-                menuOnChange: (updated) {},
-                verticalMargin: -10,
-                pressType: PressType.singleClick,
-                controller: _controller,
-                child: Row(
+          if (widget.isShowAllTime)
+            Column(
+              children: [
+                AppConstants.sizeBoxHeight15,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Icon(
-                      Icons.calendar_month,
-                      color: AppPallete.blueColor,
+                    CustomPopupMenu(
+                      position: PreferredPosition.bottom,
+                      arrowSize: 20,
+                      arrowColor: AppPallete.white,
+                      menuBuilder: () {
+                        return PopOverContentWidget(
+                          menuItems: menuItems,
+                          selectedItem: selectedItem,
+                          onSelectItem: (val) {
+                            debugPrint(val.title);
+                            debugPrint("Formatted Date: ${val.displayName.$3}");
+                            selectedItem = val;
+                            widget.onSelectedMenuItem(
+                              val,
+                              val.displayName.$3,
+                              val.displayName.$1,
+                              val.displayName.$2,
+                            );
+                            _controller.hideMenu();
+                          },
+                        );
+                      },
+                      menuOnChange: (updated) {},
+                      verticalMargin: -10,
+                      pressType: PressType.singleClick,
+                      controller: _controller,
+                      child: Row(
+                        children: [
+                          const Icon(
+                            Icons.calendar_month,
+                            color: AppPallete.blueColor,
+                          ),
+                          AppConstants.sizeBoxWidth10,
+                          Text(
+                            selectedItem.displayName.$3,
+                            style: AppFonts.regularStyle(
+                                color: AppPallete.blueColor),
+                          )
+                        ],
+                      ),
                     ),
-                    AppConstants.sizeBoxWidth10,
-                    Text(
-                      selectedItem.displayName.$3,
-                      style: AppFonts.regularStyle(color: AppPallete.blueColor),
-                    )
+                    CapsuleStatusWidget(
+                        title: widget.capsuleText,
+                        backgroundColor: AppPallete.kF2F2F2,
+                        textColor: AppPallete.k666666)
                   ],
                 ),
-              ),
-              CapsuleStatusWidget(
-                  title: widget.capsuleText,
-                  backgroundColor: AppPallete.kF2F2F2,
-                  textColor: AppPallete.k666666)
-            ],
-          ),
+              ],
+            )
         ],
       ),
     );

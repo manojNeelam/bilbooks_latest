@@ -18,26 +18,26 @@ class CreditNoteRemoteDataSourceImpl implements CreditNoteRemoteDataSource {
   Future<CreditNoteListMainResponseModel> getList(
       CreditNoteListReqParams params) async {
     try {
-      // Map<String, dynamic> queryParameters = {
-      //   "q": params.query,
-      //   "sort_column": params.columnName,
-      //   "sort_order": params.sortOrder,
-      //   "page": params.page,
-      // };
+      Map<String, dynamic> queryParameters = {
+        "q": params.query,
+      };
 
-      // if (params.status.isNotEmpty) {
-      //   queryParameters.addAll({
-      //     "status": params.status,
-      //   });
-      // } else {
-      //   queryParameters.addAll({
-      //     "status": "",
-      //   });
-      // }
+      if (params.status.isNotEmpty) {
+        queryParameters.addAll({
+          "status": params.status,
+        });
+      } else {
+        queryParameters.addAll({
+          "status": "",
+        });
+      }
 
       // debugPrint(queryParameters.toString());
 
-      final response = await apiClient.getRequest(ApiEndPoints.creditNotes);
+      final response = await apiClient.getRequest(
+        ApiEndPoints.creditNotes,
+        queryParameters: queryParameters,
+      );
       debugPrint(response.statusCode.toString());
       if (response.statusCode == 200) {
         final resModel =

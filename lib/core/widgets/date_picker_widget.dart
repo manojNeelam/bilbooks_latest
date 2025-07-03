@@ -2,12 +2,12 @@ import 'package:billbooks_app/core/theme/app_pallete.dart';
 import 'package:flutter/material.dart';
 
 Future<DateTime?> buildMaterialDatePicker(
-    BuildContext context, DateTime initialDate) async {
+    BuildContext context, DateTime? initialDate) async {
   final DateTime? picked = await showDatePicker(
     context: context,
     initialDate: initialDate,
     firstDate: DateTime(2000),
-    lastDate: DateTime(2025),
+    lastDate: DateTime(2028),
     builder: (context, child) {
       return Theme(
         data: Theme.of(context).copyWith(

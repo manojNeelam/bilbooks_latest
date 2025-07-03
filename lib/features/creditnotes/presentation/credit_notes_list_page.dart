@@ -1,9 +1,11 @@
 import 'package:auto_route/annotations.dart';
+import 'package:auto_route/auto_route.dart';
 import 'package:billbooks_app/core/app_constants.dart' show AppConstants;
 import 'package:billbooks_app/core/theme/app_fonts.dart' show AppFonts;
 import 'package:billbooks_app/features/creditnotes/domain/entity/credit_notes_list_entity.dart';
 import 'package:billbooks_app/features/creditnotes/domain/model/credit_note_list_req_params.dart';
 import 'package:billbooks_app/features/creditnotes/presentation/credit_notes_type_header_widget.dart';
+import 'package:billbooks_app/router/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_section_list/flutter_section_list.dart';
@@ -16,6 +18,7 @@ import '../../../core/utils/show_toast.dart';
 import '../../../core/utils/utils.dart';
 import '../../../core/widgets/list_count_header_widget.dart';
 import '../../../core/widgets/list_empty_page.dart';
+import '../../../core/widgets/list_empty_search_page.dart';
 import '../../clients/domain/entities/client_list_entity.dart';
 import 'bloc/creditnote_bloc.dart';
 import 'widgets/creditnote_list_item_widget.dart';
@@ -81,9 +84,9 @@ class _CreditNotesListPageState extends State<CreditNotesListPage>
   }
 
   void loadCreditNotes() {
-    context
-        .read<CreditnoteBloc>()
-        .add(CreditnoteLoadEvent(CreditNoteListReqParams()));
+    context.read<CreditnoteBloc>().add(CreditnoteLoadEvent(
+        CreditNoteListReqParams(
+            status: selectedType.apiParam, query: searchController.text)));
   }
 
   @override
@@ -99,17 +102,14 @@ class _CreditNotesListPageState extends State<CreditNotesListPage>
                 selectedType = type;
                 setState(() {});
                 currentPage = 1;
+                loadCreditNotes();
               },
             )),
         actions: [
           IconButton(
-              onPressed: () {},
-              icon: const Icon(
-                Icons.filter_list_alt,
-                color: AppPallete.blueColor,
-              )),
-          IconButton(
-              onPressed: () {},
+              onPressed: () {
+                _showAddCreditNoteScreen();
+              },
               icon: const Icon(
                 Icons.add,
                 color: AppPallete.blueColor,
@@ -140,11 +140,13 @@ class _CreditNotesListPageState extends State<CreditNotesListPage>
             isFromPagination = false;
             creditNotesList.addAll(list);
             isLoading = false;
-          } else if (state is CreditnoteError) {
-            // Handle the error state, e.g., show an error message
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Error: ${state.message}')),
-            );
+
+            if (creditNotesList.isEmpty) {
+              if (searchController.text.isNotEmpty) {
+                return _showNoSearchResultFound();
+              }
+              return _showEmptyView();
+            }
           }
 
           return SafeArea(
@@ -232,13 +234,22 @@ class _CreditNotesListPageState extends State<CreditNotesListPage>
     );
   }
 
+  Widget _showNoSearchResultFound() {
+    return ListEmptySearchPage(
+        searchText: searchController.text,
+        callBack: () {
+          searchController.text = "";
+          loadCreditNotes();
+        });
+  }
+
   Widget _showEmptyView() {
     return ListEmptyPage(
-      buttonTitle: "Create new expense",
-      noDataText: "No expenses yet?",
+      buttonTitle: "Create new credit note",
+      noDataText: "Billing without Credit Notes could be hard.",
       iconName: Icons.people_alt_outlined,
       noDataSubtitle:
-          "Having expenses like rent, electricity, travel can help you claim for a tax benefit. It's really easy to create expenses. Try it.",
+          "Add your popular products and services so you can use them while creating invoices and estimates in seconds. It's easy, we'll show you how.",
       callBack: () {},
     );
   }
@@ -283,28 +294,24 @@ class _CreditNotesListPageState extends State<CreditNotesListPage>
   @override
   Widget getSectionHeader(BuildContext context, int section) {
     return Padding(
-      padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
+      padding: const EdgeInsets.only(top: 5, left: 16, right: 16, bottom: 0),
       child: ListCountHeader(
           controller: searchController,
-          hintText: "Search Expenses",
+          hintText: "Search by CN num, Client / Project id",
           capsuleText: "${creditNotesList.length} Credit Notes",
           selectedMenuItem: selectedAllTimes,
-          onSelectedMenuItem: (val, displayName, startDate, endDate) {
-            selectedAllTimes = val;
-            allTimesDisplayName = displayName;
-
-            startDateReqParams = startDate;
-            endDateReqParams = endDate;
-
-            showToastification(
-                context, "Selected ${val.title}", ToastificationType.info);
-
-            setState(() {});
-          },
+          isShowAllTime: false,
+          onSelectedMenuItem: (val, displayName, startDate, endDate) {},
           dismissKeyboard: () {
             Utils.hideKeyboard();
           },
-          onSubmitted: (val) {}),
+          onSubmitted: (val) {
+            loadCreditNotes();
+          }),
     );
+  }
+
+  _showAddCreditNoteScreen() {
+    AutoRouter.of(context).push(AddCreateNotePageRoute());
   }
 }

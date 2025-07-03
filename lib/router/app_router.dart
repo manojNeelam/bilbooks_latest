@@ -22,6 +22,7 @@ import '../features/clients/presentation/client_sort_page.dart';
 import '../features/clients/presentation/layout_builder_demo.dart';
 import '../features/clients/presentation/newclient_page.dart';
 import '../features/clients/presentation/shipping_address_page.dart';
+import '../features/creditnotes/presentation/add_create_note_page.dart';
 import '../features/creditnotes/presentation/credit_notes_list_page.dart';
 import '../features/dashboard/domain/entity/authinfo_entity.dart';
 import '../features/email templates/presentation/email_template_page.dart';
@@ -108,6 +109,7 @@ class AppRouter extends _$AppRouter {
         AutoRoute(page: SettingTemplatePageRoute.page, fullscreenDialog: true),
         AutoRoute(page: PlanExpiredPageRoute.page, fullscreenDialog: true),
         AutoRoute(page: NotificationPageRoute.page, fullscreenDialog: true),
+        AutoRoute(page: AddCreateNotePageRoute.page, fullscreenDialog: true),
         AutoRoute(
           page: CreditNotesListPageRoute.page,
         ),

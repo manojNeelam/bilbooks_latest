@@ -15,6 +15,12 @@ abstract class _$AppRouter extends RootStackRouter {
 
   @override
   final Map<String, PageFactory> pagesMap = {
+    AddCreateNotePageRoute.name: (routeData) {
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: const AddCreateNotePage(),
+      );
+    },
     AddNewInvoiceEstimatePageRoute.name: (routeData) {
       final args = routeData.argsAs<AddNewInvoiceEstimatePageRouteArgs>();
       return AutoRoutePage<dynamic>(
@@ -764,6 +770,20 @@ abstract class _$AppRouter extends RootStackRouter {
       );
     },
   };
+}
+
+/// generated route for
+/// [AddCreateNotePage]
+class AddCreateNotePageRoute extends PageRouteInfo<void> {
+  const AddCreateNotePageRoute({List<PageRouteInfo>? children})
+      : super(
+          AddCreateNotePageRoute.name,
+          initialChildren: children,
+        );
+
+  static const String name = 'AddCreateNotePageRoute';
+
+  static const PageInfo<void> page = PageInfo<void>(name);
 }
 
 /// generated route for
