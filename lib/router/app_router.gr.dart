@@ -23,6 +23,7 @@ abstract class _$AppRouter extends RootStackRouter {
           key: args.key,
           screenType: args.screenType,
           creditNoteId: args.creditNoteId,
+          onrefreshPage: args.onrefreshPage,
         ),
       );
     },
@@ -784,6 +785,7 @@ class AddCreateNotePageRoute extends PageRouteInfo<AddCreateNotePageRouteArgs> {
     Key? key,
     required CreditNoteScreenType screenType,
     String creditNoteId = "0",
+    dynamic Function()? onrefreshPage,
     List<PageRouteInfo>? children,
   }) : super(
           AddCreateNotePageRoute.name,
@@ -791,6 +793,7 @@ class AddCreateNotePageRoute extends PageRouteInfo<AddCreateNotePageRouteArgs> {
             key: key,
             screenType: screenType,
             creditNoteId: creditNoteId,
+            onrefreshPage: onrefreshPage,
           ),
           initialChildren: children,
         );
@@ -806,6 +809,7 @@ class AddCreateNotePageRouteArgs {
     this.key,
     required this.screenType,
     this.creditNoteId = "0",
+    this.onrefreshPage,
   });
 
   final Key? key;
@@ -814,9 +818,11 @@ class AddCreateNotePageRouteArgs {
 
   final String creditNoteId;
 
+  final dynamic Function()? onrefreshPage;
+
   @override
   String toString() {
-    return 'AddCreateNotePageRouteArgs{key: $key, screenType: $screenType, creditNoteId: $creditNoteId}';
+    return 'AddCreateNotePageRouteArgs{key: $key, screenType: $screenType, creditNoteId: $creditNoteId, onrefreshPage: $onrefreshPage}';
   }
 }
 

@@ -40,3 +40,15 @@ final class CreditnoteAddError extends CreditnoteState {
   final String message;
   CreditnoteAddError({required this.message});
 }
+
+final class CreditNoteDeleteLoading extends CreditnoteState {}
+
+final class CreditNoteDeleteSuccess extends CreditnoteState {
+  final CreditNoteDeleteMainResEntity creditNoteDeleteMainResEntity;
+  CreditNoteDeleteSuccess({required this.creditNoteDeleteMainResEntity});
+}
+
+final class CreditNoteDeleteError extends CreditnoteState {
+  final String message;
+  CreditNoteDeleteError({required this.message});
+}

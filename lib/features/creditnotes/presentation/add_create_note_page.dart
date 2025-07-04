@@ -1,13 +1,14 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:billbooks_app/core/utils/show_toast.dart';
 import 'package:billbooks_app/core/utils/utils.dart';
+import 'package:billbooks_app/core/widgets/app_alert_widget.dart'
+    show AppAlertWidget;
 import 'package:billbooks_app/features/creditnotes/domain/model/credit_note_add_req_params.dart';
 import 'package:billbooks_app/features/creditnotes/domain/model/credit_note_detail_req_params.dart';
 import 'package:billbooks_app/features/creditnotes/presentation/model/credit_note_expiry_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:toastification/toastification.dart';
 
 import '../../../core/app_constants.dart';
@@ -23,6 +24,7 @@ import '../../../core/widgets/new_multiline_input_widget.dart';
 import '../../../router/app_router.dart';
 import '../../clients/domain/entities/client_list_entity.dart';
 import '../../project/domain/entity/project_list_entity.dart';
+import '../domain/model/credit_note_delete_req_params.dart';
 import 'bloc/creditnote_bloc.dart';
 
 enum CreditNoteScreenType {
@@ -34,11 +36,13 @@ enum CreditNoteScreenType {
 class AddCreateNotePage extends StatefulWidget {
   final CreditNoteScreenType screenType;
   final String creditNoteId;
-  const AddCreateNotePage({
-    super.key,
-    required this.screenType,
-    this.creditNoteId = "0",
-  });
+  final Function()? onrefreshPage;
+
+  const AddCreateNotePage(
+      {super.key,
+      required this.screenType,
+      this.creditNoteId = "0",
+      this.onrefreshPage});
 
   @override
   State<AddCreateNotePage> createState() => _AddCreateNotePageState();
@@ -83,7 +87,9 @@ class _AddCreateNotePageState extends State<AddCreateNotePage> {
         //title: Text("ghghghfhghgh"),
         actions: [
           TextButton(
-              onPressed: () {},
+              onPressed: () {
+                updateCreditNote();
+              },
               child: Text(
                 widget.screenType == CreditNoteScreenType.create
                     ? "Save"
@@ -93,7 +99,7 @@ class _AddCreateNotePageState extends State<AddCreateNotePage> {
         ],
         leading: IconButton(
             onPressed: () {
-              AutoRouter.of(context).maybePop();
+              _popView();
             },
             icon: const Icon(
               Icons.close,
@@ -109,20 +115,34 @@ class _AddCreateNotePageState extends State<AddCreateNotePage> {
           },
           child: BlocConsumer<CreditnoteBloc, CreditnoteState>(
             listener: (context, state) {
-              if (state is CreditnoteAddLoaded) {
+              if (state is CreditNoteDeleteSuccess) {
+                showToastification(
+                    context,
+                    state.creditNoteDeleteMainResEntity.data?.message ??
+                        "Successfully deleted.",
+                    ToastificationType.success);
+                if (widget.onrefreshPage != null) {
+                  widget.onrefreshPage!();
+                }
+                _popView();
+              } else if (state is CreditNoteDeleteError) {
+                showToastification(
+                    context, state.message, ToastificationType.error);
+              } else if (state is CreditnoteAddLoaded) {
                 showToastification(
                     context,
                     state.creditNoteDetails.data?.message ??
-                        "Successfully Added.",
+                        "Successfully ${widget.screenType == CreditNoteScreenType.create} ? added. : updated.",
                     ToastificationType.success);
-              }
 
-              if (state is CreditnoteAddError) {
+                if (widget.onrefreshPage != null) {
+                  widget.onrefreshPage!();
+                }
+                _popView();
+              } else if (state is CreditnoteAddError) {
                 showToastification(
                     context, state.message, ToastificationType.error);
-              }
-
-              if (state is CreditnoteDetailLoaded) {
+              } else if (state is CreditnoteDetailLoaded) {
                 if (state.creditNoteDetails.data?.creditNotes != null) {
                   final detail = state.creditNoteDetails.data?.creditNotes;
                   creditNoteController.text = detail?.noteNo ?? "";
@@ -173,8 +193,14 @@ class _AddCreateNotePageState extends State<AddCreateNotePage> {
             },
             builder: (context, state) {
               if (state is CreditnoteAddLoading) {
-                return LoadingPage(title: "Adding credit notes...");
+                return LoadingPage(
+                    title:
+                        "${widget.screenType == CreditNoteScreenType.create ? "Adding" : "Updating"} credit note...");
               }
+              if (state is CreditNoteDeleteLoading) {
+                return LoadingPage(title: "Deleting credit note...");
+              }
+
               return Container(
                 height: MediaQuery.of(context).size.height,
                 color: AppPallete.clear,
@@ -266,6 +292,44 @@ class _AddCreateNotePageState extends State<AddCreateNotePage> {
                                   if (date != null) selectedDate = date;
                                   rerenderUI();
                                 }),
+                          if (widget.screenType == CreditNoteScreenType.edit)
+                            Column(
+                              children: [
+                                AppConstants.sizeBoxHeight10,
+                                Container(
+                                  width: MediaQuery.of(context).size.width,
+                                  color: AppPallete.white,
+                                  child: TextButton(
+                                      onPressed: () {
+                                        showDialog(
+                                            context: context,
+                                            builder: (BuildContext context) {
+                                              return AppAlertWidget(
+                                                title: "Delete Credit Note",
+                                                message:
+                                                    "Are you sure you want to delete this credit note?",
+                                                onTapDelete: () {
+                                                  debugPrint(
+                                                      "on tap delete item");
+                                                  _popView();
+                                                  context
+                                                      .read<CreditnoteBloc>()
+                                                      .add(CreditnoteDeleteEvent(
+                                                          params: CreditNoteDeleteReqParams(
+                                                              id: widget
+                                                                  .creditNoteId)));
+                                                },
+                                              );
+                                            });
+                                      },
+                                      child: Text(
+                                        "Delete",
+                                        style: AppFonts.regularStyle(
+                                            color: AppPallete.red),
+                                      )),
+                                ),
+                              ],
+                            )
                         ],
                       ),
                     ),
@@ -286,7 +350,7 @@ class _AddCreateNotePageState extends State<AddCreateNotePage> {
 
   updateCreditNote() {
     CreditNoteAddReqParams params = CreditNoteAddReqParams(
-      id: widget.creditNoteId,
+      id: widget.creditNoteId, //
       noteNumber: creditNoteController.text,
       projectId: selectedProject?.id,
       clientId: selectedClient?.clientId,
@@ -294,6 +358,8 @@ class _AddCreateNotePageState extends State<AddCreateNotePage> {
       amount: amountController.text,
       expiryDate: dateAsString,
     );
+
+    debugPrint("${params.toJson()}");
 
     context.read<CreditnoteBloc>().add(CreditnoteAddEvent(params));
   }
@@ -358,5 +424,9 @@ class _AddCreateNotePageState extends State<AddCreateNotePage> {
           selectedProject = project;
           setState(() {});
         }));
+  }
+
+  void _popView() {
+    AutoRouter.of(context).maybePop();
   }
 }

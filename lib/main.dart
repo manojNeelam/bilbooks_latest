@@ -76,7 +76,8 @@ void main() async {
       create: (context) => CreditnoteBloc(
           fetchCreditNotes: serviceLocator(),
           fetchCreditNoteDetail: serviceLocator(),
-          addCreditNote: serviceLocator()),
+          addCreditNote: serviceLocator(),
+          deleteCreditNoteUsecase: serviceLocator()),
     ),
     BlocProvider(
       create: (context) => GeneralBloc(),

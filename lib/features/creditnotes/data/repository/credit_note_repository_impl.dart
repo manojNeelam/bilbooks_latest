@@ -1,5 +1,6 @@
 import 'package:billbooks_app/core/error/failures.dart';
 import 'package:billbooks_app/features/creditnotes/data/datasource/credit_note_datasource.dart';
+import 'package:billbooks_app/features/creditnotes/domain/entity/credit_note_delete_entity.dart';
 import 'package:billbooks_app/features/creditnotes/domain/entity/credit_note_details_entity.dart';
 import 'package:billbooks_app/features/creditnotes/domain/entity/credit_notes_list_entity.dart';
 import 'package:billbooks_app/features/creditnotes/domain/entity/update_credit_note_eitity.dart';
@@ -11,6 +12,7 @@ import 'package:flutter/foundation.dart';
 import 'package:fpdart/fpdart.dart';
 
 import '../../../../core/api/api_exception.dart';
+import '../../domain/model/credit_note_delete_req_params.dart';
 
 class CreditNoteRepositoryImpl implements CreditNoteRepository {
   final CreditNoteRemoteDataSource remoteDataSource;
@@ -59,6 +61,22 @@ class CreditNoteRepositoryImpl implements CreditNoteRepository {
       return left(Failure(e.message));
     } catch (e) {
       debugPrint("Credit Note Add Repository: default error");
+      return left(Failure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, CreditNoteDeleteMainResEntity>> deleteCreditNote(
+      CreditNoteDeleteReqParams params) async {
+    try {
+      final res = await remoteDataSource.deleteCreditNote(params);
+      debugPrint("Credit Note delete Repository: success");
+      return right(res);
+    } on ApiException catch (e) {
+      debugPrint("Credit Note delete Repository: api exception error");
+      return left(Failure(e.message));
+    } catch (e) {
+      debugPrint("Credit Note delete Repository: default error");
       return left(Failure(e.toString()));
     }
   }

@@ -18,3 +18,8 @@ class CreditnoteAddEvent extends CreditnoteEvent {
   final CreditNoteAddReqParams params;
   CreditnoteAddEvent(this.params);
 }
+
+class CreditnoteDeleteEvent extends CreditnoteEvent {
+  final CreditNoteDeleteReqParams params;
+  CreditnoteDeleteEvent({required this.params});
+}

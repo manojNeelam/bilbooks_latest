@@ -100,6 +100,8 @@ class ApiEndPoints {
   static const String creditNotes = "creditnote";
   static const String creditnotedetails = "creditnote/details";
   static const String creditnoteadd = "creditnote/entry";
+  static const String creditnotedelete = "creditnote/delete";
+
   //Reports
   static const String invoiceReport = "reports/invoices";
   static const String outstandingReport = "reports/invoices";

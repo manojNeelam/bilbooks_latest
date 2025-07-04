@@ -19,13 +19,12 @@ class CreditNoteAddReqParams {
 
   toJson() {
     return {
-      "id": id,
+      // "id": id == id,
       "note_no": noteNumber,
       "project_id": projectId,
       "description": desc,
       "amount": amount,
       "client_id": clientId,
-      "expiry_date": expiryDate,
       "status": "Unused"
     };
   }

@@ -325,7 +325,11 @@ class _CreditNotesListPageState extends State<CreditNotesListPage>
   _showAddCreditNoteScreen(
       {String id = "0",
       CreditNoteScreenType type = CreditNoteScreenType.create}) {
-    AutoRouter.of(context)
-        .push(AddCreateNotePageRoute(screenType: type, creditNoteId: id));
+    AutoRouter.of(context).push(AddCreateNotePageRoute(
+        screenType: type,
+        creditNoteId: id,
+        onrefreshPage: () {
+          loadCreditNotes();
+        }));
   }
 }

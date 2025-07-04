@@ -121,6 +121,7 @@ import 'package:get_it/get_it.dart';
 
 import 'features/categories/data/repository/category_repository_impl.dart';
 import 'features/categories/domain/repository/category_repository.dart';
+import 'features/creditnotes/domain/usecase/delete_credit_note_usecase.dart';
 import 'features/creditnotes/domain/usecase/get_credit_notes_usecase.dart';
 import 'features/integrations/data/repositories/online_payment_repository_impl.dart';
 import 'features/invoice/domain/usecase/add_payment_usecase.dart';
@@ -164,10 +165,14 @@ void _initCreditNotes() {
       .registerFactory(() => GetCreditNoteDetailUsecase(serviceLocator()));
   serviceLocator.registerFactory(() => AddCreditNoteUsecase(serviceLocator()));
 
+  serviceLocator.registerFactory(
+      () => DeleteCreditNoteUsecase(repository: serviceLocator()));
+
   serviceLocator.registerLazySingleton(() => CreditnoteBloc(
         fetchCreditNotes: serviceLocator(),
         fetchCreditNoteDetail: serviceLocator(),
         addCreditNote: serviceLocator(),
+        deleteCreditNoteUsecase: serviceLocator(),
       ));
 }
 
