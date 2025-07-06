@@ -91,6 +91,11 @@ class _SplashPageState extends State<SplashPage> {
             saveColumnSettings(columnSettingsPref);
 
             if (authInfoMainDataEntity?.sessionData != null) {
+              bool isUserPremium = false;
+              var plan =
+                  authInfoMainDataEntity?.sessionData?.organization?.plan;
+              isUserPremium = !(plan?.isExpired ?? true);
+              Utils.setIsPremiumUser(isPremiumUser: isUserPremium);
               saveUserSessionData(authInfoMainDataEntity!.sessionData!);
             }
 

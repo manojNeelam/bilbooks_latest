@@ -75,6 +75,10 @@ class _LoginPageState extends State<LoginPage> {
                       hideRate: columnSettingsEntity?.hideColumnRate);
               Utils.saveColumnSettings(columnSettingsPref);
               if (state.user.data?.sessionData != null) {
+                bool isUserPremium = false;
+                var plan = state.user.data!.sessionData?.organization?.plan;
+                isUserPremium = !(plan?.isExpired ?? true);
+                Utils.setIsPremiumUser(isPremiumUser: isUserPremium);
                 HiveFunctions.saveUserSessionData(
                     state.user.data!.sessionData!);
               }

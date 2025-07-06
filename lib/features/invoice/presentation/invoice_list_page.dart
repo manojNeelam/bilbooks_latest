@@ -17,6 +17,7 @@ import 'package:flutter_swipe_action_cell/core/cell.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:toastification/toastification.dart';
 import '../../../core/theme/app_fonts.dart';
+import '../../../core/utils/trial_expiry_widget.dart';
 import '../../../core/widgets/list_count_header_widget.dart';
 import '../../../core/widgets/list_empty_page.dart';
 import '../../../core/widgets/list_empty_search_page.dart';
@@ -182,10 +183,15 @@ class _InvoiceListPageState extends State<InvoiceListPage>
                 style: AppFonts.regularStyle(color: AppPallete.white),
                 title: "Payment",
                 onTap: (CompletionHandler handler) async {
-                  await handler(false);
-                  if (item.id != null) {
-                    enumInvoiceSwipeOptions = EnumInvoiceSwipeOptions.payment;
-                    _loadInvoiceDetails(item.id ?? "");
+                  handler(false);
+                  var isPremiumUser = await Utils.getIsPremiumUser();
+                  if ((isPremiumUser ?? false) == false) {
+                    _showExpiryPopup();
+                  } else {
+                    if (item.id != null) {
+                      enumInvoiceSwipeOptions = EnumInvoiceSwipeOptions.payment;
+                      _loadInvoiceDetails(item.id ?? "");
+                    }
                   }
                 },
                 color: AppPallete.greenColor),
@@ -208,9 +214,15 @@ class _InvoiceListPageState extends State<InvoiceListPage>
               style: AppFonts.regularStyle(color: AppPallete.white),
               title: "Duplicate",
               onTap: (CompletionHandler handler) async {
-                if (item.id != null) {
-                  enumInvoiceSwipeOptions = EnumInvoiceSwipeOptions.duplicate;
-                  _loadInvoiceDetails(item.id ?? "");
+                handler(false);
+                var isPremiumUser = await Utils.getIsPremiumUser();
+                if ((isPremiumUser ?? false) == false) {
+                  _showExpiryPopup();
+                } else {
+                  if (item.id != null) {
+                    enumInvoiceSwipeOptions = EnumInvoiceSwipeOptions.duplicate;
+                    _loadInvoiceDetails(item.id ?? "");
+                  }
                 }
               },
               color: AppPallete.borderColor),
@@ -549,21 +561,30 @@ class _InvoiceListPageState extends State<InvoiceListPage>
     _forceRefreshList();
   }
 
-  void _showAddInvoice() {
-    isIgnoreBlocStates = true;
-    AutoRouter.of(context).push(AddNewInvoiceEstimatePageRoute(
-        invoiceDetailResEntity: null,
-        startObserveBlocBack: () {
-          isFromAddNewInvoice = true;
-          isIgnoreBlocStates = false;
-          setState(() {});
-        },
-        deletedItem: () {},
-        type: EnumNewInvoiceEstimateType.invoice,
-        refreshCallBack: () {
-          isIgnoreBlocStates = false;
-          _getInvoiceList();
-        }));
+  _showExpiryPopup() {
+    TrialService.checkTrialStatus(context: context, mounted: mounted);
+  }
+
+  void _showAddInvoice() async {
+    var isPremiumUser = await Utils.getIsPremiumUser();
+    if (isPremiumUser ?? false) {
+      isIgnoreBlocStates = true;
+      AutoRouter.of(context).push(AddNewInvoiceEstimatePageRoute(
+          invoiceDetailResEntity: null,
+          startObserveBlocBack: () {
+            isFromAddNewInvoice = true;
+            isIgnoreBlocStates = false;
+            setState(() {});
+          },
+          deletedItem: () {},
+          type: EnumNewInvoiceEstimateType.invoice,
+          refreshCallBack: () {
+            isIgnoreBlocStates = false;
+            _getInvoiceList();
+          }));
+    } else {
+      _showExpiryPopup();
+    }
   }
 
   Widget showEmptyView() {

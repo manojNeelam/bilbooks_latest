@@ -20,6 +20,7 @@ import '../../../core/app_constants.dart';
 import '../../../core/theme/app_fonts.dart';
 import '../../../core/theme/app_pallete.dart';
 import '../../../core/utils/show_toast.dart';
+import '../../../core/utils/trial_expiry_widget.dart';
 import '../../../core/widgets/list_count_header_widget.dart';
 import '../../../core/widgets/list_empty_search_page.dart';
 import '../../invoice/domain/entities/invoice_details_entity.dart';
@@ -179,16 +180,22 @@ class _EstimateListPageState extends State<EstimateListPage>
               style: AppFonts.regularStyle(color: AppPallete.white),
               title: isDraft(item) ? "Send" : "Invoice",
               onTap: (CompletionHandler handler) async {
-                await handler(false);
+                handler(false);
                 if (isDraft(item)) {
                   if (item.id != null) {
                     _onTapSendDoc(item.id!);
                   }
                 } else {
-                  if (item.id != null) {
-                    invoiceEstimateType =
-                        EnumNewInvoiceEstimateType.convertEstimateToInvoice;
-                    _loadInvoiceDetails(item.id ?? "");
+                  handler(false);
+                  var isPremiumUser = await Utils.getIsPremiumUser();
+                  if (isPremiumUser ?? false) {
+                    if (item.id != null) {
+                      invoiceEstimateType =
+                          EnumNewInvoiceEstimateType.convertEstimateToInvoice;
+                      _loadInvoiceDetails(item.id ?? "");
+                    }
+                  } else {
+                    _showExpiryPopup();
                   }
                 }
               },
@@ -200,11 +207,16 @@ class _EstimateListPageState extends State<EstimateListPage>
               style: AppFonts.regularStyle(color: AppPallete.white),
               title: "Duplicate",
               onTap: (CompletionHandler handler) async {
-                await handler(false);
-                if (item.id != null) {
-                  invoiceEstimateType =
-                      EnumNewInvoiceEstimateType.duplicateEstimate;
-                  _loadInvoiceDetails(item.id ?? "");
+                handler(false);
+                var isPremiumUser = await Utils.getIsPremiumUser();
+                if (isPremiumUser ?? false) {
+                  if (item.id != null) {
+                    invoiceEstimateType =
+                        EnumNewInvoiceEstimateType.duplicateEstimate;
+                    _loadInvoiceDetails(item.id ?? "");
+                  }
+                } else {
+                  _showExpiryPopup();
                 }
               },
               color: AppPallete.borderColor),
@@ -365,10 +377,19 @@ class _EstimateListPageState extends State<EstimateListPage>
     //     }));
   }
 
-  void _addNewEstimate() {
-    isIgnoreBlocStates = true;
-    _openAddEstimateInvoicePage(
-        null, null, EnumNewInvoiceEstimateType.estimate);
+  void _addNewEstimate() async {
+    var isPremiumUser = await Utils.getIsPremiumUser();
+    if (isPremiumUser ?? false) {
+      isIgnoreBlocStates = true;
+      _openAddEstimateInvoicePage(
+          null, null, EnumNewInvoiceEstimateType.estimate);
+    } else {
+      _showExpiryPopup();
+    }
+  }
+
+  _showExpiryPopup() {
+    TrialService.checkTrialStatus(context: context, mounted: mounted);
   }
 
   @override

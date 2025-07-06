@@ -56,6 +56,17 @@ class Utils {
     AutoRouter.of(context).push(PlanExpiredPageRoute(planName: planName));
   }
 
+  static Future<bool?> getIsPremiumUser() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    var isPremium = prefs.getBool("is_user_premium_user");
+    return !(isPremium ?? false);
+  }
+
+  static setIsPremiumUser({required bool isPremiumUser}) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool("is_user_premium_user", isPremiumUser);
+  }
+
   // static Future<void> manipulateLogin(context) async {
   //   var token = await getToken();
   //   if (token != null) {

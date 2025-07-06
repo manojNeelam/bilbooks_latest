@@ -194,54 +194,22 @@ class _CreditNotesListPageState extends State<CreditNotesListPage>
   Widget getItem(BuildContext context, IndexPath indexPath) {
     final item = isLoading
         ? CreditNoteEntity(
-            creditNoteId: "",
-            creditnoteDate: "",
-            creditnoteNo: "",
-            invoiceNo: "",
-            clientName: "",
-            projectName: "",
-            status: "",
-            expiryDate: "",
-            formatedAmount: "",
-            currency: "")
+            creditNoteId: "CN-001",
+            creditnoteDate: "Test Data",
+            creditnoteNo: "123",
+            invoiceNo: "123",
+            clientName: "Client Name",
+            projectName: "Project Name",
+            status: "Status",
+            expiryDate: "yyyy-MM-dd",
+            formatedAmount: "123",
+            currency: "123")
         : creditNotesList[indexPath.item];
-    return GestureDetector(
-      child: SwipeActionCell(
-        key: ObjectKey(item),
-        trailingActions: [
-          SwipeAction(
-              closeOnTap: true,
-              style: AppFonts.regularStyle(color: AppPallete.white),
-              title: "Unused",
-              onTap: (CompletionHandler handler) async {
-                await handler(false);
-              },
-              color: AppPallete.blueColor),
-          SwipeAction(
-              closeOnTap: true,
-              style: AppFonts.regularStyle(color: AppPallete.white),
-              title: "Void",
-              onTap: (CompletionHandler handler) async {
-                await handler(false);
-              },
-              color: AppPallete.orangeBannerColor)
-        ],
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: CreditnoteListItemWidget(
-            creditNoteEntity: item,
-          ),
-        ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: CreditnoteListItemWidget(
+        creditNoteEntity: item,
       ),
-      onTap: () {
-        if (item.creditNoteId == null || item.creditNoteId!.isEmpty) {
-          showToastification(
-              context, "Credit Note not found", ToastificationType.error);
-          return;
-        }
-        _showAddCreditNoteScreen(
-            type: CreditNoteScreenType.edit, id: item.creditNoteId ?? "0");
-      },
     );
   }
 
