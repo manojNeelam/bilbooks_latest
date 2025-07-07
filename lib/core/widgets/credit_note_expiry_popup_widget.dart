@@ -49,7 +49,7 @@ class _CreditNoteExpiryPopupWidgetState
                     children: [
                       Expanded(
                         child: Text(
-                          item.label ?? "",
+                          item.label,
                           style: AppFonts.regularStyle(
                               color: item.value == selectedExpiry?.value
                                   ? AppPallete.blueColor

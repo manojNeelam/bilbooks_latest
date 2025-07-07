@@ -1,15 +1,21 @@
-// Load keystore properties from key.properties file
-def keystoreProperties = new Properties()
-def keystorePropertiesFile = rootProject.file("key.properties")
-if (keystorePropertiesFile.exists()) {
-    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
-}
+
 
 plugins {
     id "com.android.application"
     id "kotlin-android"
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id "dev.flutter.flutter-gradle-plugin"
+}
+
+// Load keystore properties from key.properties file
+// ✅ This must come after plugins {} block
+def keystoreProperties = new Properties()
+def keystorePropertiesFile = new File(rootProject.projectDir, "../key.properties")
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+    println("✅ key.properties loaded")
+} else {
+    println("❌ key.properties NOT found at: " + keystorePropertiesFile.absolutePath)
 }
 
 android {
