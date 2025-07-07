@@ -59,7 +59,7 @@ class Utils {
   static Future<bool?> getIsPremiumUser() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     var isPremium = prefs.getBool("is_user_premium_user");
-    return !(isPremium ?? false);
+    return (isPremium ?? false);
   }
 
   static setIsPremiumUser({required bool isPremiumUser}) async {
