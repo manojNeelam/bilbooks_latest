@@ -33,6 +33,8 @@ class DashboardInvoiceEntity {
   String? paid;
   String? balance;
   String? status;
+  String? overdueText;
+  String? formatedBalance;
 
   DashboardInvoiceEntity({
     this.id,
@@ -47,5 +49,7 @@ class DashboardInvoiceEntity {
     this.paid,
     this.balance,
     this.status,
+    this.overdueText,
+    this.formatedBalance,
   });
 }

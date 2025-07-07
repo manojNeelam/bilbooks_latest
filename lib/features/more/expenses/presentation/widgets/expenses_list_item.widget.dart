@@ -63,7 +63,7 @@ class ExpensesListItemWidget extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Text(
-                      "\$${expenseEntity.amount ?? "0.00"}",
+                      expenseEntity.formatedAmount ?? "0.00",
                       style: AppFonts.mediumStyle(size: 16),
                       maxLines: 1,
                     ),

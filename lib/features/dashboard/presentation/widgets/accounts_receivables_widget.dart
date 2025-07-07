@@ -113,7 +113,7 @@ class _AccountsReceivablesState extends State<AccountsReceivables> {
                                         ),
                                         AppConstants.sizeBoxWidth15,
                                         Text(
-                                          item.amount ?? "",
+                                          item.formatedAmount ?? "",
                                           style: AppFonts.mediumStyle(
                                               color: AppPallete.red, size: 16),
                                         )

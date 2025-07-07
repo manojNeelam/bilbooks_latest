@@ -189,160 +189,164 @@ class _NewItemPageState extends State<NewItemPage> {
               return const LoadingPage(title: "Deleting item..");
             }
 
-            return SingleChildScrollView(
-              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-              child: GestureDetector(
-                onTap: () {
-                  Utils.hideKeyboard();
-                },
-                child: Column(
-                  children: [
-                    AppConstants.sizeBoxHeight10,
-                    ItemTypeWidget(
-                      title: "Type",
-                      radioTitle1: "Service",
-                      radioTitle2: "Goods",
-                      isSeletedRadio1: isSeletedRadio1,
-                      callbackRadio1: () {
-                        isSeletedRadio1 = true;
-                        reRenderUI();
-                      },
-                      callbackRadio2: () {
-                        isSeletedRadio1 = false;
-                        reRenderUI();
-                      },
-                    ),
-                    AppConstants.sizeBoxHeight10,
-                    NewInputViewWidget(
-                      title: "Item Name",
-                      hintText: "Item Name",
-                      controller: itemNameController,
-                      inputType: TextInputType.text,
-                      inputAction: TextInputAction.next,
-                      textCapitalization: TextCapitalization.words,
-                      onChanged: (val) {
-                        _validateItemForm();
-                      },
-                    ),
-                    NewInputViewWidget(
-                      title: "SKU",
-                      hintText: "SKU",
-                      isRequired: false,
-                      controller: skuController,
-                      inputType: TextInputType.name,
-                      inputAction: TextInputAction.next,
-                    ),
-                    NewMultilineInputWidget(
-                      title: "Description",
-                      hintText: "Tap to Enter",
-                      controller: descController,
-                      inputType: TextInputType.multiline,
-                      inputAction: TextInputAction.newline,
-                      textCapitalization: TextCapitalization.sentences,
-                      isRequired: false,
-                      showDivider: true,
-                    ),
-                    NewInputViewWidget(
-                      title: "Rate",
-                      hintText: "0.00",
-                      controller: rateController,
-                      isRequired: false,
-                      inputType: TextInputType.number,
-                      inputAction: TextInputAction.next,
-                    ),
-                    NewInputViewWidget(
-                      title: "Unit",
-                      hintText: "Unit",
-                      controller: unitController,
-                      isRequired: false,
-                      inputType: TextInputType.name,
-                      inputAction: TextInputAction.done,
-                    ),
-                    BlocListener<TaxBloc, TaxState>(
-                      listener: (context, state) {
-                        if (state is TaxListSuccessState) {
-                          debugPrint(
-                              (state.taxListResEntity.data?.taxes?.length ?? 0)
-                                  .toString());
-                          taxes = state.taxListResEntity.data?.taxes ?? [];
-                          debugPrint(
-                              "Taxes First name new item: ${taxes.first.name}");
-                        }
-                      },
-                      child: InputDropdownView(
-                          title: "Tax",
-                          defaultText: getTaxesValue(),
-                          value: getTaxesValue(),
-                          isRequired: false,
-                          showDivider: false,
-                          onPress: () {
-                            showTaxPopup();
-                          }),
-                    ),
-                    if (isSeletedRadio1 == false)
-                      Column(
-                        children: [
-                          AppConstants.sizeBoxHeight10,
-                          InPutSwitchWidget(
-                              title: "Track Inventory",
-                              context: context,
-                              isRecurringOn: trackInventory,
-                              onChanged: (val) {
-                                trackInventory = val;
-                                setState(() {});
-                              },
-                              showDivider: true),
-                          if (trackInventory)
-                            NewInputViewWidget(
-                                title: "Current Stock",
-                                hintText: "0",
-                                isRequired: false,
-                                inputAction: TextInputAction.done,
-                                inputType: TextInputType.number,
-                                controller: currentStockController),
-                        ],
+            return SafeArea(
+              child: SingleChildScrollView(
+                keyboardDismissBehavior:
+                    ScrollViewKeyboardDismissBehavior.onDrag,
+                child: GestureDetector(
+                  onTap: () {
+                    Utils.hideKeyboard();
+                  },
+                  child: Column(
+                    children: [
+                      AppConstants.sizeBoxHeight10,
+                      ItemTypeWidget(
+                        title: "Type",
+                        radioTitle1: "Service",
+                        radioTitle2: "Goods",
+                        isSeletedRadio1: isSeletedRadio1,
+                        callbackRadio1: () {
+                          isSeletedRadio1 = true;
+                          reRenderUI();
+                        },
+                        callbackRadio2: () {
+                          isSeletedRadio1 = false;
+                          reRenderUI();
+                        },
                       ),
-                    if (isEdit) AppConstants.sizeBoxHeight10,
-                    if (isEdit)
-                      Container(
-                        width: MediaQuery.of(context).size.width,
-                        color: AppPallete.white,
-                        child: Column(
+                      AppConstants.sizeBoxHeight10,
+                      NewInputViewWidget(
+                        title: "Item Name",
+                        hintText: "Item Name",
+                        controller: itemNameController,
+                        inputType: TextInputType.text,
+                        inputAction: TextInputAction.next,
+                        textCapitalization: TextCapitalization.words,
+                        onChanged: (val) {
+                          _validateItemForm();
+                        },
+                      ),
+                      NewInputViewWidget(
+                        title: "SKU",
+                        hintText: "SKU",
+                        isRequired: false,
+                        controller: skuController,
+                        inputType: TextInputType.name,
+                        inputAction: TextInputAction.next,
+                      ),
+                      NewMultilineInputWidget(
+                        title: "Description",
+                        hintText: "Tap to Enter",
+                        controller: descController,
+                        inputType: TextInputType.multiline,
+                        inputAction: TextInputAction.newline,
+                        textCapitalization: TextCapitalization.sentences,
+                        isRequired: false,
+                        showDivider: true,
+                      ),
+                      NewInputViewWidget(
+                        title: "Rate",
+                        hintText: "0.00",
+                        controller: rateController,
+                        isRequired: false,
+                        inputType: TextInputType.number,
+                        inputAction: TextInputAction.next,
+                      ),
+                      NewInputViewWidget(
+                        title: "Unit",
+                        hintText: "Unit",
+                        controller: unitController,
+                        isRequired: false,
+                        inputType: TextInputType.name,
+                        inputAction: TextInputAction.done,
+                      ),
+                      BlocListener<TaxBloc, TaxState>(
+                        listener: (context, state) {
+                          if (state is TaxListSuccessState) {
+                            debugPrint(
+                                (state.taxListResEntity.data?.taxes?.length ??
+                                        0)
+                                    .toString());
+                            taxes = state.taxListResEntity.data?.taxes ?? [];
+                            debugPrint(
+                                "Taxes First name new item: ${taxes.first.name}");
+                          }
+                        },
+                        child: InputDropdownView(
+                            title: "Tax",
+                            defaultText: getTaxesValue(),
+                            value: getTaxesValue(),
+                            isRequired: false,
+                            showDivider: false,
+                            onPress: () {
+                              showTaxPopup();
+                            }),
+                      ),
+                      if (isSeletedRadio1 == false)
+                        Column(
                           children: [
-                            TextButton(
-                                onPressed: () {
-                                  showDialog(
-                                      context: context,
-                                      builder: (BuildContext context) {
-                                        return AppAlertWidget(
-                                          title: "Delete Item",
-                                          message:
-                                              "Are you sure you want to delete this item?",
-                                          onTapDelete: () {
-                                            debugPrint("on tap delete item");
-                                            AutoRouter.of(context).maybePop();
-
-                                            context.read<ItemBloc>().add(
-                                                DeleteItemEvent(
-                                                    deleteItemReqModel:
-                                                        DeleteItemReqModel(
-                                                            id: widget
-                                                                    .itemListEntity
-                                                                    ?.id ??
-                                                                "")));
-                                          },
-                                        );
-                                      });
+                            AppConstants.sizeBoxHeight10,
+                            InPutSwitchWidget(
+                                title: "Track Inventory",
+                                context: context,
+                                isRecurringOn: trackInventory,
+                                onChanged: (val) {
+                                  trackInventory = val;
+                                  setState(() {});
                                 },
-                                child: Text(
-                                  "Delete",
-                                  style: AppFonts.regularStyle(
-                                      color: AppPallete.red),
-                                ))
+                                showDivider: true),
+                            if (trackInventory)
+                              NewInputViewWidget(
+                                  title: "Current Stock",
+                                  hintText: "0",
+                                  isRequired: false,
+                                  inputAction: TextInputAction.done,
+                                  inputType: TextInputType.number,
+                                  controller: currentStockController),
                           ],
                         ),
-                      )
-                  ],
+                      if (isEdit) AppConstants.sizeBoxHeight10,
+                      if (isEdit)
+                        Container(
+                          width: MediaQuery.of(context).size.width,
+                          color: AppPallete.white,
+                          child: Column(
+                            children: [
+                              TextButton(
+                                  onPressed: () {
+                                    showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return AppAlertWidget(
+                                            title: "Delete Item",
+                                            message:
+                                                "Are you sure you want to delete this item?",
+                                            onTapDelete: () {
+                                              debugPrint("on tap delete item");
+                                              AutoRouter.of(context).maybePop();
+
+                                              context.read<ItemBloc>().add(
+                                                  DeleteItemEvent(
+                                                      deleteItemReqModel:
+                                                          DeleteItemReqModel(
+                                                              id: widget
+                                                                      .itemListEntity
+                                                                      ?.id ??
+                                                                  "")));
+                                            },
+                                          );
+                                        });
+                                  },
+                                  child: Text(
+                                    "Delete",
+                                    style: AppFonts.regularStyle(
+                                        color: AppPallete.red),
+                                  ))
+                            ],
+                          ),
+                        )
+                    ],
+                  ),
                 ),
               ),
             );

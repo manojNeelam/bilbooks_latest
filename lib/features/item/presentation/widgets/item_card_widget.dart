@@ -35,7 +35,7 @@ class ItemCardWidget extends StatelessWidget {
                 width: 70,
                 child: Text(
                   textAlign: TextAlign.end,
-                  "\$${itemListEntity.rate ?? ""}",
+                  itemListEntity.formatedRate ?? "",
                   style: AppFonts.mediumStyle(size: 16),
                 ),
               )

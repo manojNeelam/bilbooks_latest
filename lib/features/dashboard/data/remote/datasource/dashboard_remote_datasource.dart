@@ -145,7 +145,7 @@ class DashboardRemoteDatasourceImpl implements DashboardRemoteDatasource {
       final response = await apiClient.getRequest(ApiEndPoints.totalincomes,
           queryParameters: queryParameters);
       if (response.statusCode == 200) {
-        final resModel = totalIncomesMainResModelFromJson(response.data);
+        final resModel = TotalIncomesMainResModel.fromJson(response.data);
         if (resModel.data?.success != true) {
           throw ApiException(
               message:
@@ -175,7 +175,7 @@ class DashboardRemoteDatasourceImpl implements DashboardRemoteDatasource {
       debugPrint("TotalReceivablesMainResModel ");
       debugPrint(response.statusCode.toString());
       if (response.statusCode == 200) {
-        final resModel = totalReceivablesMainResModelFromJson(response.data);
+        final resModel = TotalReceivablesMainResModel.fromJson(response.data);
         if (resModel.data?.success != true) {
           throw ApiException(
               message:

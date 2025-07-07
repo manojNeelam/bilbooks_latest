@@ -64,6 +64,7 @@ class ExpenseEntity {
   String? recurringCount;
   DateTime? dateCreated;
   String? dateModified;
+  String? formatedAmount;
 
   ExpenseEntity({
     this.id,
@@ -95,6 +96,7 @@ class ExpenseEntity {
     this.recurringCount,
     this.dateCreated,
     this.dateModified,
+    this.formatedAmount,
   });
 
   Color get statusColor {

@@ -89,6 +89,7 @@ class ExpenseDataModel extends ExpenseEntity {
     String? nextRecurring,
     String? recurringCount,
     DateTime? dateCreated,
+    String? formatedAmount,
   }) : super(
             id: id,
             date: date,
@@ -117,7 +118,8 @@ class ExpenseDataModel extends ExpenseEntity {
             lastRecurring: lastRecurring,
             nextRecurring: nextRecurring,
             recurringCount: recurringCount,
-            dateCreated: dateCreated);
+            dateCreated: dateCreated,
+            formatedAmount: formatedAmount);
 
   factory ExpenseDataModel.fromJson(Map<String, dynamic> json) =>
       ExpenseDataModel(
@@ -152,5 +154,6 @@ class ExpenseDataModel extends ExpenseEntity {
         dateCreated: json["date_created"] == null
             ? null
             : DateTime.parse(json["date_created"]),
+        formatedAmount: json["formated_amount"],
       );
 }

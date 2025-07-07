@@ -42,6 +42,7 @@ class ItemListEntity {
   DateTime? dateCreated;
   DateTime? dateModified;
   String? status;
+  String? formatedRate;
 
   ItemListEntity({
     this.id,
@@ -58,6 +59,7 @@ class ItemListEntity {
     this.dateCreated,
     this.dateModified,
     this.status,
+    this.formatedRate,
   });
 }
 

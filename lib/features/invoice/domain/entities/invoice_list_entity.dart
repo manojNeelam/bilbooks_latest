@@ -6,6 +6,7 @@
 import 'dart:ui';
 
 import 'package:billbooks_app/core/app_constants.dart';
+import 'package:billbooks_app/core/utils/currency_helper.dart';
 import 'package:billbooks_app/features/clients/domain/entities/client_list_entity.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 
@@ -61,7 +62,7 @@ class GrandtotalEntity {
 
 class InvoiceEntity {
   String get decodedCurrencySymbol =>
-      EscapeHtmlCode().convert(currencySymbol ?? "");
+      CurrencyHelper().getSymbolById(currency ?? "") ?? "";
 
   String get displayNetTotal => "$decodedCurrencySymbol${nettotal ?? ""}";
 
@@ -217,7 +218,8 @@ class InvoiceEntity {
     if (status.toLowerCase() == "draft") {
       return AppPallete.draftColor128;
     } else if (status.toLowerCase() == "paid" ||
-        status.toLowerCase() == "invoiced") {
+        status.toLowerCase() == "invoiced" ||
+        status.toLowerCase() == "approved") {
       return AppPallete.greenColor;
     } else if (status.toLowerCase() == "overdue" ||
         status.toLowerCase() == "expired") {

@@ -61,6 +61,7 @@ class ClientEntity {
   String? countryName;
   String? shippingCountryName;
   List<PersonEntity>? persons;
+  String? currencyCode;
 
   ClientEntity({
     this.id,
@@ -99,6 +100,7 @@ class ClientEntity {
     this.countryName,
     this.shippingCountryName,
     this.persons,
+    this.currencyCode,
   });
 }
 

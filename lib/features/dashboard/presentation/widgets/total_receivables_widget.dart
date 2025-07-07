@@ -1,8 +1,10 @@
 import 'package:billbooks_app/core/app_constants.dart';
 import 'package:billbooks_app/core/theme/app_fonts.dart';
+import 'package:billbooks_app/core/utils/currency_helper.dart';
 import 'package:billbooks_app/core/widgets/item_separator.dart';
 import 'package:billbooks_app/core/widgets/loading_page.dart';
 import 'package:billbooks_app/main.dart';
+import 'package:custom_pop_up_menu/custom_pop_up_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -26,6 +28,7 @@ class _TotalReceivablesWidgetState extends State<TotalReceivablesWidget> {
   TotalReceivablesEntity? selectedItem;
   List<TotalReceivablesEntity> receivables = [];
   List<String> totalIncomesCurrencies = [];
+  final CustomPopupMenuController _controller = CustomPopupMenuController();
 
   List<String> incomesList = [
     "Today",
@@ -50,25 +53,30 @@ class _TotalReceivablesWidgetState extends State<TotalReceivablesWidget> {
   }
 
   String getValueForIndex(int index) {
+    var currencyCode = selectedItem?.currency ?? "";
+    final symbol = CurrencyHelper().getSymbolById(currencyCode);
     if (selectedItem == null) {
       return "Its Null";
     }
     if (index == 0) {
-      return selectedItem?.today.toString() ?? "";
+      return "$symbol ${selectedItem?.today.toString() ?? ""}";
     }
     if (index == 1) {
-      return selectedItem?.the90Days.toString() ?? "";
+      return "$symbol ${selectedItem?.the90Days.toString() ?? ""}";
     }
     if (index == 2) {
-      return selectedItem?.the130Days.toString() ?? "";
+      return "$symbol ${selectedItem?.the130Days.toString() ?? ""}";
     }
+
     if (index == 3) {
-      return selectedItem?.the130Days.toString() ?? "";
+      return "$symbol ${selectedItem?.the130Days.toString() ?? ""}";
     }
+
     if (index == 4) {
-      return selectedItem?.the3160Days.toString() ?? "";
+      return "$symbol ${selectedItem?.the3160Days.toString() ?? ""}";
     }
-    return "Hello";
+
+    return "";
   }
 
   @override
@@ -118,12 +126,50 @@ class _TotalReceivablesWidgetState extends State<TotalReceivablesWidget> {
           if (state is TotalReceivablesSuccessState) {
             return Column(
               children: [
-                DropdownView(
-                  title: 'Total Receivables'.toUpperCase(),
-                  defaultText: 'AUD',
-                  dropDownColor: AppPallete.blueColor,
-                  dropDownIconColor: AppPallete.blueColor50,
-                  onPress: () {},
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Total Incomes'.toUpperCase(),
+                      style: AppFonts.regularStyle(),
+                    ),
+                    TextButton(
+                        onPressed: () {},
+                        child: CustomPopupMenu(
+                            position: PreferredPosition.bottom,
+                            arrowSize: 20,
+                            arrowColor: AppPallete.white,
+                            menuBuilder: () {
+                              return TotalInvoicePopOverWidget(
+                                totalIncomes: receivables,
+                                currentSelectedItem: selectedItem!,
+                                onSelectItem: (returnedItem) {
+                                  selectedItem = returnedItem;
+                                  setState(() {});
+                                  _controller.hideMenu();
+                                },
+                              );
+                            },
+                            menuOnChange: (updated) {},
+                            verticalMargin: -10,
+                            pressType: PressType.singleClick,
+                            controller: _controller,
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                Text(
+                                  selectedItem?.currency ?? "",
+                                  style: AppFonts.regularStyle(
+                                    color: AppPallete.blueColor,
+                                  ),
+                                ),
+                                Icon(
+                                  Icons.arrow_drop_down,
+                                  color: AppPallete.blueColor50,
+                                )
+                              ],
+                            ))),
+                  ],
                 ),
                 AppConstants.sizeBoxHeight15,
                 Flexible(
@@ -165,6 +211,62 @@ class _TotalReceivablesWidgetState extends State<TotalReceivablesWidget> {
             width: 400,
           );
         },
+      ),
+    );
+  }
+}
+
+class TotalInvoicePopOverWidget extends StatelessWidget {
+  final List<TotalReceivablesEntity> totalIncomes;
+  final TotalReceivablesEntity currentSelectedItem;
+  final Function(TotalReceivablesEntity?) onSelectItem;
+
+  const TotalInvoicePopOverWidget(
+      {super.key,
+      required this.totalIncomes,
+      required this.currentSelectedItem,
+      required this.onSelectItem});
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(10),
+      child: Container(
+        color: const Color(0xFF4C4C4C),
+        child: IntrinsicWidth(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: totalIncomes
+                .map(
+                  (item) => GestureDetector(
+                    behavior: HitTestBehavior.translucent,
+                    onTap: () {
+                      onSelectItem(item);
+                    },
+                    child: Container(
+                      color: Colors.white,
+                      height: 40,
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Row(
+                        children: <Widget>[
+                          Expanded(
+                            child: Text(item.currency ?? "",
+                                style: AppFonts.regularStyle()),
+                          ),
+                          AppConstants.sizeBoxWidth10,
+                          if (currentSelectedItem.currency == item.currency)
+                            const Icon(
+                              Icons.check,
+                              color: AppPallete.blueColor,
+                            ),
+                        ],
+                      ),
+                    ),
+                  ),
+                )
+                .toList(),
+          ),
+        ),
       ),
     );
   }

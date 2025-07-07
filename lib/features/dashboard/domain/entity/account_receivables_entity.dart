@@ -24,10 +24,12 @@ class AccountsReceivableEntity {
   String? name;
   String? amount;
   String? currency;
+  String? formatedAmount;
 
   AccountsReceivableEntity({
     this.name,
     this.amount,
     this.currency,
+    this.formatedAmount,
   });
 }

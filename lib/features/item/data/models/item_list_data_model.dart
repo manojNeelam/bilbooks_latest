@@ -117,21 +117,24 @@ class ItemDataModel extends ItemListEntity {
     DateTime? dateCreated,
     DateTime? dateModified,
     String? status,
+    String? formatedRate,
   }) : super(
-            id: id,
-            type: type,
-            name: name,
-            sku: sku,
-            hsn: hsn,
-            description: description,
-            rate: rate,
-            unit: unit,
-            taxes: taxes,
-            trackInventory: trackInventory,
-            stock: stock,
-            dateCreated: dateCreated,
-            dateModified: dateModified,
-            status: status);
+          id: id,
+          type: type,
+          name: name,
+          sku: sku,
+          hsn: hsn,
+          description: description,
+          rate: rate,
+          unit: unit,
+          taxes: taxes,
+          trackInventory: trackInventory,
+          stock: stock,
+          dateCreated: dateCreated,
+          dateModified: dateModified,
+          status: status,
+          formatedRate: formatedRate,
+        );
 
   factory ItemDataModel.fromJson(Map<String, dynamic> json) {
     debugPrint("ItemDataModel JSON: $json");
@@ -156,6 +159,7 @@ class ItemDataModel extends ItemListEntity {
           ? null
           : DateTime.parse(json["date_modified"]),
       status: json["status"],
+      formatedRate: json["formated_rate"],
     );
   }
 

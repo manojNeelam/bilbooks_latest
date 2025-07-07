@@ -264,7 +264,7 @@ class _InvoiceDetailPageState extends State<InvoiceDetailPage>
           //   height: 5,
           // ),
           Text(
-            "${invoiceEntity?.displayNetTotal}",
+            "${invoiceEntity?.formatedTotal}",
             style: AppFonts.mediumStyle(color: AppPallete.blueColor, size: 24),
           ),
 

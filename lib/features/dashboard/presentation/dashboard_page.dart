@@ -4,11 +4,9 @@ import 'package:billbooks_app/core/theme/app_fonts.dart';
 import 'package:billbooks_app/core/theme/app_pallete.dart';
 import 'package:billbooks_app/core/utils/trial_expiry_widget.dart';
 import 'package:billbooks_app/core/utils/utils.dart';
-import 'package:billbooks_app/features/dashboard/presentation/widgets/trial_expired_popup.dart';
 import 'package:billbooks_app/router/app_router.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
 import '../domain/entity/authinfo_entity.dart';
 import 'widgets/accounts_receivables_widget.dart';
 import 'widgets/overdue_invoce_widget.dart';
@@ -205,11 +203,11 @@ class _DashboardPageState extends State<DashboardPage>
                   },
                 ),
                 AppConstants.sizeBoxHeight15,
-                AccountsReceivables(
-                  builder: (context, updateAccountReceivable) {
-                    updateAccountReceivableMethod = updateAccountReceivable;
-                  },
-                ),
+                // AccountsReceivables(
+                //   builder: (context, updateAccountReceivable) {
+                //     updateAccountReceivableMethod = updateAccountReceivable;
+                //   },
+                // ),
               ],
             ),
           ),

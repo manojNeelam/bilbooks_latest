@@ -1,3 +1,4 @@
+import 'package:billbooks_app/core/utils/currency_helper.dart';
 import 'package:billbooks_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:billbooks_app/features/categories/presentation/bloc/category_bloc.dart';
 import 'package:billbooks_app/features/clients/presentation/bloc/client_bloc.dart';
@@ -60,6 +61,8 @@ final navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await CurrencyHelper().loadCurrencies();
+
   // getting the path of the document in the device for accesing the database
   final document = await getApplicationDocumentsDirectory();
   Hive.init(document.path);

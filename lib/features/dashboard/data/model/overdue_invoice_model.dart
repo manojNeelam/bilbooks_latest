@@ -63,6 +63,8 @@ class DashboardInvoiceModel extends DashboardInvoiceEntity {
     String? paid,
     String? balance,
     String? status,
+    String? overdueText,
+    String? formatedBalance,
   }) : super(
           id: id,
           clientName: clientName,
@@ -76,6 +78,8 @@ class DashboardInvoiceModel extends DashboardInvoiceEntity {
           paid: paid,
           balance: balance,
           status: status,
+          overdueText: overdueText,
+          formatedBalance: formatedBalance,
         );
 
   factory DashboardInvoiceModel.fromJson(Map<String, dynamic> json) =>
@@ -92,5 +96,7 @@ class DashboardInvoiceModel extends DashboardInvoiceEntity {
         paid: json["paid"],
         balance: json["balance"],
         status: json["status"],
+        overdueText: json["overdue_text"],
+        formatedBalance: json["formated_balance"],
       );
 }

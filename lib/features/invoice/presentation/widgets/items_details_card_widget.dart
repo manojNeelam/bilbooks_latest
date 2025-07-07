@@ -33,7 +33,7 @@ class ItemDetailsCardWidget extends StatelessWidget {
                       style: AppFonts.mediumStyle(size: 16),
                     ),
                     Text(
-                      "${currencySymbol}${invoiceItemEntity.amount}",
+                      "$currencySymbol ${invoiceItemEntity.amount}",
                       style: AppFonts.mediumStyle(size: 16),
                     ),
                   ],

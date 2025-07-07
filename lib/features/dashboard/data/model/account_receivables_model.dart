@@ -48,20 +48,19 @@ class AccountsReceivablesDataModel extends AccountsReceivablesDataEntity {
 }
 
 class AccountsReceivableModel extends AccountsReceivableEntity {
-  AccountsReceivableModel({
-    String? name,
-    String? amount,
-    String? currency,
-  }) : super(
+  AccountsReceivableModel(
+      {String? name, String? amount, String? currency, String? formatedAmount})
+      : super(
           amount: amount,
           name: name,
           currency: currency,
+          formatedAmount: formatedAmount,
         );
 
   factory AccountsReceivableModel.fromJson(Map<String, dynamic> json) =>
       AccountsReceivableModel(
-        name: json["name"],
-        amount: json["amount"],
-        currency: json["currency"],
-      );
+          name: json["name"],
+          amount: json["amount"],
+          currency: json["currency"],
+          formatedAmount: json["formated_amount"]);
 }

@@ -40,7 +40,7 @@ class _NotificationPageState extends State<NotificationPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Notifications"),
+        title: const Text("Recent Activities"),
         bottom: AppConstants.getAppBarDivider,
       ),
       body: BlocConsumer<NotificationBloc, NotificationState>(

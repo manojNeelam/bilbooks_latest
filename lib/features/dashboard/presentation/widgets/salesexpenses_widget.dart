@@ -213,9 +213,6 @@ class _SalesexpensesWidgetState extends State<SalesexpensesWidget> {
                               menuItems: menuItems,
                               selectedItem: selectedSummaryType,
                               onSelectItem: (val) {
-                                debugPrint(val.title);
-                                debugPrint(
-                                    "Formatted Date: ${val.displayName}");
                                 selectedSummaryType = val;
                                 startDatePrams = val.displayName.$1;
                                 endDateParams = val.displayName.$2;

@@ -61,7 +61,7 @@ class EstimateListItemWidget extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Text(
-                      "\$${estimateEntity.nettotal ?? ""}",
+                      estimateEntity.formatedTotal ?? "",
                       style: AppFonts.mediumStyle(size: 16),
                       maxLines: 1,
                     ),
@@ -103,7 +103,8 @@ class EstimateListItemWidget extends StatelessWidget {
     if (status.toLowerCase() == "draft") {
       return AppPallete.k666666;
     } else if (status.toLowerCase() == "paid" ||
-        status.toLowerCase() == "invoiced") {
+        status.toLowerCase() == "invoiced" ||
+        status.toLowerCase() == "approved") {
       return AppPallete.greenColor;
     } else if (status.toLowerCase() == "overdue" ||
         status.toLowerCase() == "expired") {

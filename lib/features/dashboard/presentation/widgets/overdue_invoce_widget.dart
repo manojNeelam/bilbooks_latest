@@ -103,7 +103,7 @@ class _OverdueInvoceWidgetState extends State<OverdueInvoceWidget> {
                                         ),
                                         AppConstants.sizeBoxWidth15,
                                         Text(
-                                          invoice.balance ?? "",
+                                          invoice.formatedBalance ?? "",
                                           style: AppFonts.mediumStyle(
                                               color: AppPallete.red, size: 16),
                                         )
@@ -120,7 +120,7 @@ class _OverdueInvoceWidgetState extends State<OverdueInvoceWidget> {
                                               size: 14),
                                         ),
                                         Text(
-                                          invoice.date ?? "",
+                                          invoice.overdueText ?? "",
                                           style: AppFonts.regularStyle(
                                               color: AppPallete.k666666,
                                               size: 14),

@@ -5,6 +5,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:billbooks_app/core/app_constants.dart';
 import 'package:billbooks_app/core/theme/app_fonts.dart';
 import 'package:billbooks_app/core/theme/app_pallete.dart';
+import 'package:billbooks_app/core/utils/currency_helper.dart';
 import 'package:billbooks_app/core/utils/show_toast.dart';
 import 'package:billbooks_app/core/widgets/cap_status_widget.dart';
 import 'package:billbooks_app/core/widgets/item_separator.dart';
@@ -49,6 +50,7 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
   String langName = "";
   String currencyName = "";
   ClientDetailsDataEntity? clientDetailsDataEntity;
+  var clientCurrencySymbol = "";
 
   void dismissPopup(context) {
     AutoRouter.of(context).maybePop();
@@ -232,6 +234,33 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
     }
   }
 
+  String get currencySymbol {
+    if (clientDetailsDataEntity?.client?.currencyCode != null) {
+      final symbol = CurrencyHelper()
+          .getSymbolById(clientDetailsDataEntity?.client?.currencyCode ?? "");
+      return symbol ?? "";
+    }
+    return "";
+  }
+
+  String get getTotalSales {
+    if (clientDetailsDataEntity?.totals != null) {
+      return "${clientDetailsDataEntity?.totals?.sales ?? "0"}";
+    }
+    return "0";
+  }
+
+  String get getTotalReceipts {
+    if (clientDetailsDataEntity?.totals != null) {
+      return "${clientDetailsDataEntity?.totals?.receipts ?? "0"}";
+    }
+    return "0";
+  }
+
+  String get getTotalBalanceDue {
+    return "0";
+  }
+
   String get getInvoiceTotalCount {
     if (clientDetailsDataEntity?.invoices != null) {
       return "${clientDetailsDataEntity?.invoices?.length ?? "0"}";
@@ -353,6 +382,8 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
             if (state is ClientDetailsSuccessState) {
               clientDetailsDataEntity = state.clientDetailsMainResEntity.data;
               final clientObj = state.clientDetailsMainResEntity.data?.client;
+
+              clientCurrencySymbol = currencySymbol;
               debugPrint("Name: (${clientObj?.name ?? ""}");
               if (clientObj != null) {
                 clientEntity = clientObj;
@@ -604,17 +635,18 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
                         children: [
                           summaryItem(context,
                               title: 'Total Sales',
-                              value: "\$0.00",
+                              value: "$clientCurrencySymbol $getTotalSales",
                               textColor: AppPallete.blueColor),
                           AppConstants.sepSizeBox5,
                           summaryItem(context,
                               title: 'Total Receipts',
-                              value: "\$0.00",
+                              value: "$clientCurrencySymbol $getTotalReceipts",
                               textColor: AppPallete.greenColor),
                           AppConstants.sepSizeBox5,
                           summaryItem(context,
                               title: "Balance Due",
-                              value: "\$0.00",
+                              value:
+                                  "$clientCurrencySymbol $getTotalBalanceDue",
                               textColor: AppPallete.red),
                         ],
                       )),

@@ -68,7 +68,7 @@ class InvoiceListItemWidget extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Text(
-                      invoiceEntity.displayNetTotal,
+                      invoiceEntity.formatedTotal ?? "",
                       style: AppFonts.mediumStyle(size: 16),
                       maxLines: 1,
                     ),
