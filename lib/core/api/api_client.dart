@@ -12,7 +12,7 @@ class APIClient {
   APIClient() {
     baseOptions = BaseOptions(
         baseUrl: ApiConstant.mainUrl,
-        headers: {"x-api-key": "WhMF1i3V6uJYwCUItvgmLwNeetIHCobi"});
+        headers: {"x-api-key": "AndvX36fVWwuRBKAEG4BAalTtIcLRheQ"});
     dio = Dio(baseOptions);
   }
 

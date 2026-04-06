@@ -17,6 +17,9 @@ class PreferencesTypeHeaderWidget extends StatelessWidget {
     const EnumPreferencesType general = EnumPreferencesType.general;
     const EnumPreferencesType invioce = EnumPreferencesType.invoice;
     const EnumPreferencesType estimate = EnumPreferencesType.estimate;
+    const EnumPreferencesType proforma = EnumPreferencesType.proforma;
+    const EnumPreferencesType invoiceEstimate = EnumPreferencesType.invEst;
+    const EnumPreferencesType dashboard = EnumPreferencesType.dashboard;
 
     Color getColorFor(EnumPreferencesType type) {
       return type == selectedType ? AppPallete.blueColor : AppPallete.clear;
@@ -83,6 +86,57 @@ class PreferencesTypeHeaderWidget extends StatelessWidget {
                     Container(
                       height: 2,
                       color: getColorFor(estimate),
+                    )
+                  ],
+                ),
+              ),
+              AppConstants.sizeBoxWidth5,
+              Expanded(
+                child: Column(
+                  children: [
+                    TextButton(
+                        onPressed: () {
+                          callBack(proforma);
+                        },
+                        child:
+                            Text(proforma.title, style: getStyleFor(proforma))),
+                    Container(
+                      height: 2,
+                      color: getColorFor(proforma),
+                    )
+                  ],
+                ),
+              ),
+              AppConstants.sizeBoxWidth5,
+              Expanded(
+                child: Column(
+                  children: [
+                    TextButton(
+                        onPressed: () {
+                          callBack(invoiceEstimate);
+                        },
+                        child: Text(invoiceEstimate.title,
+                            style: getStyleFor(invoiceEstimate))),
+                    Container(
+                      height: 2,
+                      color: getColorFor(invoiceEstimate),
+                    )
+                  ],
+                ),
+              ),
+              AppConstants.sizeBoxWidth5,
+              Expanded(
+                child: Column(
+                  children: [
+                    TextButton(
+                        onPressed: () {
+                          callBack(dashboard);
+                        },
+                        child: Text(dashboard.title,
+                            style: getStyleFor(dashboard))),
+                    Container(
+                      height: 2,
+                      color: getColorFor(dashboard),
                     )
                   ],
                 ),

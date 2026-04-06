@@ -33,6 +33,10 @@
 		<true/>
 		<key>NSContactsUsageDescription</key>
 		<string>This app requires access to your contacts to manage your contacts list.</string>
+		<key>NSCameraUsageDescription</key>
+		<string>This app requires camera access so you can take pictures for your records.</string>
+		<key>NSPhotoLibraryUsageDescription</key>
+		<string>This app requires photo library access so you can select images for your records.</string>
 		<key>UIApplicationSupportsIndirectInputEvents</key>
 		<true/>
 		<key>UILaunchStoryboardName</key>

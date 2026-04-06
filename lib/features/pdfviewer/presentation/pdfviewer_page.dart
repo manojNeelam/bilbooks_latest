@@ -2,15 +2,16 @@ import 'dart:io';
 
 import 'package:auto_route/auto_route.dart';
 import 'package:billbooks_app/core/app_constants.dart';
+import 'package:billbooks_app/core/utils/hive_functions.dart';
 import 'package:billbooks_app/core/theme/app_pallete.dart';
 import 'package:billbooks_app/core/widgets/loading_page.dart';
 import 'package:flutter/material.dart';
 import 'package:html_to_pdf/html_to_pdf.dart';
-import 'package:pdfrx/pdfrx.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 
 import '../../invoice/domain/usecase/get_document_usecase.dart';
+import 'widgets/pdf_signature_input_dialog.dart';
 // import 'package:html_to_pdf_plus/html_to_pdf_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:billbooks_app/core/api/api_client.dart';
@@ -34,14 +35,35 @@ class PdfviewerPage extends StatefulWidget {
 
 class _PdfviewerPageState extends State<PdfviewerPage> {
   String pdfPath = "";
-  //PdfViewerController pdfController = PdfViewerController();
+  final PdfViewerController _pdfViewerController = PdfViewerController();
 
   String? generatedPdfFilePath;
+  String _currentUserName = "";
+  bool _isSignatureDialogOpen = false;
 
   @override
   void initState() {
     _getPdfContent();
+    _loadCurrentUserName();
     super.initState();
+  }
+
+  Future<void> _loadCurrentUserName() async {
+    final session = await HiveFunctions.getUserSessionData();
+    final user = session?.user;
+    final resolvedName = (user?.name ?? '').trim().isNotEmpty
+        ? (user?.name ?? '').trim()
+        : (user?.firstname ?? '').trim().isNotEmpty
+            ? (user?.firstname ?? '').trim()
+            : (user?.email ?? '').trim();
+
+    if (!mounted) {
+      return;
+    }
+
+    setState(() {
+      _currentUserName = resolvedName;
+    });
   }
 
   void _getPdfContent() async {
@@ -79,16 +101,57 @@ class _PdfviewerPageState extends State<PdfviewerPage> {
   }
 
   void sharePDF() async {
-    if (pdfPath.isNotEmpty) {
-      debugPrint("PDF Path: $pdfPath");
+    if (generatedPdfFilePath != null) {
+      final file = await _getShareablePdfFile();
       await Share.shareXFiles(
-        [XFile(pdfPath)],
+        [XFile(file.path)],
         sharePositionOrigin: Rect.fromCircle(
           radius: MediaQuery.of(context).size.width * 0.25,
           center: const Offset(0, 0),
         ),
       );
-    } else {}
+    }
+  }
+
+  Future<File> _getShareablePdfFile() async {
+    final file = File(generatedPdfFilePath!);
+    try {
+      final savedBytes = await _pdfViewerController.saveDocument(
+        flattenOption: PdfFlattenOption.formFields,
+      );
+      await file.writeAsBytes(savedBytes, flush: true);
+      pdfPath = file.path;
+      return file;
+    } catch (_) {
+      return file;
+    }
+  }
+
+  Future<void> _handleFormFieldFocusChange(
+    PdfFormFieldFocusChangeDetails details,
+  ) async {
+    if (!details.hasFocus || _isSignatureDialogOpen) {
+      return;
+    }
+
+    final field = details.formField;
+    if (field is! PdfSignatureFormField || field.readOnly) {
+      return;
+    }
+
+    _isSignatureDialogOpen = true;
+    try {
+      final signatureBytes = await showPdfSignatureInputDialog(
+        context,
+        userName: _currentUserName,
+      );
+
+      if (signatureBytes != null) {
+        field.signature = signatureBytes;
+      }
+    } finally {
+      _isSignatureDialogOpen = false;
+    }
   }
 
   @override
@@ -128,7 +191,12 @@ class _PdfviewerPageState extends State<PdfviewerPage> {
       ),
       body: Container(
           child: generatedPdfFilePath != null
-              ? SfPdfViewer.file(File(generatedPdfFilePath!))
+              ? SfPdfViewer.file(
+                  File(generatedPdfFilePath!),
+                  controller: _pdfViewerController,
+                  canShowSignaturePadDialog: false,
+                  onFormFieldFocusChange: _handleFormFieldFocusChange,
+                )
               : const LoadingPage(title: "Loading pdf")),
     );
   }

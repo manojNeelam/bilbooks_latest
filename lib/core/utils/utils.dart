@@ -4,11 +4,21 @@ import 'package:auto_route/auto_route.dart';
 import 'package:billbooks_app/core/utils/column_settings_pref.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../router/app_router.dart';
 
 class Utils {
   Utils();
+
+  static Future<void> openLink(String urlString) async {
+    final Uri callLaunchUri = Uri.parse(urlString);
+    if (await canLaunchUrl(callLaunchUri)) {
+      launchUrl(callLaunchUri);
+    } else {
+      debugPrint("Unable to launch sms");
+    }
+  }
 
   //MARK: - Private helpers
   static void hideKeyboard() {

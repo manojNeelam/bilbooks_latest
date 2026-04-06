@@ -7,6 +7,7 @@ import 'dart:convert';
 import 'package:billbooks_app/features/clients/data/models/client_list_model.dart';
 import 'package:billbooks_app/features/invoice/data/models/invoice_details_model.dart';
 import 'package:billbooks_app/features/invoice/domain/entities/invoice_list_entity.dart';
+import 'package:flutter/material.dart';
 
 import '../../../clients/domain/entities/client_list_entity.dart';
 import '../../domain/entities/invoice_details_entity.dart';
@@ -156,6 +157,15 @@ class InvoiceModel extends InvoiceEntity {
     List<EmailtoMystaffData>? emailtoMystaff,
     List<InvoiceItemModel>? items,
     List<InvoiceTaxModel>? taxes,
+    String? clientPhone,
+    String? clientCity,
+    String? clientState,
+    String? clientCountry,
+    String? clientZipcode,
+    String? clientWebsite,
+    String? clientTaxId,
+    bool? isProformaSignature,
+    String? proformaSignature,
   }) : super(
           currencySymbol: currencySymbol,
           items: items,
@@ -216,6 +226,15 @@ class InvoiceModel extends InvoiceEntity {
           expiryDate: expiryDate,
           expirydateYmd: expirydateYmd,
           emailtoClientstaff: emailtoClientstaff,
+          clientCity: clientCity,
+          clientCountry: clientCountry,
+          clientPhone: clientPhone,
+          clientState: clientState,
+          clientTaxId: clientTaxId,
+          clientWebsite: clientWebsite,
+          clientZipcode: clientZipcode,
+          proformaSignature: proformaSignature,
+          isProformaSignature: isProformaSignature,
         );
 /*
 json["persons"] == null
@@ -223,7 +242,9 @@ json["persons"] == null
             : List<PersonModel>.from(
                 json["persons"]!.map((x) => PersonModel.fromJson(x)))
 */
-  factory InvoiceModel.fromJson(Map<String, dynamic> json) => InvoiceModel(
+  factory InvoiceModel.fromJson(Map<String, dynamic> json) {
+    debugPrint("Details: ${json.toString()}");
+    return InvoiceModel(
         items: json["items"] == null
             ? []
             : List<InvoiceItemModel>.from(
@@ -250,6 +271,13 @@ json["persons"] == null
         projectId: json["project_id"],
         projectName: json["project_name"],
         no: json["no"],
+        clientCity: json["client_city"],
+        clientState: json["client_state"],
+        clientCountry: json["client_country"],
+        clientZipcode: json["client_zipcode"],
+        clientWebsite: json["client_website"],
+        clientTaxId: json["company_tax_id"],
+        clientPhone: json['client_phone'],
         expiryDate: json["expiry_date"],
         expirydateYmd: json["expirydate_ymd"],
         pono: json["pono"],
@@ -296,13 +324,16 @@ json["persons"] == null
         isAttachments: json["is_attachments"],
         invoiceId: json["invoice_id"],
         invoiceNo: json["invoice_no"],
+        proformaSignature: json["proforma_signature"],
+        isProformaSignature: json["is_proforma_signature"]
         // dateCreated: json["date_created"] == null
         //     ? null
         //     : DateTime.parse(json["date_created"]),
         // dateModified: json["date_modified"] == null
         //     ? null
         //     : DateTime.parse(json["date_modified"]),
-      );
+        );
+  }
 }
 
 class InvoiceListStatusCountModel extends InvoiceListStatusCountEntity {

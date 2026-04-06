@@ -39,6 +39,8 @@ class AddInvoiceReqParms {
   final String? shipping;
   final String? netTotal;
   final String? id;
+  final String? currency;
+  final String? exchangeRate;
 
   AddInvoiceReqParms({
     required this.type,
@@ -58,5 +60,7 @@ class AddInvoiceReqParms {
     required this.subTotal,
     required this.taxTotal,
     required this.id,
+    this.currency,
+    this.exchangeRate,
   });
 }

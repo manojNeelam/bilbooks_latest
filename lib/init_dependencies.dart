@@ -102,6 +102,11 @@ import 'package:billbooks_app/features/profile/data/repository/repository_impl.d
 import 'package:billbooks_app/features/profile/domain/repository/repository.dart';
 import 'package:billbooks_app/features/profile/domain/usecase/profile_usecase.dart';
 import 'package:billbooks_app/features/profile/presentation/bloc/profile_bloc.dart';
+import 'package:billbooks_app/features/proforma/data/datasource/remote/proforma_remote_datasource.dart';
+import 'package:billbooks_app/features/proforma/data/repository/proforma_repository_impl.dart';
+import 'package:billbooks_app/features/proforma/domain/repository/proforma_repository.dart';
+import 'package:billbooks_app/features/proforma/domain/usecase/proforma_list_usecase.dart';
+import 'package:billbooks_app/features/proforma/presentation/bloc/proforma_bloc.dart';
 import 'package:billbooks_app/features/project/data/datasource/project_datasource.dart';
 import 'package:billbooks_app/features/project/data/repository/project_repository_impl.dart';
 import 'package:billbooks_app/features/project/domain/repository/project_repository.dart';
@@ -150,9 +155,25 @@ Future<void> initDependencies() async {
   _initEstimates();
   _initDashboard();
   _initProfile();
+  _initProforma();
   _emailTemplate();
   _initReports();
   _initCreditNotes();
+}
+
+void _initProforma() {
+  serviceLocator.registerFactory<ProformaRemoteDatasource>(() =>
+      ProformaRemoteDatasourceImpl(apiClient: serviceLocator<APIClient>()));
+  serviceLocator.registerFactory<ProformaRepository>(
+      () => ProformaRepositoryImpl(proformaRemoteDatasource: serviceLocator()));
+  serviceLocator.registerFactory(
+      () => ProformaListUsecase(proformaRepository: serviceLocator()));
+  serviceLocator.registerFactory(
+      () => GetProformaDetailsUsecase(proformaRepository: serviceLocator()));
+
+  serviceLocator.registerLazySingleton(() => ProformaBloc(
+      proformaListUsecase: serviceLocator(),
+      getProformaDetailsUsecase: serviceLocator()));
 }
 
 void _initCreditNotes() {

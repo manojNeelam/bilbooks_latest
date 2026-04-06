@@ -115,7 +115,7 @@ class _InvoiceListPageState extends State<InvoiceListPage>
 
   EnumInvoiceType selectedType = EnumInvoiceType.all;
   EnumInvoiceSortBy selectedInvoiceSortBy = EnumInvoiceSortBy.date;
-  EnumOrderBy selectedOrderBy = EnumOrderBy.ascending;
+  EnumOrderBy selectedOrderBy = EnumOrderBy.descending;
   List<InvoiceEntity> invoices = [];
   EnumAllTimes selectedAllTimes = EnumAllTimes.all;
   String allTimesDisplayName = "All";
@@ -128,6 +128,8 @@ class _InvoiceListPageState extends State<InvoiceListPage>
   String? startDateReqParams;
   String? endDateReqParams;
   bool isFromAddNewInvoice = false;
+  InvoiceListMainResEntity? invoiceListMainResEntity;
+  Map<EnumInvoiceType, int> counts = {};
 
   @override
   void initState() {
@@ -255,6 +257,20 @@ class _InvoiceListPageState extends State<InvoiceListPage>
     );
   }
 
+  Map<EnumInvoiceType, int> getInvoiceCounts() {
+    InvoiceListStatusCountEntity? statusCountEntity =
+        invoiceListMainResEntity?.data?.statusCount?.firstOrNull;
+    if (statusCountEntity == null) {
+      return {};
+    }
+    return {
+      EnumInvoiceType.all: int.tryParse(statusCountEntity.allcount ?? "") ?? 0,
+      EnumInvoiceType.draft: int.tryParse(statusCountEntity.draft ?? "") ?? 0,
+      EnumInvoiceType.unpaid: int.tryParse(statusCountEntity.unpaid ?? "") ?? 0,
+      EnumInvoiceType.paid: int.tryParse(statusCountEntity.paid ?? "") ?? 0,
+    };
+  }
+
   void _onTapSendDoc(String id) {
     AutoRouter.of(context).push(SendInvoiceEstimatePageRoute(
         params: GetDocumentUsecaseReqParams(
@@ -369,6 +385,7 @@ class _InvoiceListPageState extends State<InvoiceListPage>
             preferredSize: const Size.fromHeight(45),
             child: InvoiceTypeHeaderWidget(
               selectedType: selectedType,
+              counts: counts,
               callBack: (type) {
                 selectedType = type;
                 setState(() {});
@@ -410,6 +427,13 @@ class _InvoiceListPageState extends State<InvoiceListPage>
         listener: (context, state) {
           if (isIgnoreBlocStates) {
             return;
+          }
+
+          if (state is InvoiceListSuccessState) {
+            setState(() {
+              invoiceListMainResEntity = state.invoiceListMainResEntity;
+              counts = getInvoiceCounts();
+            });
           }
 
           if (state is InvoiceDetailSuccessState) {

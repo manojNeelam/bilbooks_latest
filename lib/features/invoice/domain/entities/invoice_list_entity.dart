@@ -8,10 +8,7 @@ import 'dart:ui';
 import 'package:billbooks_app/core/app_constants.dart';
 import 'package:billbooks_app/core/utils/currency_helper.dart';
 import 'package:billbooks_app/features/clients/domain/entities/client_list_entity.dart';
-import 'package:flutter_contacts/flutter_contacts.dart';
-
 import '../../../../core/theme/app_pallete.dart';
-import '../../../../core/utils/escape_html_code.dart';
 import 'invoice_details_entity.dart';
 
 class InvoiceListMainResEntity {
@@ -73,6 +70,13 @@ class InvoiceEntity {
   String? clientId;
   String? clientName;
   String? clientAddress;
+  String? clientPhone;
+  String? clientCity;
+  String? clientState;
+  String? clientCountry;
+  String? clientZipcode;
+  String? clientWebsite;
+  String? clientTaxId;
   String? projectId;
   String? projectName;
   String? no;
@@ -127,69 +131,79 @@ class InvoiceEntity {
   List<EmailtoMystaffEntity>? emailtoMystaff;
   List<InvoiceItemEntity>? items;
   List<InvoiceTaxEntity>? taxes;
-  InvoiceEntity({
-    this.currencySymbol,
-    this.id,
-    this.date,
-    this.dateYmd,
-    this.clientId,
-    this.clientName,
-    this.clientAddress,
-    this.projectId,
-    this.projectName,
-    this.no,
-    this.pono,
-    this.expiryDate,
-    this.expirydateYmd,
-    this.summary,
-    this.currency,
-    this.exchangeRate,
-    this.subtotal,
-    this.discountType,
-    this.discountValue,
-    this.discount,
-    this.taxtotal,
-    this.shipping,
-    this.nettotal,
-    this.formatedTotal,
-    this.notes,
-    this.terms,
-    this.publicKey,
-    this.status,
-    this.isViewed,
-    this.dateViewed,
-    this.invoiceId,
-    this.invoiceNo,
-    this.isAttachments,
-    this.dateCreated,
-    //this.dateModified,
-    this.dueTerms,
-    this.dueDate,
-    this.overdueDays,
-    this.overdueText,
-    this.paymentReminders,
-    this.paid,
-    this.formatedPaid,
-    this.balance,
-    this.formatedBalance,
-    this.heading,
-    this.parentId,
-    this.frequency,
-    this.frequencyName,
-    this.howmany,
-    this.deliveryOptions,
-    this.timezoneId,
-    this.lastReminders,
-    this.nextReminders,
-    this.remindersCount,
-    this.lastRecurring,
-    this.nextRecurring,
-    this.recurringCount,
-    this.emailtoMystaff,
-    this.items,
-    this.taxes,
-    this.emailtoClientstaff,
-  });
+  bool? isProformaSignature;
+  String? proformaSignature;
+  InvoiceEntity(
+      {this.currencySymbol,
+      this.id,
+      this.date,
+      this.dateYmd,
+      this.clientId,
+      this.clientName,
+      this.clientAddress,
+      this.projectId,
+      this.projectName,
+      this.no,
+      this.pono,
+      this.expiryDate,
+      this.expirydateYmd,
+      this.summary,
+      this.currency,
+      this.exchangeRate,
+      this.subtotal,
+      this.discountType,
+      this.discountValue,
+      this.discount,
+      this.taxtotal,
+      this.shipping,
+      this.nettotal,
+      this.formatedTotal,
+      this.notes,
+      this.terms,
+      this.publicKey,
+      this.status,
+      this.isViewed,
+      this.dateViewed,
+      this.invoiceId,
+      this.invoiceNo,
+      this.isAttachments,
+      this.dateCreated,
+      //this.dateModified,
+      this.dueTerms,
+      this.dueDate,
+      this.overdueDays,
+      this.overdueText,
+      this.paymentReminders,
+      this.paid,
+      this.formatedPaid,
+      this.balance,
+      this.formatedBalance,
+      this.heading,
+      this.parentId,
+      this.frequency,
+      this.frequencyName,
+      this.howmany,
+      this.deliveryOptions,
+      this.timezoneId,
+      this.lastReminders,
+      this.nextReminders,
+      this.remindersCount,
+      this.lastRecurring,
+      this.nextRecurring,
+      this.recurringCount,
+      this.emailtoMystaff,
+      this.items,
+      this.taxes,
+      this.emailtoClientstaff,
+      this.clientCity,
+      this.clientCountry,
+      this.clientPhone,
+      this.clientState,
+      this.clientTaxId,
+      this.clientWebsite,
+      this.clientZipcode,
+      this.isProformaSignature,
+      this.proformaSignature});
   static InvoiceEntity get mock {
     return InvoiceEntity(
       id: "TEST",
@@ -423,24 +437,31 @@ class InvoiceItemEntity {
   String? amount;
   bool? isTaxable;
   List<TaxEntity>? taxes;
+  String? formateDate;
+  String? sku;
+  String? image;
+  String? thumbnail;
 
-  InvoiceItemEntity({
-    this.type,
-    this.itemId,
-    this.itemName,
-    this.description,
-    this.date,
-    this.time,
-    this.custom,
-    this.qty,
-    this.unit,
-    this.rate,
-    this.discountType,
-    this.discountValue,
-    this.amount,
-    this.isTaxable,
-    this.taxes,
-  });
+  InvoiceItemEntity(
+      {this.type,
+      this.itemId,
+      this.itemName,
+      this.description,
+      this.date,
+      this.time,
+      this.custom,
+      this.qty,
+      this.unit,
+      this.rate,
+      this.discountType,
+      this.discountValue,
+      this.amount,
+      this.isTaxable,
+      this.taxes,
+      this.formateDate,
+      this.image,
+      this.sku,
+      this.thumbnail});
 }
 
 // class ItemTaxEntity {

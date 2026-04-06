@@ -4,7 +4,6 @@ import 'package:billbooks_app/core/theme/app_fonts.dart';
 import 'package:billbooks_app/core/theme/app_pallete.dart';
 import 'package:billbooks_app/features/email%20templates/domain/usecase/email_template_usecase.dart';
 import 'package:billbooks_app/features/email%20templates/presentation/bloc/email_templates_bloc.dart';
-import 'package:billbooks_app/features/line%20item/presentation/add_new_line_item_page.dart';
 import 'package:billbooks_app/router/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,7 +11,14 @@ import 'package:skeletonizer/skeletonizer.dart';
 
 import '../domain/entity/email_template_entity.dart';
 
-enum EnumEmailTemplate { invoice, estimate, remainder, thankyou }
+enum EnumEmailTemplate {
+  invoice,
+  estimate,
+  proforma,
+  remainder,
+  thankyou,
+  followUpEstimate,
+}
 
 extension EnumEmailTemplateExtension on EnumEmailTemplate {
   bool get isSendInvoice {
@@ -31,6 +37,14 @@ extension EnumEmailTemplateExtension on EnumEmailTemplate {
     return this == EnumEmailTemplate.thankyou;
   }
 
+  bool get isProforma {
+    return this == EnumEmailTemplate.proforma;
+  }
+
+  bool get isfollowUpEstimate {
+    return this == EnumEmailTemplate.followUpEstimate;
+  }
+
   List<String> get emailTemplateList {
     switch (this) {
       case EnumEmailTemplate.invoice:
@@ -44,6 +58,10 @@ extension EnumEmailTemplateExtension on EnumEmailTemplate {
 
       case EnumEmailTemplate.thankyou:
         return paymentThankYouList;
+      case EnumEmailTemplate.proforma:
+        return sendproformaList;
+      case EnumEmailTemplate.followUpEstimate:
+        return followUpEstimateList;
     }
   }
 
@@ -61,6 +79,10 @@ extension EnumEmailTemplateExtension on EnumEmailTemplate {
 
       case EnumEmailTemplate.thankyou:
         return "paymentthankyou";
+      case EnumEmailTemplate.proforma:
+        return "sendproforma";
+      case EnumEmailTemplate.followUpEstimate:
+        return "followUpEstimate";
     }
   }
 
@@ -86,6 +108,10 @@ extension EnumEmailTemplateExtension on EnumEmailTemplate {
           "Payment Thank-you",
           "Message sent upon receiving a successful payment"
         );
+      case EnumEmailTemplate.proforma:
+        return ("Send Proforma", "");
+      case EnumEmailTemplate.followUpEstimate:
+        return ("Send Follow-Up Estimate", "");
     }
   }
 }
@@ -158,6 +184,41 @@ final List<String> paymentThankYouList = [
   'payment-received',
   'payment-method',
   'payment-refno',
+  'client-name',
+  'client-contact-name',
+  'organization-name',
+  'user-name',
+];
+final List<String> sendproformaList = [
+  'proforma-date',
+  'proforma-number',
+  'po-number',
+  'due-date',
+  'total-amount',
+  'shipping-charge',
+  'overdue-days',
+  'proforma-title',
+  'proforma-notes',
+  'proforma-url',
+  'project-name',
+  'client-name',
+  'client-contact-name',
+  'organization-name',
+  'user-name',
+];
+final List<String> followUpEstimateList = [
+  'estimate-date',
+  'estimate-number',
+  'po-number',
+  'due-date',
+  'total-amount',
+  'shipping-charge',
+  'balance-due',
+  'overdue-days',
+  'estimate-title',
+  'estimate-notes',
+  'estimate-url',
+  'project-name',
   'client-name',
   'client-contact-name',
   'organization-name',
@@ -272,6 +333,27 @@ class _EmailTemplatePageState extends State<EmailTemplatePage> {
                                             ?.emailSubjectPaymentthankyou ??
                                         "",
                                     type: EnumEmailTemplate.thankyou,
+                                    refreshPage: () {
+                                      _getEmailTemplates();
+                                    }));
+                          case EnumEmailTemplate.proforma:
+                            AutoRouter.of(context)
+                                .push(UpdateEmailTemplatePageRoute(
+                                    title: 'Send Proforma',
+                                    message: '',
+                                    subject: '',
+                                    type: EnumEmailTemplate.proforma,
+                                    refreshPage: () {
+                                      _getEmailTemplates();
+                                    }));
+
+                          case EnumEmailTemplate.followUpEstimate:
+                            AutoRouter.of(context)
+                                .push(UpdateEmailTemplatePageRoute(
+                                    title: 'Send Follow-Up Estimate',
+                                    message: '',
+                                    subject: '',
+                                    type: EnumEmailTemplate.proforma,
                                     refreshPage: () {
                                       _getEmailTemplates();
                                     }));

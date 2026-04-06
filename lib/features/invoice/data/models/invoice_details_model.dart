@@ -169,23 +169,30 @@ class InvoiceItemModel extends InvoiceItemEntity {
     String? amount,
     bool? isTaxable,
     List<TaxData>? taxes,
+    String? formateDate,
+    String? sku,
+    String? image,
+    String? thumbnail,
   }) : super(
-          type: type,
-          itemId: itemId,
-          itemName: itemName,
-          description: description,
-          date: date,
-          time: time,
-          custom: custom,
-          qty: qty,
-          unit: unit,
-          rate: rate,
-          discountType: discountType,
-          discountValue: discountValue,
-          amount: amount,
-          isTaxable: isTaxable,
-          taxes: taxes,
-        );
+            type: type,
+            itemId: itemId,
+            itemName: itemName,
+            description: description,
+            date: date,
+            time: time,
+            custom: custom,
+            qty: qty,
+            unit: unit,
+            rate: rate,
+            discountType: discountType,
+            discountValue: discountValue,
+            amount: amount,
+            isTaxable: isTaxable,
+            taxes: taxes,
+            thumbnail: thumbnail,
+            formateDate: formateDate,
+            image: image,
+            sku: sku);
 
   factory InvoiceItemModel.fromJson(Map<String, dynamic> json) =>
       InvoiceItemModel(
@@ -207,6 +214,10 @@ class InvoiceItemModel extends InvoiceItemEntity {
         discountValue: json["discount_value"],
         amount: json["amount"],
         isTaxable: json["is_taxable"],
+        sku: json['sku'],
+        formateDate: json['formate_date'],
+        image: json['image'],
+        thumbnail: json['thumbnail'],
         taxes: json["taxes"] == null
             ? []
             : List<TaxData>.from(

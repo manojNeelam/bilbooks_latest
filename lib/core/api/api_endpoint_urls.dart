@@ -77,6 +77,10 @@ class ApiEndPoints {
   static const String estimateMarkAsSent = "estimates/markassent";
   static const String estimateDelete = "estimates/delete";
 
+  //Proformas
+  static const String proformas = "proformas/index";
+  static const String proformaDetails = "proformas/details";
+
   static const String organization = "settings/organization";
   static const String preferences = "settings/preferences";
   //onlinepayments

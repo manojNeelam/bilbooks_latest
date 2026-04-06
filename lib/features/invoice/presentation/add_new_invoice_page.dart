@@ -14,7 +14,6 @@ import 'package:billbooks_app/features/invoice/domain/usecase/client_staff_useca
 import 'package:billbooks_app/features/invoice/domain/usecase/invoice_usecase.dart';
 import 'package:billbooks_app/features/invoice/presentation/bloc/invoice_bloc.dart';
 import 'package:billbooks_app/features/invoice/presentation/line_item_total_selection.dart';
-import 'package:billbooks_app/features/item/domain/entities/item_list_entity.dart';
 import 'package:billbooks_app/features/project/domain/entity/project_list_entity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -142,6 +141,47 @@ class _AddNewInvoiceEstimatePageState extends State<AddNewInvoiceEstimatePage>
   List<PaymentTerms> paymentTermsList = [];
   List<RepeatEvery> repeatEveryitems = [];
   List<Timezone> timeZonesList = [];
+
+  void _syncMyStaffSelections(List<EmailtoMystaffEntity> staffList) {
+    myStaffList = staffList;
+    selectedMyStaffList = myStaffList
+        .where((returnedItem) => returnedItem.selected == true)
+        .toList();
+  }
+
+  void _syncSelectedClientStaffFromInvoice(InvoiceEntity? invoiceEntity) {
+    final preselectedClientStaff = invoiceEntity?.emailtoClientstaff ?? [];
+
+    selectedClientStaff = preselectedClientStaff
+        .where((returnedItem) => returnedItem.selected == true)
+        .toList();
+
+    if (selectedClientStaff.isEmpty) {
+      selectedClientStaff = preselectedClientStaff;
+    }
+  }
+
+  void _syncFetchedClientStaffSelections(List<EmailtoMystaffEntity> staffList) {
+    final selectedIds = selectedClientStaff
+        .map((returnedItem) => returnedItem.id)
+        .whereType<String>()
+        .toSet();
+
+    clientStaff = staffList.map((returnedItem) {
+      final isSelected = selectedIds.contains(returnedItem.id) ||
+          (selectedIds.isEmpty && returnedItem.selected == true);
+      return EmailtoMystaffEntity(
+        email: returnedItem.email,
+        id: returnedItem.id,
+        name: returnedItem.name,
+        selected: isSelected,
+      );
+    }).toList();
+
+    selectedClientStaff = clientStaff
+        .where((returnedItem) => returnedItem.selected == true)
+        .toList();
+  }
 
   void calculateListOfTaxes() {
     if (selectedLineItems.isEmpty) {
@@ -348,8 +388,7 @@ class _AddNewInvoiceEstimatePageState extends State<AddNewInvoiceEstimatePage>
       address: widget.invoiceEntity?.clientAddress,
     );
     terms = widget.invoiceEntity?.terms ?? "";
-    myStaffList = widget.invoiceEntity?.emailtoMystaff ?? [];
-    //clientStaff = widget.invoiceEntity?.emailtoClientstaff ?? [];
+    _syncMyStaffSelections(widget.invoiceEntity?.emailtoMystaff ?? []);
     var itemListss = widget.invoiceEntity?.items ?? [];
     List<InvoiceItemEntity> convertedListt = [];
     for (final item in itemListss) {
@@ -416,9 +455,7 @@ class _AddNewInvoiceEstimatePageState extends State<AddNewInvoiceEstimatePage>
       }
       _loadInvoiceListData();
     }
-    selectedMyStaffList = myStaffList.where((returnedItem) {
-      return returnedItem.selected == true;
-    }).toList();
+    _syncSelectedClientStaffFromInvoice(widget.invoiceEntity);
     if (widget.invoiceEntity?.clientId != null) {
       getClientStaffBy(widget.invoiceEntity?.clientId ?? "");
     }
@@ -441,10 +478,6 @@ class _AddNewInvoiceEstimatePageState extends State<AddNewInvoiceEstimatePage>
         shipping: widget.invoiceEntity?.shipping ?? "",
         isPercentage: isPercentage);
     notesController.text = widget.invoiceEntity?.notes ?? "";
-
-    selectedClientStaff = clientStaff.where((returnedItem) {
-      return returnedItem.selected == true;
-    }).toList();
 
     calculateListOfTaxes();
     setState(() {});
@@ -547,13 +580,14 @@ emailto_clientstaff:[{"id":"23214","email":"abc@exaple.com"},{"id":"23216","emai
             if (state is ClientStaffSuccessState) {
               final clientStaffList =
                   state.clientStaffMainResEntity.data?.staffs ?? [];
-              clientStaff = clientStaffList.map((returnedItem) {
+              _syncFetchedClientStaffSelections(
+                  clientStaffList.map((returnedItem) {
                 return EmailtoMystaffEntity(
                     email: returnedItem.email,
                     id: returnedItem.id,
                     name: returnedItem.name,
                     selected: returnedItem.primary);
-              }).toList();
+              }).toList());
             }
             if (state is InvoiceDeleteErrorState) {
               showToastification(
@@ -609,7 +643,8 @@ emailto_clientstaff:[{"id":"23214","email":"abc@exaple.com"},{"id":"23216","emai
               }
 
               taxesList = state.invoiceDetailResEntity.taxes ?? [];
-              myStaffList = invoiceEntity?.emailtoMystaff ?? [];
+              _syncMyStaffSelections(invoiceEntity?.emailtoMystaff ?? []);
+              _syncSelectedClientStaffFromInvoice(invoiceEntity);
               invoiceDetailResEntity = state.invoiceDetailResEntity;
               invoiceRequestModel.no = invoiceEntity?.no;
               invoiceRequestModel.heading = invoiceEntity?.heading;
@@ -828,17 +863,6 @@ emailto_clientstaff:[{"id":"23214","email":"abc@exaple.com"},{"id":"23216","emai
             return;
           }
           if (returnedIndex != null) {
-            var itemId = lineItem.itemId ?? "";
-            var taxes = lineItem.taxes;
-            if (taxes != null) {
-              var taxModels = taxes.map((returnedTax) {
-                TaxData(
-                    id: returnedTax.id,
-                    name: returnedTax.name,
-                    rate: returnedTax.rate);
-              });
-            }
-
             // if (itemId.isNotEmpty) {
             //   //Consider as InvoiceItemModel
             //   InvoiceItemModel(
@@ -890,14 +914,15 @@ emailto_clientstaff:[{"id":"23214","email":"abc@exaple.com"},{"id":"23216","emai
           selectedProject = null;
           selectedClientStaff = [];
           selectedClient = client;
-          clientStaff = client?.persons?.map((returnedItem) {
-                return EmailtoMystaffEntity(
-                    email: returnedItem.email ?? "",
-                    id: returnedItem.id ?? "",
-                    name: returnedItem.name ?? "",
-                    selected: returnedItem.primary ?? false);
-              }).toList() ??
-              [];
+          _syncFetchedClientStaffSelections(
+              client?.persons?.map((returnedItem) {
+                    return EmailtoMystaffEntity(
+                        email: returnedItem.email ?? "",
+                        id: returnedItem.id ?? "",
+                        name: returnedItem.name ?? "",
+                        selected: returnedItem.primary ?? false);
+                  }).toList() ??
+                  []);
           if (client?.id != null) {
             getClientStaffBy(client?.id ?? "");
           }

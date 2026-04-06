@@ -83,6 +83,20 @@ abstract class _$AppRouter extends RootStackRouter {
         ),
       );
     },
+    AddProformaPageRoute.name: (routeData) {
+      final args = routeData.argsAs<AddProformaPageRouteArgs>();
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: AddProformaPage(
+          key: args.key,
+          proformaEntity: args.proformaEntity,
+          type: args.type,
+          refreshCallBack: args.refreshCallBack,
+          startObserveBlocBack: args.startObserveBlocBack,
+          deletedItem: args.deletedItem,
+        ),
+      );
+    },
     AddProjectPageRoute.name: (routeData) {
       final args = routeData.argsAs<AddProjectPageRouteArgs>();
       return AutoRoutePage<dynamic>(
@@ -407,6 +421,7 @@ abstract class _$AppRouter extends RootStackRouter {
         child: LineItemTotalSelectionPage(
           key: args.key,
           shippingDiscountModel: args.shippingDiscountModel,
+          currencyPrefix: args.currencyPrefix,
           callBack: args.callBack,
         ),
       );
@@ -540,6 +555,16 @@ abstract class _$AppRouter extends RootStackRouter {
       return AutoRoutePage<dynamic>(
         routeData: routeData,
         child: const PreferencesPage(),
+      );
+    },
+    ProformaListPageRoute.name: (routeData) {
+      final args = routeData.argsAs<ProformaListPageRouteArgs>();
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: ProformaListPage(
+          key: args.key,
+          builder: args.builder,
+        ),
       );
     },
     ProjectDetailPageRoute.name: (routeData) {
@@ -1063,6 +1088,64 @@ class AddPersonPageRouteArgs {
   @override
   String toString() {
     return 'AddPersonPageRouteArgs{key: $key, clientPersonModel: $clientPersonModel, callback: $callback}';
+  }
+}
+
+/// generated route for
+/// [AddProformaPage]
+class AddProformaPageRoute extends PageRouteInfo<AddProformaPageRouteArgs> {
+  AddProformaPageRoute({
+    Key? key,
+    InvoiceEntity? proformaEntity,
+    required EnumNewProformaType type,
+    required dynamic Function() refreshCallBack,
+    required dynamic Function() startObserveBlocBack,
+    required dynamic Function() deletedItem,
+    List<PageRouteInfo>? children,
+  }) : super(
+          AddProformaPageRoute.name,
+          args: AddProformaPageRouteArgs(
+            key: key,
+            proformaEntity: proformaEntity,
+            type: type,
+            refreshCallBack: refreshCallBack,
+            startObserveBlocBack: startObserveBlocBack,
+            deletedItem: deletedItem,
+          ),
+          initialChildren: children,
+        );
+
+  static const String name = 'AddProformaPageRoute';
+
+  static const PageInfo<AddProformaPageRouteArgs> page =
+      PageInfo<AddProformaPageRouteArgs>(name);
+}
+
+class AddProformaPageRouteArgs {
+  const AddProformaPageRouteArgs({
+    this.key,
+    this.proformaEntity,
+    required this.type,
+    required this.refreshCallBack,
+    required this.startObserveBlocBack,
+    required this.deletedItem,
+  });
+
+  final Key? key;
+
+  final InvoiceEntity? proformaEntity;
+
+  final EnumNewProformaType type;
+
+  final dynamic Function() refreshCallBack;
+
+  final dynamic Function() startObserveBlocBack;
+
+  final dynamic Function() deletedItem;
+
+  @override
+  String toString() {
+    return 'AddProformaPageRouteArgs{key: $key, proformaEntity: $proformaEntity, type: $type, refreshCallBack: $refreshCallBack, startObserveBlocBack: $startObserveBlocBack, deletedItem: $deletedItem}';
   }
 }
 
@@ -2312,6 +2395,7 @@ class LineItemTotalSelectionPageRoute
   LineItemTotalSelectionPageRoute({
     Key? key,
     required ShippingDiscountModel shippingDiscountModel,
+    String currencyPrefix = r'$',
     required dynamic Function(ShippingDiscountModel) callBack,
     List<PageRouteInfo>? children,
   }) : super(
@@ -2319,6 +2403,7 @@ class LineItemTotalSelectionPageRoute
           args: LineItemTotalSelectionPageRouteArgs(
             key: key,
             shippingDiscountModel: shippingDiscountModel,
+            currencyPrefix: currencyPrefix,
             callBack: callBack,
           ),
           initialChildren: children,
@@ -2334,6 +2419,7 @@ class LineItemTotalSelectionPageRouteArgs {
   const LineItemTotalSelectionPageRouteArgs({
     this.key,
     required this.shippingDiscountModel,
+    this.currencyPrefix = r'$',
     required this.callBack,
   });
 
@@ -2341,11 +2427,13 @@ class LineItemTotalSelectionPageRouteArgs {
 
   final ShippingDiscountModel shippingDiscountModel;
 
+  final String currencyPrefix;
+
   final dynamic Function(ShippingDiscountModel) callBack;
 
   @override
   String toString() {
-    return 'LineItemTotalSelectionPageRouteArgs{key: $key, shippingDiscountModel: $shippingDiscountModel, callBack: $callBack}';
+    return 'LineItemTotalSelectionPageRouteArgs{key: $key, shippingDiscountModel: $shippingDiscountModel, currencyPrefix: $currencyPrefix, callBack: $callBack}';
   }
 }
 
@@ -2810,6 +2898,50 @@ class PreferencesPageRoute extends PageRouteInfo<void> {
   static const String name = 'PreferencesPageRoute';
 
   static const PageInfo<void> page = PageInfo<void>(name);
+}
+
+/// generated route for
+/// [ProformaListPage]
+class ProformaListPageRoute extends PageRouteInfo<ProformaListPageRouteArgs> {
+  ProformaListPageRoute({
+    Key? key,
+    required void Function(
+      BuildContext,
+      dynamic Function(),
+    ) builder,
+    List<PageRouteInfo>? children,
+  }) : super(
+          ProformaListPageRoute.name,
+          args: ProformaListPageRouteArgs(
+            key: key,
+            builder: builder,
+          ),
+          initialChildren: children,
+        );
+
+  static const String name = 'ProformaListPageRoute';
+
+  static const PageInfo<ProformaListPageRouteArgs> page =
+      PageInfo<ProformaListPageRouteArgs>(name);
+}
+
+class ProformaListPageRouteArgs {
+  const ProformaListPageRouteArgs({
+    this.key,
+    required this.builder,
+  });
+
+  final Key? key;
+
+  final void Function(
+    BuildContext,
+    dynamic Function(),
+  ) builder;
+
+  @override
+  String toString() {
+    return 'ProformaListPageRouteArgs{key: $key, builder: $builder}';
+  }
 }
 
 /// generated route for

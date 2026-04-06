@@ -72,7 +72,6 @@ import '../features/more/reports/presentation/report_invoice_page.dart';
 import '../features/more/reports/presentation/report_sales_tax_page.dart';
 import '../features/more/reports/presentation/reports_outstanding_page.dart';
 import '../features/more/reports/presentation/reports_page.dart';
-import '../features/more/settings/domain/entity/preference_details_entity.dart';
 import '../features/more/settings/domain/usecase/update_preference_column_usecase.dart';
 import '../features/more/settings/presentation/column_settings_page.dart';
 import '../features/more/settings/presentation/organization_profile_page.dart';
@@ -86,6 +85,8 @@ import '../features/popups/items_popup.dart';
 import '../features/popups/project_popup.dart';
 import '../features/profile/presentation/update_user_profile_page.dart';
 import '../features/profile/presentation/user_profile_page.dart';
+import '../features/proforma/presentation/add_proforma_page.dart';
+import '../features/proforma/presentation/proforma_list_page.dart';
 import '../features/project/domain/entity/project_list_entity.dart';
 import '../features/project/presentation/add_project_page.dart';
 import '../features/project/presentation/project_detail_page.dart';
@@ -140,6 +141,8 @@ class AppRouter extends _$AppRouter {
         AutoRoute(page: EmailToPageRoute.page, fullscreenDialog: true),
         AutoRoute(
             page: AddNewInvoiceEstimatePageRoute.page, fullscreenDialog: true),
+        AutoRoute(page: AddProformaPageRoute.page, fullscreenDialog: true),
+        AutoRoute(page: ProformaListPageRoute.page),
         AutoRoute(page: ProjectPopupRoute.page, fullscreenDialog: true),
         AutoRoute(page: ClientPopupRoute.page, fullscreenDialog: true),
         AutoRoute(page: CategoryListPageRoute.page, fullscreenDialog: true),

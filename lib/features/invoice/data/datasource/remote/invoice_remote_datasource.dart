@@ -28,7 +28,6 @@ import '../../../../../core/api/api_client.dart';
 import '../../../../../core/api/api_endpoint_urls.dart';
 import '../../../../../core/api/api_exception.dart';
 import '../../../domain/entities/client_staff_entity.dart';
-import '../../../domain/entities/send_document_entity.dart';
 import '../../../domain/usecase/invoice_unvoid_usecase.dart';
 import '../../../domain/usecase/send_document_usecase.dart';
 import '../../models/add_payment_model.dart';
@@ -285,8 +284,8 @@ late_fee:90
             "repeat": req.selectedRepeatEvery?.value ?? "",
             "payment_reminders": req.selectedPaymentReminder?.value ?? "",
             "recurring": req.isRecurring == true ? "true" : "false",
-            "currency": "",
-            "exchange_rate": "",
+            "currency": params.currency ?? "",
+            "exchange_rate": params.exchangeRate ?? "",
             "subtotal": params.subTotal ?? "",
             "discount_type": params.discountType ?? "",
             "discount_value": params.discountValue ?? "",
@@ -306,8 +305,8 @@ late_fee:90
           debugPrint("Inside estimate");
 
           map.addAll({
-            "currency": "",
-            "exchange_rate": "",
+            "currency": params.currency ?? "",
+            "exchange_rate": params.exchangeRate ?? "",
             "subtotal": params.subTotal ?? "",
             "discount_type": params.discountType ?? "",
             "discount_value": params.discountValue ?? "",

@@ -27,6 +27,10 @@ class MorePage extends StatelessWidget with SectionAdapterMixin {
           imageName: Assets.assetsImagesIcExpenses,
           enumMoreScreen: EnumMoreScreen.expenses),
       MoreItemModel(
+          name: "Proformas",
+          imageName: Assets.assetsImagesIcReportsInvoice,
+          enumMoreScreen: EnumMoreScreen.proformas),
+      MoreItemModel(
           name: "Items",
           imageName: Assets.assetsImagesIcItem,
           enumMoreScreen: EnumMoreScreen.items),
@@ -162,6 +166,11 @@ class MorePage extends StatelessWidget with SectionAdapterMixin {
           case EnumMoreScreen.expenses:
             debugPrint("Tapped Expenses");
             AutoRouter.of(context).push(const ExpensesListPageRoute());
+          case EnumMoreScreen.proformas:
+            debugPrint("Tapped Proformas");
+            AutoRouter.of(context).push(ProformaListPageRoute(
+              builder: (context, refreshList) {},
+            ));
           case EnumMoreScreen.items:
             debugPrint("Tapped items");
             AutoRouter.of(context).push(const ItemListRoute());
@@ -299,6 +308,7 @@ class MoreItemModel {
 
 enum EnumMoreScreen {
   expenses,
+  proformas,
   items,
   projects,
   creditnotes,
@@ -319,6 +329,7 @@ extension EnumMoreScreenExtension on EnumMoreScreen {
     const defaultUrl = "https://www.google.com";
     switch (this) {
       case EnumMoreScreen.expenses ||
+            EnumMoreScreen.proformas ||
             EnumMoreScreen.items ||
             EnumMoreScreen.projects ||
             EnumMoreScreen.creditnotes ||
