@@ -26,6 +26,7 @@ import '../../invoice/presentation/widgets/invoice_list_item.widget.dart';
 import '../domain/entities/proforma_list_entity.dart';
 import '../domain/usecase/proforma_list_usecase.dart';
 import 'add_proforma_page.dart';
+import 'proforma_detail_page.dart';
 
 enum EnumProformaSwipeOptions { send, duplicate }
 
@@ -230,21 +231,20 @@ class _ProformaListPageState extends State<ProformaListPage>
       ),
       onTap: () {
         isIgnoreBlocStates = true;
-        AutoRouter.of(context).push(AddProformaPageRoute(
+        Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => ProformaDetailPage(
             proformaEntity: item.toInvoiceEntity(),
-            type: EnumNewProformaType.editProforma,
             startObserveBlocBack: () {
               isFromAddNewProforma = true;
               isIgnoreBlocStates = false;
               setState(() {});
             },
-            deletedItem: () {
-              _getProformaList();
-            },
-            refreshCallBack: () {
+            refreshList: () {
               isIgnoreBlocStates = false;
               _getProformaList();
-            }));
+            },
+          ),
+        ));
       },
     );
   }

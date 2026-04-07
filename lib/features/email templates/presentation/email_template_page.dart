@@ -348,12 +348,16 @@ class _EmailTemplatePageState extends State<EmailTemplatePage> {
                                     }));
 
                           case EnumEmailTemplate.followUpEstimate:
-                            AutoRouter.of(context)
-                                .push(UpdateEmailTemplatePageRoute(
+                            AutoRouter.of(context).push(
+                                UpdateEmailTemplatePageRoute(
                                     title: 'Send Follow-Up Estimate',
-                                    message: '',
-                                    subject: '',
-                                    type: EnumEmailTemplate.proforma,
+                                    message: emailtemplatesEntity
+                                            ?.emailMessageFollowupestimate1 ??
+                                        '',
+                                    subject: emailtemplatesEntity
+                                            ?.emailSubjectFollowupestimate1 ??
+                                        '',
+                                    type: EnumEmailTemplate.followUpEstimate,
                                     refreshPage: () {
                                       _getEmailTemplates();
                                     }));

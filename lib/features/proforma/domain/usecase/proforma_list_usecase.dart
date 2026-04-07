@@ -53,10 +53,8 @@ class GetProformaDetailsUsecase
 
 class ProformaDetailsReqParams {
   final String id;
-  final String duplicate;
 
   ProformaDetailsReqParams({
     this.id = "0",
-    this.duplicate = "",
   });
 }

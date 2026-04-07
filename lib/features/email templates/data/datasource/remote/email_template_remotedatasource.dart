@@ -2,7 +2,6 @@ import 'package:billbooks_app/features/email%20templates/data/model/email_templa
 import 'package:billbooks_app/features/email%20templates/data/model/update_email_template_model.dart';
 import 'package:billbooks_app/features/email%20templates/domain/usecase/email_template_usecase.dart';
 import 'package:billbooks_app/features/email%20templates/presentation/email_template_page.dart';
-import 'package:billbooks_app/features/email%20templates/presentation/update_email_template_page.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
@@ -70,7 +69,7 @@ email_message_paymentthankyou:
       final message = params.message ?? "";
 
       Map<String, dynamic> reqPrams = {
-        "emailtemplate": params.type.emailTemplate,
+        "emailtemplate": params.templateKey ?? params.type.emailTemplate,
         "email_subject_sendinvoice": params.type.isSendInvoice ? subject : "",
         "email_message_sendinvoice": params.type.isSendInvoice ? message : "",
         "email_subject_sendestimate": params.type.isSendEstimate ? subject : "",
@@ -84,6 +83,12 @@ email_message_paymentthankyou:
         "email_message_paymentthankyou":
             params.type.isPaymentThankyou ? message : "",
       };
+      if (params.subjectFieldKey != null) {
+        reqPrams[params.subjectFieldKey!] = subject;
+      }
+      if (params.messageFieldKey != null) {
+        reqPrams[params.messageFieldKey!] = message;
+      }
       final body = FormData.fromMap(reqPrams);
       const path = ApiEndPoints.updateEmailTemplates;
       final response = await apiClient.postRequest(

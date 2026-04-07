@@ -132,7 +132,8 @@ class InvoiceInfoWidget extends StatelessWidget {
     if (type == EnumNewInvoiceEstimateType.duplicateInvoice ||
         type == EnumNewInvoiceEstimateType.invoice ||
         type == EnumNewInvoiceEstimateType.editInvoice ||
-        type == EnumNewInvoiceEstimateType.convertEstimateToInvoice) {
+        type == EnumNewInvoiceEstimateType.convertEstimateToInvoice ||
+        type == EnumNewInvoiceEstimateType.convertProformaToInvoice) {
       return true;
     }
     return false;
@@ -172,6 +173,7 @@ class InvoiceInfoWidget extends StatelessWidget {
     switch (type) {
       case EnumNewInvoiceEstimateType.invoice ||
             EnumNewInvoiceEstimateType.convertEstimateToInvoice ||
+            EnumNewInvoiceEstimateType.convertProformaToInvoice ||
             EnumNewInvoiceEstimateType.duplicateInvoice:
         if (invoiceRequestModel.selectedPaymentTerms != null) {
           return true;

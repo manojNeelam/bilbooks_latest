@@ -15,22 +15,29 @@ enum EnumScreentype {
   users,
   taxes,
   integrations,
+  subscription,
   emailtemplate;
 }
 
 extension EnumScreentypeExtension on EnumScreentype {
-  (String image, String title) get details {
+  (String? image, IconData? icon, String title) get details {
     switch (this) {
       case EnumScreentype.preference:
-        return (Assets.assetsImagesIcSettingsPreferences, "Preferences");
+        return (Assets.assetsImagesIcSettingsPreferences, null, "Preferences");
       case EnumScreentype.users:
-        return (Assets.assetsImagesIcSettingsUsers, "User");
+        return (Assets.assetsImagesIcSettingsUsers, null, "User");
       case EnumScreentype.taxes:
-        return (Assets.assetsImagesIcTaxesSettings, "Taxes");
+        return (Assets.assetsImagesIcTaxesSettings, null, "Taxes");
       case EnumScreentype.integrations:
-        return (Assets.assetsImagesIcSettingsIntegrations, "Integration");
+        return (Assets.assetsImagesIcSettingsIntegrations, null, "Integration");
+      case EnumScreentype.subscription:
+        return (null, Icons.subscriptions_outlined, "Subscription");
       case EnumScreentype.emailtemplate:
-        return (Assets.assetsImagesIcSettingsEmailTemplate, "Email Templates");
+        return (
+          Assets.assetsImagesIcSettingsEmailTemplate,
+          null,
+          "Email Templates"
+        );
     }
   }
 }
@@ -72,6 +79,7 @@ class SettingsPage extends StatelessWidget {
       EnumScreentype.users,
       EnumScreentype.taxes,
       EnumScreentype.integrations,
+      EnumScreentype.subscription,
       EnumScreentype.emailtemplate
     ];
     return Scaffold(
@@ -152,7 +160,8 @@ class SettingsPage extends StatelessWidget {
                   itemCount: settingsList.length,
                   itemBuilder: (contet, index) {
                     final settingEnumType = settingsList[index];
-                    final (imageName, title) = settingEnumType.details;
+                    final (imageName, iconData, title) =
+                        settingEnumType.details;
                     return GestureDetector(
                       onTap: () {
                         switch (settingEnumType) {
@@ -160,25 +169,37 @@ class SettingsPage extends StatelessWidget {
                             debugPrint("onTap Preferences");
                             AutoRouter.of(context)
                                 .push(const PreferencesPageRoute());
+                            return;
                           case EnumScreentype.users:
                             debugPrint("onTap Users");
                             AutoRouter.of(context).push(UsersListPageRoute());
+                            return;
                           case EnumScreentype.integrations:
                             debugPrint("onTap Integrations");
                             AutoRouter.of(context)
                                 .push(const OnlinePaymentsPageRoute());
+                            return;
+                          case EnumScreentype.subscription:
+                            debugPrint("onTap Subscription");
+                            AutoRouter.of(context)
+                                .push(const SubscriptionPageRoute());
+                            return;
                           case EnumScreentype.emailtemplate:
                             debugPrint("onTap Email Template");
                             AutoRouter.of(context)
                                 .push(const EmailTemplatePageRoute());
+                            return;
                           case EnumScreentype.taxes:
                             debugPrint("onTap Taxes");
                             AutoRouter.of(context)
                                 .push(const TaxesListPageRoute());
+                            return;
                         }
                       },
                       child: SettingsItemWidget(
-                          imageName: imageName, title: title),
+                          imageName: imageName,
+                          leadingIcon: iconData,
+                          title: title),
                     );
                   }),
             ),
@@ -193,10 +214,12 @@ class SettingsItemWidget extends StatelessWidget {
   const SettingsItemWidget({
     super.key,
     required this.imageName,
+    required this.leadingIcon,
     required this.title,
   });
 
-  final String imageName;
+  final String? imageName;
+  final IconData? leadingIcon;
   final String title;
 
   @override
@@ -206,11 +229,18 @@ class SettingsItemWidget extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          Image.asset(
-            imageName,
-            width: 25,
-            height: 25,
-          ),
+          if (imageName != null)
+            Image.asset(
+              imageName!,
+              width: 25,
+              height: 25,
+            )
+          else
+            Icon(
+              leadingIcon,
+              color: AppPallete.textColor,
+              size: 24,
+            ),
           AppConstants.sizeBoxWidth15,
           Expanded(
             child: Text(

@@ -78,6 +78,7 @@ import '../features/more/settings/presentation/organization_profile_page.dart';
 import '../features/more/settings/presentation/preferences_page.dart';
 import '../features/more/settings/presentation/setting_template_page.dart';
 import '../features/more/settings/settings_page.dart';
+import '../features/more/settings/subscription/presentation/subscription_page.dart';
 import '../features/notifications/presentation/notification_page.dart';
 import '../features/pdfviewer/presentation/pdfviewer_page.dart';
 import '../features/popups/client_popup.dart';
@@ -100,6 +101,8 @@ part 'app_router.gr.dart';
 
 @AutoRouterConfig(replaceInRouteName: 'Screen')
 class AppRouter extends _$AppRouter {
+  AppRouter({super.navigatorKey});
+
   @override
   List<AutoRoute> get routes => [
         //AutoRoute(page: LayoutBuilderR.page, path: "/", initial: true),
@@ -196,6 +199,7 @@ class AppRouter extends _$AppRouter {
         AutoRoute(page: ClientListPageRoute.page),
         AutoRoute(page: ClientDetailPageRoute.page),
         AutoRoute(page: SettingsPageRoute.page),
+        AutoRoute(page: SubscriptionPageRoute.page, fullscreenDialog: true),
         AutoRoute(page: ProjectDetailPageRoute.page),
         AutoRoute(
             page: OrganizationProfilePageRoute.page, fullscreenDialog: true),

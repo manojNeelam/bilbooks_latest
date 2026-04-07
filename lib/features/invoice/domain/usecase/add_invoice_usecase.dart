@@ -41,6 +41,7 @@ class AddInvoiceReqParms {
   final String? id;
   final String? currency;
   final String? exchangeRate;
+  final String? creditNotes;
 
   AddInvoiceReqParms({
     required this.type,
@@ -62,5 +63,6 @@ class AddInvoiceReqParms {
     required this.id,
     this.currency,
     this.exchangeRate,
+    this.creditNotes,
   });
 }

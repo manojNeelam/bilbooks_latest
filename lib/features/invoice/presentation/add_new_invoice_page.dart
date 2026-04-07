@@ -1,12 +1,17 @@
 import 'package:auto_route/auto_route.dart';
+import 'dart:io';
 import 'package:billbooks_app/core/app_constants.dart';
+import 'package:billbooks_app/core/models/country_model.dart';
 import 'package:billbooks_app/core/theme/app_fonts.dart';
 import 'package:billbooks_app/core/theme/app_pallete.dart';
+import 'package:billbooks_app/core/utils/hive_functions.dart';
 import 'package:billbooks_app/core/utils/show_toast.dart';
 import 'package:billbooks_app/core/widgets/item_separator.dart';
 import 'package:billbooks_app/core/widgets/loading_page.dart';
 import 'package:billbooks_app/core/widgets/section_header_widget.dart';
 import 'package:billbooks_app/features/clients/domain/entities/client_list_entity.dart';
+import 'package:billbooks_app/features/clients/domain/usecase/client_usecase.dart';
+import 'package:billbooks_app/features/clients/presentation/bloc/client_bloc.dart';
 import 'package:billbooks_app/features/invoice/data/models/invoice_details_model.dart';
 import 'package:billbooks_app/features/invoice/domain/entities/delivery_options_model.dart';
 import 'package:billbooks_app/features/invoice/domain/entities/invoice_list_entity.dart';
@@ -15,12 +20,15 @@ import 'package:billbooks_app/features/invoice/domain/usecase/invoice_usecase.da
 import 'package:billbooks_app/features/invoice/presentation/bloc/invoice_bloc.dart';
 import 'package:billbooks_app/features/invoice/presentation/line_item_total_selection.dart';
 import 'package:billbooks_app/features/project/domain/entity/project_list_entity.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_section_list/flutter_section_list.dart';
 import 'package:flutter_swipe_action_cell/core/cell.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:toastification/toastification.dart';
+import 'dart:convert';
 import '../../../core/utils/utils.dart';
 import '../../../core/widgets/app_alert_widget.dart';
 import '../../../core/widgets/notes_widget.dart';
@@ -48,6 +56,7 @@ enum EnumNewInvoiceEstimateType {
   duplicateEstimate,
   duplicateInvoice,
   convertEstimateToInvoice,
+  convertProformaToInvoice,
 }
 
 extension EnumNewInvoiceEstimateTypeExtension on EnumNewInvoiceEstimateType {
@@ -58,6 +67,7 @@ extension EnumNewInvoiceEstimateTypeExtension on EnumNewInvoiceEstimateType {
         return estimateTitle;
       case EnumNewInvoiceEstimateType.invoice ||
             EnumNewInvoiceEstimateType.convertEstimateToInvoice ||
+            EnumNewInvoiceEstimateType.convertProformaToInvoice ||
             EnumNewInvoiceEstimateType.duplicateInvoice:
         return "Invoice";
       case EnumNewInvoiceEstimateType.editEstimate:
@@ -74,6 +84,7 @@ extension EnumNewInvoiceEstimateTypeExtension on EnumNewInvoiceEstimateType {
         return "New $estimateTitle";
       case EnumNewInvoiceEstimateType.invoice ||
             EnumNewInvoiceEstimateType.convertEstimateToInvoice ||
+            EnumNewInvoiceEstimateType.convertProformaToInvoice ||
             EnumNewInvoiceEstimateType.duplicateInvoice:
         return "New Invoice";
       case EnumNewInvoiceEstimateType.editEstimate:
@@ -112,6 +123,7 @@ class AddNewInvoiceEstimatePage extends StatefulWidget {
 
 class _AddNewInvoiceEstimatePageState extends State<AddNewInvoiceEstimatePage>
     with SectionAdapterMixin {
+  final ImagePicker _imagePicker = ImagePicker();
   TextEditingController notesController = TextEditingController();
   InvoiceRequestModel invoiceRequestModel = InvoiceRequestModel();
   ClientEntity? selectedClient;
@@ -141,6 +153,15 @@ class _AddNewInvoiceEstimatePageState extends State<AddNewInvoiceEstimatePage>
   List<PaymentTerms> paymentTermsList = [];
   List<RepeatEvery> repeatEveryitems = [];
   List<Timezone> timeZonesList = [];
+  String organizationCurrencyCode = "";
+  String organizationCurrency = "";
+  List<CountryModel> countries = [];
+  final TextEditingController exchangeRateController = TextEditingController();
+  bool hasAttachments = false;
+  Uint8List? localAttachmentBytes;
+  String? localAttachmentName;
+  bool localAttachmentIsImage = false;
+  List<ClientCreditnoteEntity> selectedCreditNotes = [];
 
   void _syncMyStaffSelections(List<EmailtoMystaffEntity> staffList) {
     myStaffList = staffList;
@@ -246,6 +267,8 @@ class _AddNewInvoiceEstimatePageState extends State<AddNewInvoiceEstimatePage>
 
   @override
   void initState() {
+    _loadOrganizationCurrency();
+    _loadCountries();
     if (isNewEstimateInvoice()) {
       context.read<InvoiceBloc>().add(GetInvoiceDetails(
           invoiceDetailRequest: InvoiceDetailRequest(type: widget.type)));
@@ -366,6 +389,625 @@ class _AddNewInvoiceEstimatePageState extends State<AddNewInvoiceEstimatePage>
     }
   }
 
+  String? get selectedClientCurrencyCode {
+    final currencyCode = (selectedClient?.currencyCode ?? '').trim();
+    if (currencyCode.isNotEmpty) {
+      return currencyCode;
+    }
+
+    final currency = (selectedClient?.currency ?? '').trim();
+    if (currency.isNotEmpty) {
+      return currency;
+    }
+
+    return _getCountryCurrencyCode(selectedClient);
+  }
+
+  String? _getCountryCurrencyCode(ClientEntity? client) {
+    if (client == null || countries.isEmpty) {
+      return null;
+    }
+
+    final clientCountryId = (client.countryId ?? '').trim();
+    if (clientCountryId.isNotEmpty) {
+      final country = countries.cast<CountryModel?>().firstWhere(
+            (returnedCountry) =>
+                (returnedCountry?.countryId ?? '').trim() == clientCountryId,
+            orElse: () => null,
+          );
+      final currency = (country?.currency ?? '').trim();
+      if (currency.isNotEmpty) {
+        return currency;
+      }
+    }
+
+    final clientCountryName = (client.countryName ?? '').trim().toLowerCase();
+    if (clientCountryName.isNotEmpty) {
+      final country = countries.cast<CountryModel?>().firstWhere(
+            (returnedCountry) =>
+                (returnedCountry?.name ?? '').trim().toLowerCase() ==
+                clientCountryName,
+            orElse: () => null,
+          );
+      final currency = (country?.currency ?? '').trim();
+      if (currency.isNotEmpty) {
+        return currency;
+      }
+    }
+
+    return null;
+  }
+
+  bool get shouldShowExchangeRate {
+    final baseCurrency = organizationCurrencyCode.trim().isNotEmpty
+        ? organizationCurrencyCode.trim()
+        : organizationCurrency.trim();
+    final clientCurrency = (selectedClientCurrencyCode ?? '').trim();
+
+    if (baseCurrency.isEmpty || clientCurrency.isEmpty) {
+      return false;
+    }
+
+    return baseCurrency.toLowerCase() != clientCurrency.toLowerCase();
+  }
+
+  double _toDouble(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return 0;
+    }
+    return double.tryParse(value.trim()) ?? 0;
+  }
+
+  List<ClientCreditnoteEntity> get unusedCreditNotes {
+    final creditnotes = selectedClient?.creditnotes ?? [];
+    return creditnotes.where((creditnote) {
+      return (creditnote.status ?? '').trim().toLowerCase() == 'unused';
+    }).toList();
+  }
+
+  double get availableCreditNoteLimit {
+    if (unusedCreditNotes.isEmpty) {
+      return 0;
+    }
+
+    return unusedCreditNotes.fold(0.0, (sum, creditnote) {
+      return sum + _toDouble(creditnote.amount);
+    });
+  }
+
+  bool get shouldShowCreditNoteOption => availableCreditNoteLimit > 0;
+
+  double get appliedCreditNoteTotal {
+    if (selectedCreditNotes.isEmpty) {
+      return 0;
+    }
+
+    return selectedCreditNotes.fold(0.0, (sum, creditnote) {
+      return sum + _toDouble(creditnote.amount);
+    });
+  }
+
+  double get payableNetTotal {
+    final value = _toDouble(netTotal) - appliedCreditNoteTotal;
+    return value < 0 ? 0 : value;
+  }
+
+  String? get serializedSelectedCreditNotes {
+    final rawIds = selectedCreditNotes
+        .map((creditnote) => (creditnote.id ?? '').trim())
+        .where((id) => id.isNotEmpty)
+        .toList();
+
+    if (rawIds.isEmpty) {
+      return null;
+    }
+
+    final normalizedIds = rawIds.map((id) {
+      final parsed = int.tryParse(id);
+      return parsed ?? id;
+    }).toList();
+
+    return jsonEncode(normalizedIds);
+  }
+
+  String _creditNoteKey(ClientCreditnoteEntity creditnote) {
+    final id = (creditnote.id ?? '').trim();
+    if (id.isNotEmpty) {
+      return id;
+    }
+
+    return [
+      creditnote.noteNo ?? '',
+      creditnote.amount ?? '',
+      creditnote.clientId ?? '',
+    ].join('_');
+  }
+
+  ClientEntity? _resolveClientWithCreditNotes(ClientEntity? client) {
+    if (client == null) {
+      return null;
+    }
+
+    ClientEntity? matchedClient;
+    final availableClients = invoiceDetailResEntity?.clients ?? [];
+    for (final returnedClient in availableClients) {
+      if (returnedClient.clientId == client.clientId ||
+          returnedClient.id == client.id) {
+        matchedClient = returnedClient;
+        break;
+      }
+    }
+
+    if (matchedClient?.creditnotes?.isNotEmpty == true) {
+      client.creditnotes = matchedClient?.creditnotes;
+    }
+
+    return client;
+  }
+
+  String _selectedClientLookupId(ClientEntity? client) {
+    final clientId = (client?.clientId ?? '').trim();
+    if (clientId.isNotEmpty) {
+      return clientId;
+    }
+    return (client?.id ?? '').trim();
+  }
+
+  void _fetchSelectedClientDetails(ClientEntity? client) {
+    final lookupId = _selectedClientLookupId(client);
+    if (lookupId.isEmpty) {
+      return;
+    }
+
+    context.read<ClientBloc>().add(
+          GetClientDetailsEvent(
+            clientDetailsReqParams: ClientDetailsReqParams(id: lookupId),
+          ),
+        );
+  }
+
+  void _removeSelectedCreditNote(ClientCreditnoteEntity creditnote) {
+    final selectedKey = _creditNoteKey(creditnote);
+    selectedCreditNotes.removeWhere(
+      (returnedItem) => _creditNoteKey(returnedItem) == selectedKey,
+    );
+    setState(() {});
+  }
+
+  Future<void> _openCreditNoteSelector() async {
+    if (unusedCreditNotes.isEmpty) {
+      return;
+    }
+
+    final tempSelectedIds = selectedCreditNotes
+        .map((creditnote) => _creditNoteKey(creditnote))
+        .toSet();
+
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (sheetContext) {
+        return StatefulBuilder(
+          builder: (modalContext, setModalState) {
+            return SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: AppPallete.white,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                'Select Credit Notes',
+                                style: AppFonts.mediumStyle(size: 18),
+                              ),
+                            ),
+                            Text(
+                              'Available: \$${availableCreditNoteLimit.toStringAsFixed(2)}',
+                              style: AppFonts.regularStyle(
+                                color: AppPallete.k666666,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Flexible(
+                        child: ListView.separated(
+                          shrinkWrap: true,
+                          padding: const EdgeInsets.symmetric(vertical: 4),
+                          itemCount: unusedCreditNotes.length,
+                          separatorBuilder: (_, __) => const Divider(height: 1),
+                          itemBuilder: (context, index) {
+                            final creditnote = unusedCreditNotes[index];
+                            final noteKey = _creditNoteKey(creditnote);
+                            final isSelected =
+                                tempSelectedIds.contains(noteKey);
+
+                            return CheckboxListTile(
+                              value: isSelected,
+                              activeColor: AppPallete.blueColor,
+                              controlAffinity: ListTileControlAffinity.leading,
+                              title: Text(
+                                creditnote.noteNo?.trim().isNotEmpty == true
+                                    ? creditnote.noteNo!
+                                    : 'Credit Note',
+                                style: AppFonts.mediumStyle(size: 16),
+                              ),
+                              subtitle: (creditnote.description ?? '')
+                                      .trim()
+                                      .isNotEmpty
+                                  ? Text(
+                                      creditnote.description ?? '',
+                                      style: AppFonts.regularStyle(
+                                        color: AppPallete.k666666,
+                                      ),
+                                    )
+                                  : null,
+                              secondary: Text(
+                                '\$${_toDouble(creditnote.amount).toStringAsFixed(2)}',
+                                style: AppFonts.mediumStyle(size: 16),
+                              ),
+                              onChanged: (value) {
+                                setModalState(() {
+                                  if (value == true) {
+                                    tempSelectedIds.add(noteKey);
+                                  } else {
+                                    tempSelectedIds.remove(noteKey);
+                                  }
+                                });
+                              },
+                            );
+                          },
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(sheetContext).pop();
+                              },
+                              child: Text(
+                                'Cancel',
+                                style: AppFonts.regularStyle(
+                                  color: AppPallete.k666666,
+                                ),
+                              ),
+                            ),
+                            AppConstants.sizeBoxWidth10,
+                            ElevatedButton(
+                              onPressed: () {
+                                selectedCreditNotes = unusedCreditNotes.where(
+                                  (creditnote) {
+                                    return tempSelectedIds
+                                        .contains(_creditNoteKey(creditnote));
+                                  },
+                                ).toList();
+                                setState(() {});
+                                Navigator.of(sheetContext).pop();
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppPallete.blueColor,
+                                foregroundColor: AppPallete.white,
+                                elevation: 0,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 24,
+                                  vertical: 12,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                              child: Text(
+                                'Apply',
+                                style: AppFonts.mediumStyle(
+                                  size: 16,
+                                  color: AppPallete.white,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Future<void> _loadOrganizationCurrency() async {
+    final session = await HiveFunctions.getUserSessionData();
+    final organization = session?.organization;
+
+    if (!mounted) {
+      return;
+    }
+
+    setState(() {
+      organizationCurrencyCode = (organization?.currencyCode ?? '').trim();
+      organizationCurrency = (organization?.currency ?? '').trim();
+      _syncExchangeRateValue();
+    });
+  }
+
+  Future<void> _loadCountries() async {
+    final response = await rootBundle.loadString('assets/files/countries.json');
+    final countryData = countryMainDataModelFromJson(response).country ?? [];
+
+    if (!mounted) {
+      return;
+    }
+
+    setState(() {
+      countries = countryData;
+      _syncExchangeRateValue();
+    });
+  }
+
+  Future<void> _showAttachmentOptions() async {
+    await showModalBottomSheet<void>(
+      context: context,
+      builder: (context) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.attach_file_outlined),
+                title: Text(
+                  'Add file',
+                  style: AppFonts.regularStyle(),
+                ),
+                onTap: () async {
+                  Navigator.of(context).pop();
+                  await _pickAttachmentFile();
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.camera_alt_outlined),
+                title: Text(
+                  'Take image',
+                  style: AppFonts.regularStyle(),
+                ),
+                onTap: () async {
+                  Navigator.of(context).pop();
+                  await _pickAttachmentImage(ImageSource.camera);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.photo_library_outlined),
+                title: Text(
+                  'Pick from gallery',
+                  style: AppFonts.regularStyle(),
+                ),
+                onTap: () async {
+                  Navigator.of(context).pop();
+                  await _pickAttachmentImage(ImageSource.gallery);
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _pickAttachmentImage(ImageSource source) async {
+    final image = await _imagePicker.pickImage(
+      source: source,
+      imageQuality: 85,
+    );
+
+    if (image == null) {
+      return;
+    }
+
+    final bytes = await image.readAsBytes();
+    if (!mounted) {
+      return;
+    }
+
+    setState(() {
+      localAttachmentBytes = bytes;
+      localAttachmentName = image.name;
+      localAttachmentIsImage = true;
+      hasAttachments = true;
+    });
+  }
+
+  Future<void> _pickAttachmentFile() async {
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.any,
+      withData: true,
+    );
+
+    if (result == null || result.files.isEmpty) {
+      return;
+    }
+
+    final file = result.files.first;
+    Uint8List? bytes = file.bytes;
+
+    if (bytes == null && file.path != null && file.path!.isNotEmpty) {
+      bytes = await File(file.path!).readAsBytes();
+    }
+
+    if (!mounted) {
+      return;
+    }
+
+    if (bytes == null) {
+      showToastification(
+        context,
+        'Unable to read selected file.',
+        ToastificationType.error,
+      );
+      return;
+    }
+
+    setState(() {
+      localAttachmentBytes = bytes;
+      localAttachmentName = file.name;
+      localAttachmentIsImage = _isImageFile(file.name);
+      hasAttachments = true;
+    });
+  }
+
+  bool _isImageFile(String fileName) {
+    final lower = fileName.toLowerCase();
+    return lower.endsWith('.jpg') ||
+        lower.endsWith('.jpeg') ||
+        lower.endsWith('.png') ||
+        lower.endsWith('.gif') ||
+        lower.endsWith('.webp');
+  }
+
+  Widget _buildAttachmentPreview() {
+    if (localAttachmentBytes != null && localAttachmentIsImage) {
+      return Container(
+        width: double.infinity,
+        color: AppPallete.white,
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        child: Image.memory(
+          localAttachmentBytes!,
+          height: 96,
+          fit: BoxFit.contain,
+        ),
+      );
+    }
+
+    if (localAttachmentBytes != null) {
+      return Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: AppPallete.kF2F2F2,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Row(
+          children: [
+            const Icon(
+              Icons.insert_drive_file_outlined,
+              color: AppPallete.blueColor,
+            ),
+            AppConstants.sizeBoxWidth10,
+            Expanded(
+              child: Text(
+                localAttachmentName ?? 'Selected file',
+                style: AppFonts.regularStyle(),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    if (hasAttachments) {
+      return _buildEmptyAttachmentPreview(
+        message: 'Attachment added to this invoice',
+      );
+    }
+
+    return _buildEmptyAttachmentPreview(message: 'Add a file or image');
+  }
+
+  Widget _buildEmptyAttachmentPreview({required String message}) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: AppPallete.kF2F2F2,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Text(
+        message,
+        style: AppFonts.regularStyle(),
+      ),
+    );
+  }
+
+  Widget _buildAdditionalDocumentInfo() {
+    final shouldShowAttachmentPreview =
+        localAttachmentBytes != null || hasAttachments;
+
+    return Container(
+      color: AppPallete.white,
+      padding: AppConstants.horizontalVerticalPadding,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  'Add File',
+                  style: AppFonts.mediumStyle(size: 16),
+                ),
+              ),
+              TextButton(
+                onPressed: _showAttachmentOptions,
+                child: Text(
+                  shouldShowAttachmentPreview ? 'Change' : 'Add',
+                  style: AppFonts.regularStyle(color: AppPallete.blueColor),
+                ),
+              ),
+            ],
+          ),
+          AppConstants.sizeBoxHeight10,
+          InkWell(
+            onTap: _showAttachmentOptions,
+            borderRadius: BorderRadius.circular(8),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: _buildAttachmentPreview(),
+            ),
+          ),
+          AppConstants.sizeBoxHeight10,
+          Text(
+            'Tap above to add file, take image, or pick from gallery.',
+            style: AppFonts.regularStyle(
+              size: 14,
+              color: AppPallete.k666666,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _syncExchangeRateValue({String? existingExchangeRate}) {
+    if (!shouldShowExchangeRate) {
+      exchangeRateController.clear();
+      return;
+    }
+
+    final resolvedExchangeRate = (existingExchangeRate ?? '').trim();
+    if (resolvedExchangeRate.isNotEmpty) {
+      exchangeRateController.text = resolvedExchangeRate;
+      return;
+    }
+
+    if (exchangeRateController.text.trim().isEmpty) {
+      exchangeRateController.text = '1';
+    }
+  }
+
   DateTime? getDateFrom(String? dateStr) {
     if (dateStr == null) {
       return null;
@@ -381,12 +1023,29 @@ class _AddNewInvoiceEstimatePageState extends State<AddNewInvoiceEstimatePage>
   }
 
   void populateData() {
+    invoiceDetailResEntity ??= widget.invoiceDetailResEntity;
+    taxesList = invoiceDetailResEntity?.taxes ?? taxesList;
     selectedClient = ClientEntity(
       id: widget.invoiceEntity?.clientId,
       clientId: widget.invoiceEntity?.clientId,
       name: widget.invoiceEntity?.clientName,
       address: widget.invoiceEntity?.clientAddress,
+      countryName: widget.invoiceEntity?.clientCountry,
+      currency: widget.invoiceEntity?.currency,
+      currencyCode: widget.invoiceEntity?.currency,
     );
+    final matchedClient = invoiceDetailResEntity?.clients?.firstWhere(
+      (returnedClient) =>
+          returnedClient.clientId == selectedClient?.clientId ||
+          returnedClient.id == selectedClient?.id,
+      orElse: () => ClientEntity(),
+    );
+    if (matchedClient?.creditnotes?.isNotEmpty == true) {
+      selectedClient?.creditnotes = matchedClient?.creditnotes;
+    } else {
+      _fetchSelectedClientDetails(selectedClient);
+    }
+    selectedCreditNotes = [];
     terms = widget.invoiceEntity?.terms ?? "";
     _syncMyStaffSelections(widget.invoiceEntity?.emailtoMystaff ?? []);
     var itemListss = widget.invoiceEntity?.items ?? [];
@@ -478,6 +1137,9 @@ class _AddNewInvoiceEstimatePageState extends State<AddNewInvoiceEstimatePage>
         shipping: widget.invoiceEntity?.shipping ?? "",
         isPercentage: isPercentage);
     notesController.text = widget.invoiceEntity?.notes ?? "";
+    hasAttachments = widget.invoiceEntity?.isAttachments == true;
+    _syncExchangeRateValue(
+        existingExchangeRate: widget.invoiceEntity?.exchangeRate?.toString());
 
     calculateListOfTaxes();
     setState(() {});
@@ -492,6 +1154,33 @@ class _AddNewInvoiceEstimatePageState extends State<AddNewInvoiceEstimatePage>
   }
 
   void addEstimate() {
+    if (shouldShowExchangeRate && exchangeRateController.text.trim().isEmpty) {
+      showToastification(
+        context,
+        'Please enter the exchange rate.',
+        ToastificationType.error,
+      );
+      return;
+    }
+
+    if (appliedCreditNoteTotal > availableCreditNoteLimit) {
+      showToastification(
+        context,
+        'Credit note amount cannot exceed available credit (${availableCreditNoteLimit.toStringAsFixed(2)}).',
+        ToastificationType.error,
+      );
+      return;
+    }
+
+    if (appliedCreditNoteTotal > _toDouble(netTotal)) {
+      showToastification(
+        context,
+        'Credit note amount cannot exceed invoice total (${_toDouble(netTotal).toStringAsFixed(2)}).',
+        ToastificationType.error,
+      );
+      return;
+    }
+
     final reqParams = AddInvoiceReqParms(
       type: widget.type,
       terms: terms,
@@ -510,6 +1199,10 @@ class _AddNewInvoiceEstimatePageState extends State<AddNewInvoiceEstimatePage>
       subTotal: subTotal,
       taxTotal: totalFinalTaxAmountVal,
       id: doNeedToPassId() ? widget.invoiceEntity?.id ?? "" : "",
+      currency: shouldShowExchangeRate ? selectedClientCurrencyCode : null,
+      exchangeRate:
+          shouldShowExchangeRate ? exchangeRateController.text.trim() : null,
+      creditNotes: serializedSelectedCreditNotes,
     );
 
     debugPrint("${reqParams.invoiceRequestModel?.date ?? DateTime.now()}");
@@ -575,107 +1268,138 @@ emailto_clientstaff:[{"id":"23214","email":"abc@exaple.com"},{"id":"23216","emai
                 ))
           ],
         ),
-        body: BlocConsumer<InvoiceBloc, InvoiceState>(
-          listener: (context, state) {
-            if (state is ClientStaffSuccessState) {
-              final clientStaffList =
-                  state.clientStaffMainResEntity.data?.staffs ?? [];
-              _syncFetchedClientStaffSelections(
-                  clientStaffList.map((returnedItem) {
-                return EmailtoMystaffEntity(
-                    email: returnedItem.email,
-                    id: returnedItem.id,
-                    name: returnedItem.name,
-                    selected: returnedItem.primary);
-              }).toList());
-            }
-            if (state is InvoiceDeleteErrorState) {
-              showToastification(
-                  context, state.errorMessage, ToastificationType.error);
-            }
+        body: BlocListener<ClientBloc, ClientState>(
+            listener: (context, clientState) {
+              if (clientState is ClientDetailsSuccessState) {
+                final detailedClient =
+                    clientState.clientDetailsMainResEntity.data?.client;
+                if (detailedClient == null) {
+                  return;
+                }
 
-            if (state is InvoiceDeleteSuccessState) {
-              showToastification(
-                  context,
-                  state.invoiceDeleteMainResEntity.data?.message ??
-                      "Successfully deleted",
-                  ToastificationType.success);
-              widget.deletedItem();
-              AutoRouter.of(context).popUntilRoot();
-            }
+                final currentSelectedId =
+                    _selectedClientLookupId(selectedClient);
+                final detailedClientId =
+                    _selectedClientLookupId(detailedClient);
+                if (currentSelectedId.isEmpty ||
+                    detailedClientId.isEmpty ||
+                    currentSelectedId != detailedClientId) {
+                  return;
+                }
 
-            if (state is InvoiceEstimateAddErrorState) {
-              showToastification(
-                  context, state.errorMessage, ToastificationType.error);
-            }
-
-            if (state is InvoiceEstimateAddSuccessState) {
-              showToastification(
-                  context,
-                  state.addInvoiceMainResEntity.data?.message ??
-                      "Successfully added ${isEstimate() ? widget.estimateTitle : "invoice"}.",
-                  ToastificationType.success);
-              widget.refreshCallBack();
-              AutoRouter.of(context).maybePop();
-            }
-            if (state is InvoiceDetailSuccessState) {
-              InvoiceEntity? invoiceEntity;
-
-              if (widget.type == EnumNewInvoiceEstimateType.duplicateInvoice ||
-                  widget.type == EnumNewInvoiceEstimateType.invoice ||
-                  widget.type ==
-                      EnumNewInvoiceEstimateType.convertEstimateToInvoice) {
-                invoiceEntity = state.invoiceDetailResEntity.invoice;
-              } else if (isEstimate()) {
-                invoiceEntity = state.invoiceDetailResEntity.estimate;
-              }
-
-              debugPrint(
-                  "InvoiceDetailSuccessState: ${invoiceEntity?.no ?? "No invoice number"}");
-
-              if (widget.type == EnumNewInvoiceEstimateType.duplicateInvoice ||
-                  widget.type == EnumNewInvoiceEstimateType.duplicateEstimate ||
-                  widget.type ==
-                      EnumNewInvoiceEstimateType.convertEstimateToInvoice) {
-                invoiceRequestModel.no = invoiceEntity?.no;
+                selectedClient = detailedClient;
                 setState(() {});
-                return;
               }
+            },
+            child: BlocConsumer<InvoiceBloc, InvoiceState>(
+              listener: (context, state) {
+                if (state is ClientStaffSuccessState) {
+                  final clientStaffList =
+                      state.clientStaffMainResEntity.data?.staffs ?? [];
+                  _syncFetchedClientStaffSelections(
+                      clientStaffList.map((returnedItem) {
+                    return EmailtoMystaffEntity(
+                        email: returnedItem.email,
+                        id: returnedItem.id,
+                        name: returnedItem.name,
+                        selected: returnedItem.primary);
+                  }).toList());
+                }
+                if (state is InvoiceDeleteErrorState) {
+                  showToastification(
+                      context, state.errorMessage, ToastificationType.error);
+                }
 
-              taxesList = state.invoiceDetailResEntity.taxes ?? [];
-              _syncMyStaffSelections(invoiceEntity?.emailtoMystaff ?? []);
-              _syncSelectedClientStaffFromInvoice(invoiceEntity);
-              invoiceDetailResEntity = state.invoiceDetailResEntity;
-              invoiceRequestModel.no = invoiceEntity?.no;
-              invoiceRequestModel.heading = invoiceEntity?.heading;
-            } else if (state is InvoiceDetailsFailureState) {
-              debugPrint("Error occured: ${state.errorMessage}");
-              showToastification(
-                  context, state.errorMessage, ToastificationType.error);
-            }
-          },
-          builder: (context, state) {
-            if (state is InvoiceDeleteLoadingState) {
-              return LoadingPage(
-                  title:
-                      "Deleting ${isEstimate() ? widget.estimateTitle : "invoice"}..");
-            }
-            if (state is InvoiceEstimateAddLoadingState) {
-              return LoadingPage(
-                  title:
-                      "${isEdit() ? "Updating" : "Adding"} ${isEstimate() ? widget.estimateTitle : "invoice"} data..");
-            }
-            if (state is InvoiceDetailsLoadingState) {
-              return LoadingPage(
-                  title:
-                      "Loading ${isEstimate() ? widget.estimateTitle : "invoice"} data..");
-            }
-            return SectionListView.builder(
-              adapter: this,
-              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-            );
-          },
-        ));
+                if (state is InvoiceDeleteSuccessState) {
+                  showToastification(
+                      context,
+                      state.invoiceDeleteMainResEntity.data?.message ??
+                          "Successfully deleted",
+                      ToastificationType.success);
+                  widget.deletedItem();
+                  AutoRouter.of(context).popUntilRoot();
+                }
+
+                if (state is InvoiceEstimateAddErrorState) {
+                  showToastification(
+                      context, state.errorMessage, ToastificationType.error);
+                }
+
+                if (state is InvoiceEstimateAddSuccessState) {
+                  showToastification(
+                      context,
+                      state.addInvoiceMainResEntity.data?.message ??
+                          "Successfully added ${isEstimate() ? widget.estimateTitle : "invoice"}.",
+                      ToastificationType.success);
+                  widget.refreshCallBack();
+                  AutoRouter.of(context).maybePop();
+                }
+                if (state is InvoiceDetailSuccessState) {
+                  InvoiceEntity? invoiceEntity;
+
+                  if (widget.type ==
+                          EnumNewInvoiceEstimateType.duplicateInvoice ||
+                      widget.type == EnumNewInvoiceEstimateType.invoice ||
+                      widget.type ==
+                          EnumNewInvoiceEstimateType.convertEstimateToInvoice ||
+                      widget.type ==
+                          EnumNewInvoiceEstimateType.convertProformaToInvoice) {
+                    invoiceEntity = state.invoiceDetailResEntity.invoice;
+                  } else if (isEstimate()) {
+                    invoiceEntity = state.invoiceDetailResEntity.estimate;
+                  }
+
+                  debugPrint(
+                      "InvoiceDetailSuccessState: ${invoiceEntity?.no ?? "No invoice number"}");
+
+                  if (widget.type ==
+                          EnumNewInvoiceEstimateType.duplicateInvoice ||
+                      widget.type ==
+                          EnumNewInvoiceEstimateType.duplicateEstimate ||
+                      widget.type ==
+                          EnumNewInvoiceEstimateType.convertEstimateToInvoice ||
+                      widget.type ==
+                          EnumNewInvoiceEstimateType.convertProformaToInvoice) {
+                    invoiceRequestModel.no = invoiceEntity?.no;
+                    setState(() {});
+                    return;
+                  }
+
+                  taxesList = state.invoiceDetailResEntity.taxes ?? [];
+                  _syncMyStaffSelections(invoiceEntity?.emailtoMystaff ?? []);
+                  _syncSelectedClientStaffFromInvoice(invoiceEntity);
+                  invoiceDetailResEntity = state.invoiceDetailResEntity;
+                  invoiceRequestModel.no = invoiceEntity?.no;
+                  invoiceRequestModel.heading = invoiceEntity?.heading;
+                } else if (state is InvoiceDetailsFailureState) {
+                  debugPrint("Error occured: ${state.errorMessage}");
+                  showToastification(
+                      context, state.errorMessage, ToastificationType.error);
+                }
+              },
+              builder: (context, state) {
+                if (state is InvoiceDeleteLoadingState) {
+                  return LoadingPage(
+                      title:
+                          "Deleting ${isEstimate() ? widget.estimateTitle : "invoice"}..");
+                }
+                if (state is InvoiceEstimateAddLoadingState) {
+                  return LoadingPage(
+                      title:
+                          "${isEdit() ? "Updating" : "Adding"} ${isEstimate() ? widget.estimateTitle : "invoice"} data..");
+                }
+                if (state is InvoiceDetailsLoadingState) {
+                  return LoadingPage(
+                      title:
+                          "Loading ${isEstimate() ? widget.estimateTitle : "invoice"} data..");
+                }
+                return SectionListView.builder(
+                  adapter: this,
+                  keyboardDismissBehavior:
+                      ScrollViewKeyboardDismissBehavior.onDrag,
+                );
+              },
+            )));
   }
 
   Widget getTaxCell(BuildContext context,
@@ -809,6 +1533,83 @@ emailto_clientstaff:[{"id":"23214","email":"abc@exaple.com"},{"id":"23216","emai
               subTitle: "",
               value: "\$${shippingDiscountModel.shipping}",
               isSubTotal: false),
+          if (shouldShowCreditNoteOption) ...[
+            AppConstants.sepSizeBox5,
+            GestureDetector(
+              onTap: _openCreditNoteSelector,
+              child: Row(
+                children: [
+                  Expanded(
+                    flex: 3,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Text(
+                          '(-) ',
+                          style: AppFonts.regularStyle(),
+                        ),
+                        Text(
+                          'Credit Note',
+                          style: AppFonts.regularStyle(
+                            color: AppPallete.blueColor,
+                          ),
+                        ),
+                        const Icon(
+                          Icons.keyboard_arrow_down,
+                          color: AppPallete.textColor,
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    flex: 2,
+                    child: Text(
+                      appliedCreditNoteTotal > 0
+                          ? '-\$${appliedCreditNoteTotal.toStringAsFixed(2)}'
+                          : '\$0.00',
+                      textAlign: TextAlign.end,
+                      style: AppFonts.mediumStyle(size: 16),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (selectedCreditNotes.isNotEmpty) ...[
+              AppConstants.sepSizeBox5,
+              ...selectedCreditNotes.map((creditnote) {
+                return Padding(
+                  padding: const EdgeInsets.only(left: 16, bottom: 6),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          creditnote.noteNo?.trim().isNotEmpty == true
+                              ? creditnote.noteNo!
+                              : 'Credit Note',
+                          style: AppFonts.regularStyle(),
+                        ),
+                      ),
+                      Text(
+                        '\$${_toDouble(creditnote.amount).toStringAsFixed(2)}',
+                        style: AppFonts.regularStyle(),
+                      ),
+                      InkWell(
+                        onTap: () => _removeSelectedCreditNote(creditnote),
+                        child: const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 8),
+                          child: Icon(
+                            Icons.close,
+                            size: 18,
+                            color: Colors.red,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }),
+            ],
+          ],
           AppConstants.sizeBoxHeight15,
           const ItemSeparator(),
           AppConstants.sizeBoxHeight15,
@@ -825,7 +1626,7 @@ emailto_clientstaff:[{"id":"23214","email":"abc@exaple.com"},{"id":"23216","emai
             child: getTaxCell(context,
                 title: "Total",
                 subTitle: "(USD)",
-                value: "\$$netTotal",
+                value: "\$${payableNetTotal.toStringAsFixed(2)}",
                 isTotal: true),
           ),
           AppConstants.sizeBoxHeight15,
@@ -906,16 +1707,20 @@ emailto_clientstaff:[{"id":"23214","email":"abc@exaple.com"},{"id":"23216","emai
         clientListFromParentClass: invoiceDetailResEntity?.clients,
         selectedClient: selectedClient,
         onSelectClient: (client) {
+          final resolvedClient = _resolveClientWithCreditNotes(client);
           if (client != null &&
               selectedClient != null &&
-              client.clientId == selectedClient?.clientId) {
+              resolvedClient?.clientId == selectedClient?.clientId) {
             return;
           }
           selectedProject = null;
           selectedClientStaff = [];
-          selectedClient = client;
+          selectedClient = resolvedClient;
+          exchangeRateController.clear();
+          _syncExchangeRateValue();
+          selectedCreditNotes = [];
           _syncFetchedClientStaffSelections(
-              client?.persons?.map((returnedItem) {
+              resolvedClient?.persons?.map((returnedItem) {
                     return EmailtoMystaffEntity(
                         email: returnedItem.email ?? "",
                         id: returnedItem.id ?? "",
@@ -923,9 +1728,10 @@ emailto_clientstaff:[{"id":"23214","email":"abc@exaple.com"},{"id":"23216","emai
                         selected: returnedItem.primary ?? false);
                   }).toList() ??
                   []);
-          if (client?.id != null) {
-            getClientStaffBy(client?.id ?? "");
+          if (resolvedClient?.id != null) {
+            getClientStaffBy(resolvedClient?.id ?? "");
           }
+          _fetchSelectedClientDetails(resolvedClient);
           _rerenderUI();
         }));
   }
@@ -945,7 +1751,8 @@ emailto_clientstaff:[{"id":"23214","email":"abc@exaple.com"},{"id":"23216","emai
         return false;
       case EnumNewInvoiceEstimateType.editInvoice ||
             EnumNewInvoiceEstimateType.editEstimate ||
-            EnumNewInvoiceEstimateType.convertEstimateToInvoice:
+            EnumNewInvoiceEstimateType.convertEstimateToInvoice ||
+            EnumNewInvoiceEstimateType.convertProformaToInvoice:
         return true;
     }
   }
@@ -982,7 +1789,7 @@ emailto_clientstaff:[{"id":"23214","email":"abc@exaple.com"},{"id":"23216","emai
 
   @override
   Widget getItem(BuildContext context, IndexPath indexPath) {
-    if (indexPath.section == 5) {
+    if (isEdit() && indexPath.section == 6) {
       return Container(
           width: MediaQuery.of(context).size.width,
           color: AppPallete.white,
@@ -1050,6 +1857,12 @@ emailto_clientstaff:[{"id":"23214","email":"abc@exaple.com"},{"id":"23216","emai
           projectValue: selectedProject?.name,
           emailToVlaue:
               "${selectedClientStaff.length + selectedMyStaffList.length} of ${clientStaff.length + myStaffList.length} Contacts",
+          showExchangeRate: shouldShowExchangeRate,
+          clientCurrencyCode: selectedClientCurrencyCode,
+          baseCurrencyCode: organizationCurrencyCode.isNotEmpty
+              ? organizationCurrencyCode
+              : organizationCurrency,
+          exchangeRateController: exchangeRateController,
         );
       }
       return InvoiceAddClientWidget(
@@ -1066,6 +1879,8 @@ emailto_clientstaff:[{"id":"23214","email":"abc@exaple.com"},{"id":"23216","emai
             : "Will be displayed on the invoice",
       );
     } else if (indexPath.section == 4) {
+      return _buildAdditionalDocumentInfo();
+    } else if (indexPath.section == 5) {
       return TermsCardWidget(
         onPress: () {
           AutoRouter.of(context).push(InvoiceEstimateTermsInoutPageRoute(
@@ -1118,7 +1933,7 @@ emailto_clientstaff:[{"id":"23214","email":"abc@exaple.com"},{"id":"23216","emai
 
   @override
   int numberOfSections() {
-    return isEdit() ? 6 : 5;
+    return isEdit() ? 7 : 6;
   }
 
   @override

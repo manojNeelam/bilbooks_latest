@@ -21,7 +21,6 @@ import 'package:billbooks_app/features/more/settings/domain/entity/preference_de
 import 'package:billbooks_app/features/more/settings/domain/usecase/preference_details_usecase.dart';
 import 'package:billbooks_app/features/more/settings/domain/usecase/update_preference_estimate_usecase.dart';
 import 'package:billbooks_app/features/more/settings/presentation/bloc/organization_bloc.dart';
-import 'package:billbooks_app/features/more/settings/presentation/preference_type%20header_widget.dart';
 import 'package:billbooks_app/features/more/settings/presentation/setting_template_page.dart';
 import 'package:billbooks_app/router/app_router.dart';
 import 'package:flutter/material.dart';
@@ -62,7 +61,6 @@ extension EnumPreferencesTypeExtension on EnumPreferencesType {
         return "Estimate";
       case EnumPreferencesType.invEst:
         return "Inv/Est";
-
       case EnumPreferencesType.proforma:
         return "Proforma";
       case EnumPreferencesType.dashboard:
@@ -81,6 +79,11 @@ class PreferencesPage extends StatefulWidget {
 
 class _PreferencesPageState extends State<PreferencesPage> {
   EnumPreferencesType selectedType = EnumPreferencesType.general;
+  final ScrollController _preferencesHeaderScrollController =
+      ScrollController();
+  final Map<EnumPreferencesType, GlobalKey> _preferencesHeaderKeys = {
+    for (final type in EnumPreferencesType.values) type: GlobalKey(),
+  };
 
   TextEditingController invoiceNumberController = TextEditingController();
   TextEditingController invoiceTitleController = TextEditingController();
@@ -164,6 +167,133 @@ class _PreferencesPageState extends State<PreferencesPage> {
     _loadEstimateName();
     _loadPreference();
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _preferencesHeaderScrollController.dispose();
+    invoiceNumberController.dispose();
+    invoiceTitleController.dispose();
+    notesController.dispose();
+    estimateNumberController.dispose();
+    estimateNotesController.dispose();
+    portalNameController.dispose();
+    customController.dispose();
+    _itemOtherController.dispose();
+    _unitOtherController.dispose();
+    _amountOtherController.dispose();
+    _rateOtherController.dispose();
+    proformaTitleController.dispose();
+    proformNotesController.dispose();
+    proformaNumberController.dispose();
+    super.dispose();
+  }
+
+  TextStyle _headerStyleFor(EnumPreferencesType type) {
+    return type == selectedType
+        ? AppFonts.regularStyle(color: AppPallete.blueColor, size: 16)
+        : AppFonts.regularStyle(color: AppPallete.textColor, size: 16);
+  }
+
+  Color _headerIndicatorColor(EnumPreferencesType type) {
+    return type == selectedType ? AppPallete.blueColor : AppPallete.clear;
+  }
+
+  void _scrollSelectedHeaderIntoView(EnumPreferencesType type) {
+    final targetContext = _preferencesHeaderKeys[type]?.currentContext;
+    if (targetContext == null ||
+        !_preferencesHeaderScrollController.hasClients) {
+      return;
+    }
+
+    final scrollableState = Scrollable.of(targetContext);
+    final viewportContext = scrollableState.context;
+
+    final targetBox = targetContext.findRenderObject() as RenderBox?;
+    final viewportBox = viewportContext.findRenderObject() as RenderBox?;
+    if (targetBox == null || viewportBox == null) {
+      return;
+    }
+
+    final targetOffset =
+        targetBox.localToGlobal(Offset.zero, ancestor: viewportBox);
+    final targetLeft = targetOffset.dx;
+    final targetRight = targetLeft + targetBox.size.width;
+    final viewportWidth = viewportBox.size.width;
+    const padding = 12.0;
+
+    double newOffset = _preferencesHeaderScrollController.offset;
+
+    if (targetLeft < padding) {
+      newOffset += targetLeft - padding;
+    } else if (targetRight > viewportWidth - padding) {
+      newOffset += targetRight - viewportWidth + padding;
+    } else {
+      return;
+    }
+
+    final clampedOffset = newOffset.clamp(
+      0.0,
+      _preferencesHeaderScrollController.position.maxScrollExtent,
+    );
+
+    _preferencesHeaderScrollController.animateTo(
+      clampedOffset,
+      duration: const Duration(milliseconds: 220),
+      curve: Curves.easeInOut,
+    );
+  }
+
+  Widget _buildPreferencesHeader() {
+    return Container(
+      color: AppPallete.white,
+      child: Column(
+        children: [
+          SingleChildScrollView(
+            controller: _preferencesHeaderScrollController,
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: Row(
+              children: EnumPreferencesType.values.map((type) {
+                return InkWell(
+                  key: _preferencesHeaderKeys[type],
+                  onTap: () {
+                    setState(() {
+                      selectedType = type;
+                    });
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      _scrollSelectedHeaderIntoView(type);
+                    });
+                  },
+                  child: Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          type.title,
+                          maxLines: 1,
+                          softWrap: false,
+                          style: _headerStyleFor(type),
+                        ),
+                        const SizedBox(height: 8),
+                        Container(
+                          height: 2,
+                          width: 24,
+                          color: _headerIndicatorColor(type),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+          const Divider(height: 1, thickness: 1),
+        ],
+      ),
+    );
   }
 
   void printInvEstResponse() {
@@ -1628,253 +1758,263 @@ class _PreferencesPageState extends State<PreferencesPage> {
             ),
           ),
         ],
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(45),
-          child: PreferencesTypeHeaderWidget(
-            selectedType: selectedType,
-            callBack: (type) {
-              selectedType = type;
-              updateUI();
-            },
-          ),
-        ),
       ),
-      body: BlocConsumer<OrganizationBloc, OrganizationState>(
-        listener: (context, state) {
-          if (state is UpdateInvoiceSettingsErrorState) {
-            showToastification(
-              context,
-              state.errorMessage,
-              ToastificationType.error,
-            );
-          }
-          if (state is UpdateEstimateSettingsErrorState) {
-            showToastification(
-              context,
-              state.errorMessage,
-              ToastificationType.error,
-            );
-          }
-          if (state is UpdateGeneralSettingsErrorState) {
-            showToastification(
-              context,
-              state.errorMessage,
-              ToastificationType.error,
-            );
-          }
+      body: Column(
+        children: [
+          _buildPreferencesHeader(),
+          Expanded(
+            child: BlocConsumer<OrganizationBloc, OrganizationState>(
+              listener: (context, state) {
+                if (state is UpdateInvoiceSettingsErrorState) {
+                  showToastification(
+                    context,
+                    state.errorMessage,
+                    ToastificationType.error,
+                  );
+                }
+                if (state is UpdateEstimateSettingsErrorState) {
+                  showToastification(
+                    context,
+                    state.errorMessage,
+                    ToastificationType.error,
+                  );
+                }
+                if (state is UpdateGeneralSettingsErrorState) {
+                  showToastification(
+                    context,
+                    state.errorMessage,
+                    ToastificationType.error,
+                  );
+                }
 
-          if (state is UpdateGeneralSettingsSuccessState ||
-              state is UpdateInvoiceSettingsSuccessState ||
-              state is UpdateEstimateSettingsSuccessState ||
-              state is UpdateColumnSettingsSuccessState) {
-            if (isShownSuccessToast == false) {
-              isShownSuccessToast = true;
-              showToastification(
-                context,
-                "Preferences updated successfully",
-                ToastificationType.success,
-              );
+                if (state is UpdateGeneralSettingsSuccessState ||
+                    state is UpdateInvoiceSettingsSuccessState ||
+                    state is UpdateEstimateSettingsSuccessState ||
+                    state is UpdateColumnSettingsSuccessState) {
+                  if (isShownSuccessToast == false) {
+                    isShownSuccessToast = true;
+                    showToastification(
+                      context,
+                      "Preferences updated successfully",
+                      ToastificationType.success,
+                    );
 
-              String updatedEstimateTitle =
-                  selectedEstimateName?.name ?? "Estimate";
-              Utils.saveEstimate(updatedEstimateTitle);
-              context.read<GeneralBloc>().add(
-                    SetEstimateHeading(estimateHeading: updatedEstimateTitle),
+                    String updatedEstimateTitle =
+                        selectedEstimateName?.name ?? "Estimate";
+                    Utils.saveEstimate(updatedEstimateTitle);
+                    context.read<GeneralBloc>().add(
+                          SetEstimateHeading(
+                              estimateHeading: updatedEstimateTitle),
+                        );
+
+                    ColumnSettingsPref columnSettingsPref =
+                        ColumnSettingsPref.fromInfo(
+                      qty: updatePreferenceColumnReqParams?.columnUnitsTitle,
+                      rate: updatePreferenceColumnReqParams?.columnRateTitle,
+                      hideQty: updatePreferenceColumnReqParams?.hideColumnQty,
+                      itemTitle:
+                          updatePreferenceColumnReqParams?.columnItemsTitle,
+                      hideRate: updatePreferenceColumnReqParams?.hideColumnRate,
+                    );
+
+                    Utils.saveColumnSettings(columnSettingsPref);
+                  }
+                }
+
+                if (state is UpdateGeneralSettingsSuccessState &&
+                    state is UpdateInvoiceSettingsSuccessState &&
+                    state is UpdateEstimateSettingsSuccessState &&
+                    state is UpdateColumnSettingsSuccessState) {
+                  AutoRouter.of(context).maybePop();
+                }
+
+                if (state is GetPreferenceSuccessState) {
+                  debugPrint("Portal Name");
+                  debugPrint(
+                    state.preferenceMainResEntity.data?.preferences?.portalName,
+                  );
+                  preferencesEntity =
+                      state.preferenceMainResEntity.data?.preferences;
+                  updatePreferenceColumnReqParams =
+                      UpdatePreferenceColumnReqParams(
+                    columnAmountOther: "",
+                    columnAmountTitle:
+                        preferencesEntity?.columnAmountTitle ?? "",
+                    columnCustom: preferencesEntity?.columnCustom ?? false,
+                    columnCustomTitle:
+                        preferencesEntity?.columnCustomTitle ?? "",
+                    columnDate: preferencesEntity?.columnDate ?? false,
+                    columnItemsOther: "",
+                    columnItemsTitle: preferencesEntity?.columnItemsTitle ?? "",
+                    columnRateOther: "",
+                    columnRateTitle: preferencesEntity?.columnRateTitle ?? "",
+                    columnTime: preferencesEntity?.columnTime ?? false,
+                    columnUnitsOther: "",
+                    columnUnitsTitle: preferencesEntity?.columnUnitsTitle ?? "",
+                    hideColumnAmount:
+                        preferencesEntity?.hideColumnAmount ?? false,
+                    hideColumnQty: preferencesEntity?.hideColumnQty ?? false,
+                    hideColumnRate: preferencesEntity?.hideColumnRate ?? false,
                   );
 
-              ColumnSettingsPref columnSettingsPref =
-                  ColumnSettingsPref.fromInfo(
-                qty: updatePreferenceColumnReqParams?.columnUnitsTitle,
-                rate: updatePreferenceColumnReqParams?.columnRateTitle,
-                hideQty: updatePreferenceColumnReqParams?.hideColumnQty,
-                itemTitle: updatePreferenceColumnReqParams?.columnItemsTitle,
-                hideRate: updatePreferenceColumnReqParams?.hideColumnRate,
-              );
+                  estimateNotesController.text =
+                      preferencesEntity?.estimateNotes ?? "";
+                  estimateNumberController.text =
+                      preferencesEntity?.estimateNo ?? "";
+                  attachPDF = preferencesEntity?.attachPdf ?? false;
+                  notifyEstimateandInvoiceOpened =
+                      preferencesEntity?.notifiedViewedInvoicesEstimates ??
+                          false;
+                  notifyApproveDeclined =
+                      preferencesEntity?.notifiedApprovedDeclinedEstimates ??
+                          false;
+                  notifyPaymentMade =
+                      preferencesEntity?.notifiedPayonline ?? false;
+                  invoiceNumberController.text =
+                      preferencesEntity?.invoiceNo ?? "";
+                  invoiceTitleController.text =
+                      preferencesEntity?.invoiceHeading ?? "";
+                  notesController.text = preferencesEntity?.invoiceNotes ?? "";
 
-              Utils.saveColumnSettings(columnSettingsPref);
-            }
-          }
+                  portalNameController.text =
+                      preferencesEntity?.portalName ?? "";
 
-          if (state is UpdateGeneralSettingsSuccessState &&
-              state is UpdateInvoiceSettingsSuccessState &&
-              state is UpdateEstimateSettingsSuccessState &&
-              state is UpdateColumnSettingsSuccessState) {
-            AutoRouter.of(context).maybePop();
-          }
+                  invoiceTerms = preferencesEntity?.invoiceTerms ?? "";
+                  estimateTerms = preferencesEntity?.estimateTerms ?? "";
 
-          if (state is GetPreferenceSuccessState) {
-            debugPrint("Portal Name");
-            debugPrint(
-              state.preferenceMainResEntity.data?.preferences?.portalName,
-            );
-            preferencesEntity = state.preferenceMainResEntity.data?.preferences;
-            updatePreferenceColumnReqParams = UpdatePreferenceColumnReqParams(
-              columnAmountOther: "",
-              columnAmountTitle: preferencesEntity?.columnAmountTitle ?? "",
-              columnCustom: preferencesEntity?.columnCustom ?? false,
-              columnCustomTitle: preferencesEntity?.columnCustomTitle ?? "",
-              columnDate: preferencesEntity?.columnDate ?? false,
-              columnItemsOther: "",
-              columnItemsTitle: preferencesEntity?.columnItemsTitle ?? "",
-              columnRateOther: "",
-              columnRateTitle: preferencesEntity?.columnRateTitle ?? "",
-              columnTime: preferencesEntity?.columnTime ?? false,
-              columnUnitsOther: "",
-              columnUnitsTitle: preferencesEntity?.columnUnitsTitle ?? "",
-              hideColumnAmount: preferencesEntity?.hideColumnAmount ?? false,
-              hideColumnQty: preferencesEntity?.hideColumnQty ?? false,
-              hideColumnRate: preferencesEntity?.hideColumnRate ?? false,
-            );
+                  _itemSelected = preferencesEntity?.columnItemsTitle ?? "";
+                  _unitSelected = preferencesEntity?.columnUnitsTitle ?? "";
+                  _rateSelected = preferencesEntity?.columnRateTitle ?? "";
+                  selectedCurrency = currencies.firstWhere(
+                    (returnedCurrency) {
+                      if (returnedCurrency.currencyId ==
+                              preferencesEntity?.currency ||
+                          returnedCurrency.code ==
+                              preferencesEntity?.currency) {
+                        return true;
+                      }
+                      return false;
+                    },
+                    orElse: () {
+                      return CurrencyModel();
+                    },
+                  );
 
-            estimateNotesController.text =
-                preferencesEntity?.estimateNotes ?? "";
-            estimateNumberController.text = preferencesEntity?.estimateNo ?? "";
-            attachPDF = preferencesEntity?.attachPdf ?? false;
-            notifyEstimateandInvoiceOpened =
-                preferencesEntity?.notifiedViewedInvoicesEstimates ?? false;
-            notifyApproveDeclined =
-                preferencesEntity?.notifiedApprovedDeclinedEstimates ?? false;
-            notifyPaymentMade = preferencesEntity?.notifiedPayonline ?? false;
-            invoiceNumberController.text = preferencesEntity?.invoiceNo ?? "";
-            invoiceTitleController.text =
-                preferencesEntity?.invoiceHeading ?? "";
-            notesController.text = preferencesEntity?.invoiceNotes ?? "";
+                  selectedDateFormatter = dateFormatterList.firstWhere(
+                    (returneddateFormatter) {
+                      if (returneddateFormatter.format?.toLowerCase() ==
+                          preferencesEntity?.dateFormat?.toLowerCase()) {
+                        return true;
+                      }
+                      return false;
+                    },
+                    orElse: () {
+                      return DateFormatEntity();
+                    },
+                  );
 
-            portalNameController.text = preferencesEntity?.portalName ?? "";
+                  selectedEstimateName = estimateNames.firstWhere(
+                    (returnedEstimateName) {
+                      if (returnedEstimateName.name?.toLowerCase() ==
+                          preferencesEntity?.estimateHeading?.toLowerCase()) {
+                        return true;
+                      }
+                      return false;
+                    },
+                    orElse: () {
+                      return EstimateName();
+                    },
+                  );
 
-            invoiceTerms = preferencesEntity?.invoiceTerms ?? "";
-            estimateTerms = preferencesEntity?.estimateTerms ?? "";
+                  selectedFiscalYear = fiscalYearList.firstWhere(
+                    (returnedFiscalYear) {
+                      if (returnedFiscalYear.id?.toLowerCase() ==
+                          preferencesEntity?.fiscalYear?.toLowerCase()) {
+                        return true;
+                      }
+                      return false;
+                    },
+                    orElse: () {
+                      return FiscalYearEntity();
+                    },
+                  );
 
-            _itemSelected = preferencesEntity?.columnItemsTitle ?? "";
-            _unitSelected = preferencesEntity?.columnUnitsTitle ?? "";
-            _rateSelected = preferencesEntity?.columnRateTitle ?? "";
-            selectedCurrency = currencies.firstWhere(
-              (returnedCurrency) {
-                if (returnedCurrency.currencyId ==
-                        preferencesEntity?.currency ||
-                    returnedCurrency.code == preferencesEntity?.currency) {
-                  return true;
+                  selectedLanguage = languages.firstWhere(
+                    (returnedLanguage) {
+                      if (returnedLanguage.languageId?.toLowerCase() ==
+                              preferencesEntity?.language?.toLowerCase() ||
+                          returnedLanguage.code?.toLowerCase() ==
+                              preferencesEntity?.language?.toLowerCase()) {
+                        return true;
+                      }
+                      return false;
+                    },
+                    orElse: () {
+                      return LanguageModel();
+                    },
+                  );
+
+                  selectedPaperFormatter = paperFormatters.firstWhere(
+                    (returnedPaperFormatter) {
+                      if (returnedPaperFormatter.format?.toLowerCase() ==
+                          preferencesEntity?.paperSize?.toLowerCase()) {
+                        return true;
+                      }
+                      return false;
+                    },
+                    orElse: () {
+                      return PaperFormatEntity();
+                    },
+                  );
+
+                  selectedPaymentTerms = paymentTerms.firstWhere(
+                    (returnedPaymentTerms) {
+                      if (returnedPaymentTerms.value?.toLowerCase() ==
+                          preferencesEntity?.paymentTerms?.toLowerCase()) {
+                        return true;
+                      }
+                      return false;
+                    },
+                    orElse: () {
+                      return PaymentTerms();
+                    },
+                  );
+
+                  setState(() {});
                 }
-                return false;
               },
-              orElse: () {
-                return CurrencyModel();
-              },
-            );
-
-            selectedDateFormatter = dateFormatterList.firstWhere(
-              (returneddateFormatter) {
-                if (returneddateFormatter.format?.toLowerCase() ==
-                    preferencesEntity?.dateFormat?.toLowerCase()) {
-                  return true;
+              builder: (context, state) {
+                if (state is UpdateInvoiceSettingsLoadingState ||
+                    state is UpdateGeneralSettingsLoadingState ||
+                    state is UpdateEstimateSettingsLoadingState ||
+                    state is UpdateColumnSettingsLoadingState) {
+                  return const LoadingPage(
+                      title: "Updating Invoice details...");
                 }
-                return false;
-              },
-              orElse: () {
-                return DateFormatEntity();
-              },
-            );
 
-            selectedEstimateName = estimateNames.firstWhere(
-              (returnedEstimateName) {
-                if (returnedEstimateName.name?.toLowerCase() ==
-                    preferencesEntity?.estimateHeading?.toLowerCase()) {
-                  return true;
+                if (state is GetPreferenceLoadingState) {
+                  return const LoadingPage(title: "Loading Preference...");
                 }
-                return false;
-              },
-              orElse: () {
-                return EstimateName();
-              },
-            );
 
-            selectedFiscalYear = fiscalYearList.firstWhere(
-              (returnedFiscalYear) {
-                if (returnedFiscalYear.id?.toLowerCase() ==
-                    preferencesEntity?.fiscalYear?.toLowerCase()) {
-                  return true;
-                }
-                return false;
+                return SingleChildScrollView(
+                  keyboardDismissBehavior:
+                      ScrollViewKeyboardDismissBehavior.onDrag,
+                  child: Container(
+                    color: AppPallete.white,
+                    child: switch (selectedType) {
+                      EnumPreferencesType.general => general,
+                      EnumPreferencesType.invoice => invoice,
+                      EnumPreferencesType.estimate => estimate,
+                      EnumPreferencesType.invEst => invEst,
+                      EnumPreferencesType.proforma => proforma,
+                      EnumPreferencesType.dashboard => dashboard,
+                    },
+                  ),
+                );
               },
-              orElse: () {
-                return FiscalYearEntity();
-              },
-            );
-
-            selectedLanguage = languages.firstWhere(
-              (returnedLanguage) {
-                if (returnedLanguage.languageId?.toLowerCase() ==
-                        preferencesEntity?.language?.toLowerCase() ||
-                    returnedLanguage.code?.toLowerCase() ==
-                        preferencesEntity?.language?.toLowerCase()) {
-                  return true;
-                }
-                return false;
-              },
-              orElse: () {
-                return LanguageModel();
-              },
-            );
-
-            selectedPaperFormatter = paperFormatters.firstWhere(
-              (returnedPaperFormatter) {
-                if (returnedPaperFormatter.format?.toLowerCase() ==
-                    preferencesEntity?.paperSize?.toLowerCase()) {
-                  return true;
-                }
-                return false;
-              },
-              orElse: () {
-                return PaperFormatEntity();
-              },
-            );
-
-            selectedPaymentTerms = paymentTerms.firstWhere(
-              (returnedPaymentTerms) {
-                if (returnedPaymentTerms.value?.toLowerCase() ==
-                    preferencesEntity?.paymentTerms?.toLowerCase()) {
-                  return true;
-                }
-                return false;
-              },
-              orElse: () {
-                return PaymentTerms();
-              },
-            );
-
-            setState(() {});
-          }
-        },
-        builder: (context, state) {
-          if (state is UpdateInvoiceSettingsLoadingState ||
-              state is UpdateGeneralSettingsLoadingState ||
-              state is UpdateEstimateSettingsLoadingState ||
-              state is UpdateColumnSettingsLoadingState) {
-            return const LoadingPage(title: "Updating Invoice details...");
-          }
-
-          if (state is GetPreferenceLoadingState) {
-            return const LoadingPage(title: "Loading Preference...");
-          }
-
-          return Container(
-            color: AppPallete.blueColor,
-            child: SingleChildScrollView(
-              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-              child: Container(
-                color: AppPallete.white,
-                child: switch (selectedType) {
-                  EnumPreferencesType.general => general,
-                  EnumPreferencesType.invoice => invoice,
-                  EnumPreferencesType.estimate => estimate,
-                  EnumPreferencesType.invEst => invEst,
-                  EnumPreferencesType.proforma => proforma,
-                  EnumPreferencesType.dashboard => dashboard,
-                },
-              ),
             ),
-          );
-        },
+          ),
+        ],
       ),
     );
   }

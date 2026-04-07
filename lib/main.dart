@@ -22,6 +22,8 @@ import 'package:billbooks_app/features/integrations/presentation/bloc/online_pay
 import 'package:billbooks_app/features/more/expenses/presentation/bloc/expenses_bloc.dart';
 import 'package:billbooks_app/features/more/reports/presentation/bloc/reports_bloc.dart';
 import 'package:billbooks_app/features/more/settings/presentation/bloc/organization_bloc.dart';
+import 'package:billbooks_app/features/more/settings/subscription/presentation/bloc/revenuecat_cubit.dart';
+import 'package:billbooks_app/features/more/settings/subscription/presentation/bloc/subscription_bloc.dart';
 import 'package:billbooks_app/features/notifications/bloc/notification_bloc.dart';
 import 'package:billbooks_app/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:billbooks_app/features/proforma/presentation/bloc/proforma_bloc.dart';
@@ -210,6 +212,13 @@ void main() async {
               updatePrefGeneralUsecase: serviceLocator(),
               updatePrefInvoiceUsecase: serviceLocator(),
             )),
+    BlocProvider(
+      create: (context) =>
+          SubscriptionBloc(getSubscriptionUsecase: serviceLocator()),
+    ),
+    BlocProvider(
+      create: (context) => RevenueCatCubit(revenueCatService: serviceLocator()),
+    ),
     BlocProvider(
       create: (context) => InvoiceBloc(
         invoiceDetailUsecase: serviceLocator(),

@@ -92,6 +92,12 @@ import 'package:billbooks_app/features/more/settings/domain/usecase/update_pref_
 import 'package:billbooks_app/features/more/settings/domain/usecase/update_pref_invoice_usecase.dart';
 import 'package:billbooks_app/features/more/settings/domain/usecase/update_preference_column_usecase.dart';
 import 'package:billbooks_app/features/more/settings/presentation/bloc/organization_bloc.dart';
+import 'package:billbooks_app/features/more/settings/subscription/data/remote/subscription_remote_datasource.dart';
+import 'package:billbooks_app/features/more/settings/subscription/data/repository/subscription_repository_impl.dart';
+import 'package:billbooks_app/features/more/settings/subscription/data/service/revenuecat_service.dart';
+import 'package:billbooks_app/features/more/settings/subscription/domain/repository/subscription_repository.dart';
+import 'package:billbooks_app/features/more/settings/subscription/domain/usecase/subscription_usecase.dart';
+import 'package:billbooks_app/features/more/settings/subscription/presentation/bloc/revenuecat_cubit.dart';
 import 'package:billbooks_app/features/notifications/bloc/notification_bloc.dart';
 import 'package:billbooks_app/features/notifications/data/datasource/remote/notification_datasource.dart';
 import 'package:billbooks_app/features/notifications/data/repository/notification_repository_impl.dart';
@@ -151,6 +157,7 @@ Future<void> initDependencies() async {
   _initExpenses();
   _initCategories();
   _initOrganization();
+  _initSubscription();
   _initOnlinePayments();
   _initEstimates();
   _initDashboard();
@@ -206,6 +213,20 @@ void _initCategories() {
       () => CategoryListUsecase(categoryRepository: serviceLocator()));
   serviceLocator
       .registerLazySingleton(() => CategoryBloc(usecase: serviceLocator()));
+}
+
+void _initSubscription() {
+  serviceLocator.registerFactory<SubscriptionRemoteDatasource>(() =>
+      SubscriptionRemoteDatasourceImpl(apiClient: serviceLocator<APIClient>()));
+  serviceLocator.registerFactory<SubscriptionRepository>(() =>
+      SubscriptionRepositoryImpl(
+          subscriptionRemoteDatasource: serviceLocator()));
+  serviceLocator.registerFactory(
+      () => GetSubscriptionUsecase(subscriptionRepository: serviceLocator()));
+  serviceLocator
+      .registerLazySingleton<RevenueCatService>(() => RevenueCatServiceImpl());
+  serviceLocator.registerFactory(
+      () => RevenueCatCubit(revenueCatService: serviceLocator()));
 }
 
 void _emailTemplate() {

@@ -61,7 +61,6 @@ class ProformaRemoteDatasourceImpl implements ProformaRemoteDatasource {
         ApiEndPoints.proformaDetails,
         queryParameters: {
           'id': params.id,
-          'duplicate': params.duplicate,
         },
       );
 

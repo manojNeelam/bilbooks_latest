@@ -3,10 +3,11 @@ import 'package:billbooks_app/core/app_constants.dart';
 import 'package:billbooks_app/core/constants/assets.dart';
 import 'package:billbooks_app/core/theme/app_fonts.dart';
 import 'package:billbooks_app/core/theme/app_pallete.dart';
-import 'package:billbooks_app/core/utils/alert_utility.dart';
 import 'package:billbooks_app/core/widgets/item_separator.dart';
+import 'package:billbooks_app/features/more/settings/subscription/presentation/bloc/revenuecat_cubit.dart';
 import 'package:billbooks_app/router/app_router.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_section_list/flutter_section_list.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -140,6 +141,7 @@ class MorePage extends StatelessWidget with SectionAdapterMixin {
             message: "Please confirm if you want to logout.",
             onTapDelete: () async {
               AutoRouter.of(context).maybePop();
+              await context.read<RevenueCatCubit>().logOut();
               await Utils.clearAll();
               AutoRouter.of(context).pushAndPopUntil(const LoginPageRoute(),
                   predicate: (_) => false);

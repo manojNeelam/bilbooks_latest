@@ -29,7 +29,7 @@ class GetDocumentUsecaseReqParams {
   });
 }
 
-enum EnumDocumentType { invoice, estimate }
+enum EnumDocumentType { invoice, estimate, proforma }
 
 extension EnumDocumentTypeExt on EnumDocumentType {
   String get name {
@@ -38,6 +38,19 @@ extension EnumDocumentTypeExt on EnumDocumentType {
         return "invoice";
       case EnumDocumentType.estimate:
         return "estimate";
+      case EnumDocumentType.proforma:
+        return "proforma";
+    }
+  }
+
+  String get title {
+    switch (this) {
+      case EnumDocumentType.invoice:
+        return "Invoice";
+      case EnumDocumentType.estimate:
+        return "Estimate";
+      case EnumDocumentType.proforma:
+        return "Proforma";
     }
   }
 }

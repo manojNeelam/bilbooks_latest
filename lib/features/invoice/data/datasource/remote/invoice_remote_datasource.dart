@@ -274,7 +274,9 @@ late_fee:90
             params.type == EnumNewInvoiceEstimateType.editInvoice ||
             params.type == EnumNewInvoiceEstimateType.duplicateInvoice ||
             params.type ==
-                EnumNewInvoiceEstimateType.convertEstimateToInvoice) {
+                EnumNewInvoiceEstimateType.convertEstimateToInvoice ||
+            params.type ==
+                EnumNewInvoiceEstimateType.convertProformaToInvoice) {
           debugPrint("Inside invoice");
           map.addAll({
             "dueterms": req.selectedPaymentTerms?.value ?? "",
@@ -332,6 +334,11 @@ late_fee:90
       if (params.type == EnumNewInvoiceEstimateType.convertEstimateToInvoice) {
         map.addAll({
           "estimate": params.id ?? "",
+        });
+      } else if (params.type ==
+          EnumNewInvoiceEstimateType.convertProformaToInvoice) {
+        map.addAll({
+          "proforma": params.id ?? "",
         });
       } else if (params.id != null && params.id!.isNotEmpty) {
         map.addAll({
@@ -405,6 +412,12 @@ late_fee:90
         map.addAll(clientStaffMap);
       }
 
+      if (params.creditNotes != null && params.creditNotes!.isNotEmpty) {
+        map.addAll({
+          "creditnotes": params.creditNotes!,
+        });
+      }
+
       debugPrint("Map: $map");
 
       FormData body = FormData.fromMap(map);
@@ -414,7 +427,9 @@ late_fee:90
                   params.type == EnumNewInvoiceEstimateType.invoice ||
                   params.type == EnumNewInvoiceEstimateType.editInvoice ||
                   params.type ==
-                      EnumNewInvoiceEstimateType.convertEstimateToInvoice)
+                      EnumNewInvoiceEstimateType.convertEstimateToInvoice ||
+                  params.type ==
+                      EnumNewInvoiceEstimateType.convertProformaToInvoice)
               ? ApiEndPoints.addinvoice
               : ApiEndPoints.addEstimate;
       debugPrint("Path: $path");
@@ -542,11 +557,11 @@ late_fee:90
     try {
       Map<String, String> map = {"id": params.id};
       FormData body = FormData.fromMap(map);
-      final path = (params.type == EnumNewInvoiceEstimateType.invoice ||
-              params.type ==
-                  EnumNewInvoiceEstimateType.convertEstimateToInvoice)
-          ? ApiEndPoints.invoiceMarkAsSend
-          : ApiEndPoints.estimateMarkAsSent;
+      final path = switch (params.type) {
+        EnumDocumentType.invoice => ApiEndPoints.invoiceMarkAsSend,
+        EnumDocumentType.estimate => ApiEndPoints.estimateMarkAsSent,
+        EnumDocumentType.proforma => ApiEndPoints.proformaMarkAsSent,
+      };
       final response = await apiClient.postRequest(path: path, body: body);
       if (response.statusCode == 200) {
         final resModel = InvoiceMarksendMainResModel.fromJson(response.data);
@@ -567,9 +582,11 @@ late_fee:90
       Map<String, String> reqPrams = {
         "id": params.id,
       };
-      final path = params.type == EnumDocumentType.estimate
-          ? "estimates/delete"
-          : "invoices/delete";
+      final path = switch (params.type) {
+        EnumDocumentType.invoice => ApiEndPoints.invoiceDelete,
+        EnumDocumentType.estimate => ApiEndPoints.estimateDelete,
+        EnumDocumentType.proforma => ApiEndPoints.proformaDelete,
+      };
       final response =
           await apiClient.deleteRequest(path: path, queryParameters: reqPrams);
       if (response.statusCode == 200) {

@@ -38,6 +38,7 @@ class _ClientPopupState extends State<ClientPopup> with SectionAdapterMixin {
   List<ClientEntity> clientList = [];
   bool isLoading = false;
   ClientEntity? client;
+  bool useParentClientList = false;
 
   @override
   void initState() {
@@ -47,13 +48,13 @@ class _ClientPopupState extends State<ClientPopup> with SectionAdapterMixin {
     debugPrint("Client lENGTH: ${widget.clientListFromParentClass?.length}");
 
     client = widget.selectedClient;
-    // if (widget.clientListFromParentClass != null &&
-    //     widget.clientListFromParentClass!.isNotEmpty) {
-    //   clientList = widget.clientListFromParentClass ?? [];
-    // } else {
-    //   _getClientList();
-    // }
-    _getClientList();
+    if (widget.clientListFromParentClass != null &&
+        widget.clientListFromParentClass!.isNotEmpty) {
+      clientList = List<ClientEntity>.from(widget.clientListFromParentClass!);
+      useParentClientList = true;
+    } else {
+      _getClientList();
+    }
     super.initState();
   }
 
@@ -101,13 +102,16 @@ class _ClientPopupState extends State<ClientPopup> with SectionAdapterMixin {
         builder: (context, state) {
           if (state is ClientSuccess) {
             isLoading = false;
-            clientList = state.clientResDataEntity?.clients ?? [];
+            if (!useParentClientList) {
+              clientList = state.clientResDataEntity?.clients ?? [];
+            }
             if (clientList.isEmpty) {
               if (searchController.text.isNotEmpty) {
                 return ListEmptySearchPage(
                     searchText: searchController.text,
                     callBack: () {
                       searchController.text = "";
+                      useParentClientList = false;
                       _getClientList();
                     });
               }
@@ -179,6 +183,7 @@ class _ClientPopupState extends State<ClientPopup> with SectionAdapterMixin {
             Utils.hideKeyboard();
           },
           onSubmitted: (searchText) {
+            useParentClientList = false;
             _getClientList();
           },
         ),

@@ -9,6 +9,7 @@ class ApiEndPoints {
 
   //profile
   static const String updateProfile = "auth/profile";
+  static const String subscription = "auth/subscription";
 
   //Client
   static const String client = "clients";
@@ -80,6 +81,8 @@ class ApiEndPoints {
   //Proformas
   static const String proformas = "proformas/index";
   static const String proformaDetails = "proformas/details";
+  static const String proformaMarkAsSent = "proformas/markassent";
+  static const String proformaDelete = "proformas/delete";
 
   static const String organization = "settings/organization";
   static const String preferences = "settings/preferences";

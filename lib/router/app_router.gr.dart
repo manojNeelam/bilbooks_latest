@@ -700,6 +700,12 @@ abstract class _$AppRouter extends RootStackRouter {
         ),
       );
     },
+    SubscriptionPageRoute.name: (routeData) {
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: const SubscriptionPage(),
+      );
+    },
     ShippingAddressPageRoute.name: (routeData) {
       final args = routeData.argsAs<ShippingAddressPageRouteArgs>();
       return AutoRoutePage<dynamic>(
@@ -3399,6 +3405,20 @@ class SettingsPageRouteArgs {
   String toString() {
     return 'SettingsPageRouteArgs{key: $key, authInfoMainDataEntity: $authInfoMainDataEntity}';
   }
+}
+
+/// generated route for
+/// [SubscriptionPage]
+class SubscriptionPageRoute extends PageRouteInfo<void> {
+  const SubscriptionPageRoute({List<PageRouteInfo>? children})
+      : super(
+          SubscriptionPageRoute.name,
+          initialChildren: children,
+        );
+
+  static const String name = 'SubscriptionPageRoute';
+
+  static const PageInfo<void> page = PageInfo<void>(name);
 }
 
 /// generated route for

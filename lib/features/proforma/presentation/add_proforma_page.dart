@@ -240,15 +240,14 @@ class _AddProformaPageState extends State<AddProformaPage>
     _loadCountries();
     _loadCurrencySymbols();
     if (isNewProforma()) {
-      context.read<ProformaBloc>().add(GetProformaDetailsEvent(
-          params: ProformaDetailsReqParams(id: "0", duplicate: "")));
+      context.read<ProformaBloc>().add(
+          GetProformaDetailsEvent(params: ProformaDetailsReqParams(id: "0")));
     } else {
-      if (widget.type == EnumNewProformaType.duplicateProforma) {
-        context.read<ProformaBloc>().add(GetProformaDetailsEvent(
-            params: ProformaDetailsReqParams(
-                id: "0", duplicate: widget.proformaEntity?.id ?? "")));
-      }
-      populateData();
+      context.read<ProformaBloc>().add(GetProformaDetailsEvent(
+              params: ProformaDetailsReqParams(
+            id: widget.proformaEntity?.id ?? "",
+          )));
+      // populateData();
     }
     super.initState();
   }
@@ -833,16 +832,17 @@ class _AddProformaPageState extends State<AddProformaPage>
                   "ProformaDetailSuccessState: ${proformaEntity?.no ?? "No proforma number"}");
 
               taxesList = state.proformaDetailResEntity.taxes ?? [];
-              _syncMyStaffSelections((proformaEntity?.emailtoMystaff ?? [])
-                  .map((returnedItem) =>
-                      ProformaStaffEntity.fromInvoiceStaff(returnedItem))
-                  .toList());
-              _syncSelectedClientStaffFromInvoice(proformaEntity);
-              _updateAdditionalVisibility(proformaEntity);
               proformaDetailsResEntity = state.proformaDetailResEntity;
-              if (widget.type == EnumNewProformaType.duplicateProforma) {
+              if (widget.type == EnumNewProformaType.duplicateProforma ||
+                  widget.type == EnumNewProformaType.editProforma) {
                 populateDataFromProformaResponse(proformaEntity);
               } else {
+                _syncMyStaffSelections((proformaEntity?.emailtoMystaff ?? [])
+                    .map((returnedItem) =>
+                        ProformaStaffEntity.fromInvoiceStaff(returnedItem))
+                    .toList());
+                _syncSelectedClientStaffFromInvoice(proformaEntity);
+                _updateAdditionalVisibility(proformaEntity);
                 proformaRequestModel.no = proformaEntity?.no;
                 proformaRequestModel.heading = proformaEntity?.heading;
                 setState(() {});
@@ -1532,7 +1532,7 @@ class _AddProformaPageState extends State<AddProformaPage>
       context.read<InvoiceBloc>().add(InvoiceDeleteEvent(
               params: InvoiceDeleteReqParms(
             id: widget.proformaEntity?.id ?? "",
-            type: EnumDocumentType.invoice,
+            type: EnumDocumentType.proforma,
           )));
     }
   }

@@ -72,6 +72,7 @@ class GetDocumentDataModel extends GetDocumentData {
           sendtoContacts: sendtoContacts,
           bccContacts: bccContacts,
           sendtoMails: sendtoMails,
+          bccMails: bccMails,
           subject: subject,
           message: message,
           attachPdf: attachPdf,

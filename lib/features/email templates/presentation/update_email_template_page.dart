@@ -4,6 +4,7 @@ import 'package:billbooks_app/core/theme/app_fonts.dart';
 import 'package:billbooks_app/core/theme/app_pallete.dart';
 import 'package:billbooks_app/core/utils/show_toast.dart';
 import 'package:billbooks_app/core/utils/utils.dart';
+import 'package:billbooks_app/features/email%20templates/domain/entity/email_template_entity.dart';
 import 'package:billbooks_app/features/email%20templates/domain/usecase/email_template_usecase.dart';
 import 'package:billbooks_app/features/email%20templates/presentation/bloc/email_templates_bloc.dart';
 import 'package:billbooks_app/features/email%20templates/presentation/email_template_page.dart';
@@ -116,13 +117,20 @@ class _UpdateEmailTemplatePageState extends State<UpdateEmailTemplatePage> {
   //   'user-name',
   // ];
   int _currentIndex = -1;
+  int _selectedFollowUpIndex = 0;
+  late final List<_FollowUpTemplateDraft> _followUpDrafts;
 
   @override
   void initState() {
     messageFocusNode = FocusNode();
     subjectFocusNode = FocusNode();
-    subjectController.text = widget.subject;
-    messageController.text = widget.message;
+    _followUpDrafts = _buildFollowUpDrafts();
+    if (widget.type.isfollowUpEstimate) {
+      _loadSelectedFollowUpDraft();
+    } else {
+      subjectController.text = widget.subject;
+      messageController.text = widget.message;
+    }
     super.initState();
   }
 
@@ -135,18 +143,24 @@ class _UpdateEmailTemplatePageState extends State<UpdateEmailTemplatePage> {
 
   @override
   Widget build(BuildContext context) {
+    final placeholders = widget.type.emailTemplateList;
+    final hasFollowUpTabs = widget.type.isfollowUpEstimate;
     return Scaffold(
       appBar: AppBar(
-        bottom: AppConstants.getAppBarDivider,
+        bottom: hasFollowUpTabs
+            ? PreferredSize(
+                preferredSize: const Size.fromHeight(43),
+                child: _buildFollowUpHeader(),
+              )
+            : AppConstants.getAppBarDivider,
         title: Text(widget.title),
         actions: [
           TextButton(
               onPressed: () {
-                context.read<EmailTemplatesBloc>().add(SetEmailTemplateEvent(
-                    params: UpdateEmailTemplateReqParams(
-                        type: widget.type,
-                        message: messageController.text,
-                        subject: subjectController.text)));
+                final params = _buildSaveParams();
+                context
+                    .read<EmailTemplatesBloc>()
+                    .add(SetEmailTemplateEvent(params: params));
               },
               child: Text(
                 "Save",
@@ -259,7 +273,7 @@ class _UpdateEmailTemplatePageState extends State<UpdateEmailTemplatePage> {
                       child: ChipList(
                           //padding: EdgeInsets.all(10),
                           extraOnToggle: (index) {
-                            debugPrint(sendInvoiceList[index]);
+                            debugPrint(placeholders[index]);
                             _currentIndex = index;
                             setState(() {});
 
@@ -269,7 +283,7 @@ class _UpdateEmailTemplatePageState extends State<UpdateEmailTemplatePage> {
                               final offset = selection.baseOffset;
                               messageController.value = messageController.value
                                   .replaced(TextRange.collapsed(offset),
-                                      " [${sendInvoiceList[index]}] ");
+                                      " [${placeholders[index]}] ");
                             }
                             if (subjectFocusNode!.hasFocus) {
                               debugPrint("Subject is active");
@@ -277,7 +291,7 @@ class _UpdateEmailTemplatePageState extends State<UpdateEmailTemplatePage> {
                               final offset = selection.baseOffset;
                               subjectController.value = subjectController.value
                                   .replaced(TextRange.collapsed(offset),
-                                      " [${sendInvoiceList[index]}] ");
+                                      " [${placeholders[index]}] ");
                             }
 
                             Future.delayed(Duration(milliseconds: 200), () {
@@ -308,4 +322,150 @@ class _UpdateEmailTemplatePageState extends State<UpdateEmailTemplatePage> {
       ),
     );
   }
+
+  UpdateEmailTemplateReqParams _buildSaveParams() {
+    if (!widget.type.isfollowUpEstimate) {
+      return UpdateEmailTemplateReqParams(
+        type: widget.type,
+        message: messageController.text,
+        subject: subjectController.text,
+      );
+    }
+
+    _saveSelectedFollowUpDraft();
+    final draft = _followUpDrafts[_selectedFollowUpIndex];
+    return UpdateEmailTemplateReqParams(
+      type: widget.type,
+      message: draft.message,
+      subject: draft.subject,
+      templateKey: draft.templateKey,
+      subjectFieldKey: draft.subjectFieldKey,
+      messageFieldKey: draft.messageFieldKey,
+    );
+  }
+
+  List<_FollowUpTemplateDraft> _buildFollowUpDrafts() {
+    final blocState = context.read<EmailTemplatesBloc>().state;
+    EmailtemplatesEntity? templateEntity;
+    if (blocState is EmailTemplatesSuccessState) {
+      templateEntity = blocState.emailtemplatesEntity;
+    }
+
+    return [
+      _FollowUpTemplateDraft(
+        label: 'Email 1',
+        templateKey: 'followupestimate1',
+        subjectFieldKey: 'email_subject_followupestimate1',
+        messageFieldKey: 'email_message_followupestimate1',
+        subject:
+            templateEntity?.emailSubjectFollowupestimate1 ?? widget.subject,
+        message:
+            templateEntity?.emailMessageFollowupestimate1 ?? widget.message,
+      ),
+      _FollowUpTemplateDraft(
+        label: 'Email 2',
+        templateKey: 'followupestimate2',
+        subjectFieldKey: 'email_subject_followupestimate2',
+        messageFieldKey: 'email_message_followupestimate2',
+        subject: templateEntity?.emailSubjectFollowupestimate2 ?? '',
+        message: templateEntity?.emailMessageFollowupestimate2 ?? '',
+      ),
+      _FollowUpTemplateDraft(
+        label: 'Email 3',
+        templateKey: 'followupestimate3',
+        subjectFieldKey: 'email_subject_followupestimate3',
+        messageFieldKey: 'email_message_followupestimate3',
+        subject: templateEntity?.emailSubjectFollowupestimate3 ?? '',
+        message: templateEntity?.emailMessageFollowupestimate3 ?? '',
+      ),
+    ];
+  }
+
+  void _saveSelectedFollowUpDraft() {
+    final draft = _followUpDrafts[_selectedFollowUpIndex];
+    draft.subject = subjectController.text;
+    draft.message = messageController.text;
+  }
+
+  void _loadSelectedFollowUpDraft() {
+    final draft = _followUpDrafts[_selectedFollowUpIndex];
+    subjectController.text = draft.subject;
+    messageController.text = draft.message;
+  }
+
+  Widget _buildFollowUpHeader() {
+    return Container(
+      color: AppPallete.white,
+      child: Column(
+        children: [
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: List.generate(
+                _followUpDrafts.length,
+                (index) {
+                  final isSelected = index == _selectedFollowUpIndex;
+                  return InkWell(
+                    onTap: () {
+                      if (_selectedFollowUpIndex == index) {
+                        return;
+                      }
+                      setState(() {
+                        _saveSelectedFollowUpDraft();
+                        _selectedFollowUpIndex = index;
+                        _loadSelectedFollowUpDraft();
+                      });
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.fromLTRB(18, 8, 18, 10),
+                      decoration: BoxDecoration(
+                        border: Border(
+                          bottom: BorderSide(
+                            color: isSelected
+                                ? AppPallete.blueColor
+                                : AppPallete.clear,
+                            width: 2,
+                          ),
+                        ),
+                      ),
+                      child: Text(
+                        _followUpDrafts[index].label,
+                        style: AppFonts.regularStyle(
+                          color: isSelected
+                              ? AppPallete.blueColor
+                              : AppPallete.textColor,
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
+          Container(height: 1, color: AppPallete.itemDividerColor),
+          SizedBox(
+            height: 10,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _FollowUpTemplateDraft {
+  final String label;
+  final String templateKey;
+  final String subjectFieldKey;
+  final String messageFieldKey;
+  String subject;
+  String message;
+
+  _FollowUpTemplateDraft({
+    required this.label,
+    required this.templateKey,
+    required this.subjectFieldKey,
+    required this.messageFieldKey,
+    required this.subject,
+    required this.message,
+  });
 }

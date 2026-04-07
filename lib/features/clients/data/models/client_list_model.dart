@@ -111,7 +111,8 @@ class ClientModel extends ClientEntity {
       String? countryName,
       String? shippingCountryName,
       String? currencyCode,
-      List<PersonModel>? persons})
+      List<PersonModel>? persons,
+      List<ClientCreditnoteModel>? creditnotes})
       : super(
           id: id,
           clientId: clientId,
@@ -150,6 +151,7 @@ class ClientModel extends ClientEntity {
           shippingCountryName: shippingCountryName,
           persons: persons,
           currencyCode: currencyCode,
+          creditnotes: creditnotes,
         );
 
   factory ClientModel.fromJson(Map<String, dynamic> json) => ClientModel(
@@ -197,6 +199,10 @@ class ClientModel extends ClientEntity {
             ? []
             : List<PersonModel>.from(
                 json["persons"]!.map((x) => PersonModel.fromJson(x))),
+        creditnotes: json["creditnotes"] == null
+            ? []
+            : List<ClientCreditnoteModel>.from(json["creditnotes"]!
+                .map((x) => ClientCreditnoteModel.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {
@@ -236,6 +242,68 @@ class ClientModel extends ClientEntity {
         "shipping_country_name": shippingCountryName,
         "persons":
             persons == null ? [] : List<dynamic>.from(persons!.map((x) => x)),
+        "creditnotes": creditnotes == null
+            ? []
+            : List<dynamic>.from(creditnotes!.map((x) => {
+                  "id": x.id,
+                  "note_no": x.noteNo,
+                  "client_id": x.clientId,
+                  "project_id": x.projectId,
+                  "description": x.description,
+                  "amount": x.amount,
+                  "status": x.status,
+                  "expiry_date": x.expiryDate,
+                  "organization_id": x.organizationId,
+                })),
+      };
+}
+
+class ClientCreditnoteModel extends ClientCreditnoteEntity {
+  ClientCreditnoteModel({
+    String? id,
+    String? noteNo,
+    String? clientId,
+    String? projectId,
+    String? description,
+    String? amount,
+    String? status,
+    String? expiryDate,
+    String? organizationId,
+  }) : super(
+          id: id,
+          noteNo: noteNo,
+          clientId: clientId,
+          projectId: projectId,
+          description: description,
+          amount: amount,
+          status: status,
+          expiryDate: expiryDate,
+          organizationId: organizationId,
+        );
+
+  factory ClientCreditnoteModel.fromJson(Map<String, dynamic> json) =>
+      ClientCreditnoteModel(
+        id: json["id"]?.toString(),
+        noteNo: json["note_no"]?.toString(),
+        clientId: json["client_id"]?.toString(),
+        projectId: json["project_id"]?.toString(),
+        description: json["description"]?.toString(),
+        amount: json["amount"]?.toString(),
+        status: json["status"]?.toString(),
+        expiryDate: json["expiry_date"]?.toString(),
+        organizationId: json["organization_id"]?.toString(),
+      );
+
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "note_no": noteNo,
+        "client_id": clientId,
+        "project_id": projectId,
+        "description": description,
+        "amount": amount,
+        "status": status,
+        "expiry_date": expiryDate,
+        "organization_id": organizationId,
       };
 }
 
