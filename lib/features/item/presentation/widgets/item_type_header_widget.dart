@@ -15,8 +15,8 @@ class ItemTypeHeaderWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const EnumItemType all = EnumItemType.all;
-    const EnumItemType services = EnumItemType.services;
-    const EnumItemType goods = EnumItemType.goods;
+    const EnumItemType services = EnumItemType.active;
+    const EnumItemType goods = EnumItemType.inActive;
 
     Color getColorFor(EnumItemType type) {
       return type == selectedType ? AppPallete.blueColor : AppPallete.clear;

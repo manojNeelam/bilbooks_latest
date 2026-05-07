@@ -51,7 +51,7 @@ class _ItemSortPageState extends State<ItemSortPage> with SectionAdapterMixin {
       ItemFilterItem(type: EnumItemType.all),
       ItemFilterItem(type: EnumItemType.active),
       ItemFilterItem(type: EnumItemType.inActive),
-      ItemFilterItem(type: EnumItemType.services),
+      //ItemFilterItem(type: EnumItemType.services),
       ItemFilterItem(type: EnumItemType.inventory),
       ItemFilterItem(type: EnumItemType.nonInventory),
     ]),

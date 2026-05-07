@@ -25,15 +25,7 @@ import '../../more/expenses/presentation/widgets/expenses_sort_page.dart';
 import '../domain/usecase/item_usecase.dart';
 import 'widgets/item_card_widget.dart';
 
-enum EnumItemType {
-  all,
-  active,
-  inActive,
-  services,
-  inventory,
-  nonInventory,
-  goods
-}
+enum EnumItemType { all, active, inActive, inventory, nonInventory, goods }
 
 extension EnumItemTypeExtensions on EnumItemType {
   String get title {
@@ -44,12 +36,12 @@ extension EnumItemTypeExtensions on EnumItemType {
         return "Active";
       case EnumItemType.inActive:
         return "Inactive";
-      case EnumItemType.services:
-        return "Services";
+      // case EnumItemType.services:
+      //   return "Services";
       case EnumItemType.inventory:
-        return "Inventory";
+        return "Stock";
       case EnumItemType.nonInventory:
-        return "Non-Inventory";
+        return "Out Of Stock";
       case EnumItemType.goods:
         return "Goods";
     }
@@ -64,8 +56,8 @@ extension EnumItemTypeExtensions on EnumItemType {
         return "active";
       case EnumItemType.inActive:
         return "inactive";
-      case EnumItemType.services:
-        return "services";
+      // case EnumItemType.services:
+      //   return "services";
       case EnumItemType.inventory:
         return "inventory";
       case EnumItemType.nonInventory:
