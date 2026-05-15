@@ -35,7 +35,6 @@ import 'Models/client_person_model.dart';
 import 'widgets/newClient_ other_details_input_view.dart';
 import 'widgets/new_client_section_widget.dart';
 import 'widgets/newclient_Address_details_inputview.dart';
-import 'package:flutter_native_contact_picker/flutter_native_contact_picker.dart';
 
 @RoutePage()
 class NewClientPage extends StatefulWidget {
@@ -194,22 +193,6 @@ class _NewClientPageState extends State<NewClientPage> {
     //   return persons[index].id ?? "";
     // }
     // return "";
-  }
-
-  String get currencyDisplayValue {
-    if (selectedCurrency != null) {
-      return "";
-    }
-    final code = selectedCurrency?.code ?? "";
-    final name = selectedCurrency?.name ?? "";
-    if (code.isEmpty || name.isEmpty) {
-      return "";
-    }
-    return "$code - $name";
-  }
-
-  void setCurrency() {
-    final currency = currencyDisplayValue;
   }
 
   _popScreen() {
@@ -657,6 +640,17 @@ class _NewClientPageState extends State<NewClientPage> {
       final index = paymentTerms.indexWhere((returnedTerms) {
         debugPrint("${returnedTerms.label}");
         return returnedTerms.value == clientEntity?.paymentTerms;
+      });
+      if (index >= 0) {
+        selectedPaymentTerms = paymentTerms[index];
+        setState(() {});
+      }
+      return;
+    }
+
+    if (selectedPaymentTerms == null) {
+      final index = paymentTerms.indexWhere((returnedTerms) {
+        return returnedTerms.value == "7";
       });
       if (index >= 0) {
         selectedPaymentTerms = paymentTerms[index];

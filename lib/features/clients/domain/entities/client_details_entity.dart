@@ -39,7 +39,28 @@ class ClientEstimateEntity {
 
 class ClientInvoiceEntity {
   String? id;
-  ClientInvoiceEntity({this.id});
+  String? netTotal;
+  String? paid;
+  String? balance;
+  String? formatedTotal;
+  String? formatedPaid;
+  String? formatedBalance;
+  String? status;
+  String? no;
+  String? date;
+
+  ClientInvoiceEntity({
+    this.id,
+    this.netTotal,
+    this.paid,
+    this.balance,
+    this.formatedTotal,
+    this.formatedPaid,
+    this.formatedBalance,
+    this.status,
+    this.no,
+    this.date,
+  });
 }
 
 class ClientExpensesEntity {
