@@ -24,6 +24,7 @@ import 'package:flutter_native_contact_picker/flutter_native_contact_picker.dart
 import 'package:toastification/toastification.dart';
 import '../../../../core/widgets/item_separator.dart';
 import '../../../core/app_constants.dart';
+import '../../../core/utils/hive_functions.dart';
 import '../../../core/utils/show_toast.dart';
 import '../../../core/widgets/app_alert_widget.dart';
 import '../../../core/widgets/currency_list_popup_widget.dart';
@@ -84,6 +85,7 @@ class _NewClientPageState extends State<NewClientPage> {
     clientEntity = widget.clientEntity;
     populateData();
     loadInitialData();
+    _loadOrganizationCurrency();
     super.initState();
   }
 
@@ -657,6 +659,52 @@ class _NewClientPageState extends State<NewClientPage> {
         setState(() {});
       }
     }
+  }
+
+  Future<void> _loadOrganizationCurrency() async {
+    final session = await HiveFunctions.getUserSessionData();
+    final organization = session?.organization;
+
+    debugPrint("Org Currency ID: ${organization?.currency}");
+    debugPrint("Org Currency Code: ${organization?.currencyCode}");
+    debugPrint("Org Language ID: ${organization?.language}");
+
+    if (!mounted || organization == null) return;
+
+    CurrencyModel? currency;
+    LanguageModel? language;
+
+    try {
+      currency = currencies.firstWhere(
+        (item) =>
+            item.currencyId == organization.currency ||
+            item.code == organization.currencyCode ||
+            item.code == organization.currency,
+      );
+    } catch (_) {
+      currency = null;
+    }
+
+    try {
+      language = languages.firstWhere(
+        (item) =>
+            item.languageId == organization.language ||
+            item.code == organization.language,
+      );
+    } catch (_) {
+      language = null;
+    }
+
+    debugPrint("Matched Currency: ${currency?.code}");
+    debugPrint("Matched Language: ${language?.code}");
+
+    setState(() {
+      selectedCurrency = currency;
+      selectedLanguage = language;
+    });
+
+    debugPrint("Assigned Currency Model: ${selectedCurrency?.code}");
+    debugPrint("Assigned Language Model: ${selectedLanguage?.code}");
   }
 
   void _showCurrencyPopup() {
