@@ -82,8 +82,9 @@ class _ItemListState extends State<ItemList> with SectionAdapterMixin {
   EnumItemSortBy selectedInvoiceSortBy = EnumItemSortBy.name;
   EnumOrderBy selectedOrderBy = EnumOrderBy.ascending;
   bool isLoading = false;
-  //ItemsResponseEntity? itemsResponseEntity;
+  ItemsResponseEntity? itemListResponseEntity;
   List<ItemListEntity> itemList = [];
+  Map<EnumItemType, int> counts = {};
   ScrollController _scrollController = ScrollController();
   Paging? paging;
   int currentPage = 1;
@@ -130,6 +131,21 @@ class _ItemListState extends State<ItemList> with SectionAdapterMixin {
     );
   }
 
+  Map<EnumItemType, int> getItemCounts() {
+    final statusCounts = itemListResponseEntity?.data?.statusCount;
+    if (statusCounts == null || statusCounts.isEmpty) {
+      return {};
+    }
+
+    final countEntity = statusCounts.first;
+
+    return {
+      EnumItemType.all: int.tryParse(countEntity.allcount ?? "") ?? 0,
+      EnumItemType.active: int.tryParse(countEntity.active ?? "") ?? 0,
+      EnumItemType.inActive: int.tryParse(countEntity.inactive ?? "") ?? 0,
+    };
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -139,6 +155,7 @@ class _ItemListState extends State<ItemList> with SectionAdapterMixin {
               preferredSize: const Size.fromHeight(45),
               child: ItemTypeHeaderWidget(
                 selectedType: selectedType,
+                counts: counts,
                 callBack: (type) {
                   selectedType = type;
                   currentPage = 1;
@@ -240,11 +257,13 @@ class _ItemListState extends State<ItemList> with SectionAdapterMixin {
             if (currentPage == 1) {
               itemList = [];
             }
+            itemListResponseEntity = state.itemsResponseDataModel;
             paging = state.itemsResponseDataModel.data?.paging;
             final items = state.itemsResponseDataModel.data?.items ?? [];
             currentPage = paging?.currentpage ?? 0;
             isFromPagination = false;
             itemList.addAll(items);
+            counts = getItemCounts();
             isLoading = false;
 
             if (itemList.isEmpty) {
