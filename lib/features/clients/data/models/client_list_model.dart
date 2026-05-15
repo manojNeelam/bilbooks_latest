@@ -41,6 +41,7 @@ class ClientResDataModel extends ClientResDataEntity {
   }) : super(
             clients: clients,
             success: success,
+            statusCount: statusCount,
             paging: paging,
             message: message);
 
@@ -382,10 +383,10 @@ class ClientStatusCountModel extends ClientStatusCountEntity {
 
   factory ClientStatusCountModel.fromJson(Map<String, dynamic> json) =>
       ClientStatusCountModel(
-        allcount: json["allcount"],
-        active: json["active"],
-        inactive: json["inactive"],
-        overdue: json["overdue"],
+        allcount: json["allcount"]?.toString(),
+        active: json["active"]?.toString(),
+        inactive: json["inactive"]?.toString(),
+        overdue: json["overdue"]?.toString(),
       );
 
   Map<String, dynamic> toJson() => {

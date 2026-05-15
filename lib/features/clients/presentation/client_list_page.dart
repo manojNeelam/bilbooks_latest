@@ -6,6 +6,7 @@ import 'package:billbooks_app/features/clients/domain/entities/client_list_entit
 import 'package:billbooks_app/features/clients/domain/usecase/client_usecase.dart';
 import 'package:billbooks_app/features/clients/presentation/bloc/client_bloc.dart';
 import 'package:billbooks_app/features/clients/presentation/widgets/client_item_widget.dart';
+import 'package:billbooks_app/features/clients/presentation/widgets/client_type_header_widget.dart';
 import 'package:billbooks_app/router/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -34,16 +35,17 @@ class ClientListPage extends StatefulWidget {
 class _ClientListPageState extends State<ClientListPage>
     with SectionAdapterMixin, AutomaticKeepAliveClientMixin {
   TextEditingController searchController = TextEditingController();
+  ClientResDataEntity? clientResDataEntity;
   List<ClientEntity> clientList = [];
   bool isLoading = false;
   EnumClientType selectedType = EnumClientType.all;
   EnumClientSortBy selectedClientSortBy = EnumClientSortBy.name;
   EnumOrderBy selectedOrderBy = EnumOrderBy.ascending;
+  Map<EnumClientType, int> counts = {};
   final ScrollController _scrollController = ScrollController();
   Paging? paging;
   int currentPage = 1;
   bool isFromPagination = false;
-  bool forceFetchRecords = false;
 
   @override
   void initState() {
@@ -85,8 +87,58 @@ class _ClientListPageState extends State<ClientListPage>
         )));
   }
 
-  void _setForceFetch() {
-    forceFetchRecords = true;
+  void _onClientLoading() {
+    if (!isFromPagination) {
+      setState(() {
+        isLoading = true;
+      });
+    }
+  }
+
+  void _onClientSuccess(ClientResDataEntity? responseData) {
+    setState(() {
+      if (currentPage == 1) {
+        clientList = [];
+      }
+
+      clientResDataEntity = responseData;
+      paging = responseData?.paging;
+      currentPage = paging?.currentpage ?? 0;
+      isFromPagination = false;
+      final clients = responseData?.clients ?? [];
+      clientList.addAll(clients);
+      counts = getClientCounts();
+      isLoading = false;
+    });
+  }
+
+  void _onClientError(String errorMessage) {
+    setState(() {
+      isLoading = false;
+      isFromPagination = false;
+    });
+    showToastification(context, errorMessage, ToastificationType.error);
+  }
+
+  Map<EnumClientType, int> getClientCounts() {
+    final statusCounts = clientResDataEntity?.statusCount;
+    if (statusCounts == null || statusCounts.isEmpty) {
+      return {
+        EnumClientType.all: 0,
+        EnumClientType.active: 0,
+        EnumClientType.inactive: 0,
+        EnumClientType.overdue: 0,
+      };
+    }
+
+    final countEntity = statusCounts.first;
+
+    return {
+      EnumClientType.all: int.tryParse(countEntity.allcount ?? "") ?? 0,
+      EnumClientType.active: int.tryParse(countEntity.active ?? "") ?? 0,
+      EnumClientType.inactive: int.tryParse(countEntity.inactive ?? "") ?? 0,
+      EnumClientType.overdue: int.tryParse(countEntity.overdue ?? "") ?? 0,
+    };
   }
 
   @override
@@ -132,7 +184,20 @@ class _ClientListPageState extends State<ClientListPage>
       appBar: AppBar(
         centerTitle: true,
         title: const Text("Clients"),
-        bottom: AppConstants.getAppBarDivider,
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(45),
+          child: ClientTypeHeaderWidget(
+            selectedType: selectedType,
+            counts: counts,
+            callBack: (type) {
+              selectedType = type;
+              currentPage = 1;
+              setState(() {
+                _getClientList();
+              });
+            },
+          ),
+        ),
         actions: [
           IconButton(
               onPressed: () {
@@ -163,42 +228,33 @@ class _ClientListPageState extends State<ClientListPage>
               ))
         ],
       ),
-      body: BlocConsumer<ClientBloc, ClientState>(
+      body: BlocListener<ClientBloc, ClientState>(
         listener: (context, state) {
           if (state is ClientLoading) {
-            if (!isFromPagination) isLoading = true;
+            _onClientLoading();
           }
 
           if (state is ClientError) {
-            isLoading = false;
-            isFromPagination = false;
-            showToastification(context, "", ToastificationType.error);
+            _onClientError(state.errorMessage);
+          }
+
+          if (state is ClientSuccess) {
+            _onClientSuccess(state.clientResDataEntity);
           }
         },
-        builder: (context, state) {
-          if (state is ClientSuccess) {
-            if (currentPage == 1) {
-              clientList = [];
+        child: Builder(builder: (context) {
+          if (clientList.isEmpty && !isLoading) {
+            if (searchController.text.isNotEmpty) {
+              return ListEmptySearchPage(
+                  searchText: searchController.text,
+                  callBack: () {
+                    searchController.text = "";
+                    _getClientList();
+                  });
             }
-            paging = state.clientResDataEntity?.paging;
-            currentPage = paging?.currentpage ?? 0;
-            isFromPagination = false;
-            final clients = state.clientResDataEntity?.clients ?? [];
-            clientList.addAll(clients);
-            isLoading = false;
-
-            if (clientList.isEmpty) {
-              if (searchController.text.isNotEmpty) {
-                return ListEmptySearchPage(
-                    searchText: searchController.text,
-                    callBack: () {
-                      searchController.text = "";
-                      _getClientList();
-                    });
-              }
-              return showEmptyView();
-            }
+            return showEmptyView();
           }
+
           return RefreshIndicator.adaptive(
             onRefresh: _handleRefresh,
             child: Column(
@@ -232,7 +288,7 @@ class _ClientListPageState extends State<ClientListPage>
               ],
             ),
           );
-        },
+        }),
       ),
     );
   }

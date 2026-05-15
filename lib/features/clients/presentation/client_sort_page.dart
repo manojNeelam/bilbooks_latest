@@ -7,7 +7,7 @@ import 'package:flutter_section_list/flutter_section_list.dart';
 
 import '../../more/expenses/presentation/widgets/expenses_sort_page.dart';
 
-enum EnumClientType { all, active, inactive }
+enum EnumClientType { all, active, inactive, overdue }
 
 extension EnumClientTypeExtension on EnumClientType {
   String get apiParams {
@@ -20,6 +20,9 @@ extension EnumClientTypeExtension on EnumClientType {
 
       case EnumClientType.inactive:
         return "inactive";
+
+      case EnumClientType.overdue:
+        return "overdue";
     }
   }
 
@@ -33,6 +36,9 @@ extension EnumClientTypeExtension on EnumClientType {
 
       case EnumClientType.inactive:
         return "Inactive";
+
+      case EnumClientType.overdue:
+        return "Overdue";
     }
   }
 }
@@ -85,7 +91,8 @@ class _ClientSortPageState extends State<ClientSortPage>
         items: [
           ClientFilterItem(type: EnumClientType.all),
           ClientFilterItem(type: EnumClientType.active),
-          ClientFilterItem(type: EnumClientType.inactive)
+          ClientFilterItem(type: EnumClientType.inactive),
+          ClientFilterItem(type: EnumClientType.overdue)
         ]),
   ];
 
