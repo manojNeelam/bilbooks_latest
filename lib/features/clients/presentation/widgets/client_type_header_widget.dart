@@ -68,7 +68,7 @@ class _ClientTypeHeaderWidgetState extends State<ClientTypeHeaderWidget> {
 
   Widget buildTab(EnumClientType type) {
     final count = widget.counts[type] ?? 0;
-    final title = "${type.title} ($count)";
+    final title = count > 0 ? "${type.title} ($count)" : type.title;
 
     return Padding(
       key: _keys[type],

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:billbooks_app/core/models/country_model.dart';
 import 'package:billbooks_app/core/models/language_model.dart';
@@ -27,6 +29,7 @@ import '../../../core/app_constants.dart';
 import '../../../core/utils/hive_functions.dart';
 import '../../../core/utils/show_toast.dart';
 import '../../../core/widgets/app_alert_widget.dart';
+import '../../../core/widgets/app_image_picker_field.dart';
 import '../../../core/widgets/currency_list_popup_widget.dart';
 import '../../../core/widgets/loading_page.dart';
 import '../../../core/widgets/notes_widget.dart';
@@ -79,13 +82,14 @@ class _NewClientPageState extends State<NewClientPage> {
   LanguageModel? selectedLanguage;
   PaymentTerms? selectedPaymentTerms;
   bool isRefreshPreviousScreen = false;
+  File? selectedImage;
+  bool shouldRemoveImage = false;
 
   @override
   void initState() {
     clientEntity = widget.clientEntity;
     populateData();
     loadInitialData();
-    _loadOrganizationCurrency();
     super.initState();
   }
 
@@ -97,6 +101,7 @@ class _NewClientPageState extends State<NewClientPage> {
     _loadCurrencies();
     _loadLanguages();
     _readPaymentTerms();
+    _loadOrganizationCurrency();
   }
 
   void populateData() {
@@ -183,6 +188,21 @@ class _NewClientPageState extends State<NewClientPage> {
     context
         .read<ClientBloc>()
         .add(AddClientEvent(addClientUsecaseReqParams: addClientReqParams));
+  }
+
+  String? get existingImageUrl {
+    // final item = widget.itemListEntity;
+    // final image = item?.image;
+    // if (image != null && image.isNotEmpty) {
+    //   return image;
+    // }
+
+    // final thumbnail = item?.thumbnail;
+    // if (thumbnail != null && thumbnail.isNotEmpty) {
+    //   return thumbnail;
+    // }
+
+    return null;
   }
 
   String getClientId() {
@@ -427,6 +447,17 @@ class _NewClientPageState extends State<NewClientPage> {
                         onPress: () {
                           _showLanguagePopup();
                         }),
+                    AppImagePickerField(
+                      title: 'Image',
+                      showDivider: false,
+                      initialImage: selectedImage,
+                      initialImageUrl: existingImageUrl,
+                      onChanged: (image) {
+                        selectedImage = image;
+                        // shouldRemoveImage =
+                        //     isEdit && image == null && existingImageUrl != null;
+                      },
+                    ),
                     const SectionTitle(title: "CONTACT PERSONS"),
                     Container(
                       color: AppPallete.white,
@@ -600,17 +631,41 @@ class _NewClientPageState extends State<NewClientPage> {
   Future<void> _loadLanguages() async {
     final String response =
         await rootBundle.loadString('assets/files/languages.json');
+
     languages = languageMainDataModelFromJson(response).data?.language ?? [];
 
-    if (clientEntity != null && clientEntity?.language != null) {
-      final index = languages.indexWhere((returnedLang) {
-        return returnedLang.languageId == clientEntity?.language;
-      });
-      if (index >= 0) {
-        selectedLanguage = languages[index];
-        setState(() {});
-      }
+    final session = await HiveFunctions.getUserSessionData();
+    final organization = session?.organization;
+
+    LanguageModel? language;
+
+    // Priority 1: client entity language
+    if (clientEntity?.language != null) {
+      try {
+        language = languages.firstWhere(
+          (item) => item.languageId == clientEntity!.language,
+        );
+      } catch (_) {}
     }
+
+    // Priority 2: organization language fallback
+    if (language == null && organization != null) {
+      try {
+        language = languages.firstWhere(
+          (item) =>
+              item.languageId == organization.language ||
+              item.code == organization.language,
+        );
+      } catch (_) {}
+    }
+
+    if (!mounted) return;
+
+    setState(() {
+      selectedLanguage = language;
+    });
+
+    debugPrint("Assigned Language Model: ${selectedLanguage?.code}");
   }
 
   Future<void> _loadCurrencies() async {
@@ -619,15 +674,39 @@ class _NewClientPageState extends State<NewClientPage> {
 
     currencies = currencyMainDataModelFromJson(response).data?.currency ?? [];
 
-    if (clientEntity != null && clientEntity?.currency != null) {
-      final index = currencies.indexWhere((returnedCurrency) {
-        return returnedCurrency.currencyId == clientEntity?.currency;
-      });
-      if (index >= 0) {
-        selectedCurrency = currencies[index];
-        setState(() {});
-      }
+    final session = await HiveFunctions.getUserSessionData();
+    final organization = session?.organization;
+
+    CurrencyModel? currency;
+
+    // Priority 1: client entity currency
+    if (clientEntity?.currency != null) {
+      try {
+        currency = currencies.firstWhere(
+          (item) => item.currencyId == clientEntity!.currency,
+        );
+      } catch (_) {}
     }
+
+    // Priority 2: organization fallback
+    if (currency == null && organization != null) {
+      try {
+        currency = currencies.firstWhere(
+          (item) =>
+              item.currencyId == organization.currency ||
+              item.code == organization.currencyCode ||
+              item.code == organization.currency,
+        );
+      } catch (_) {}
+    }
+
+    if (!mounted) return;
+
+    setState(() {
+      selectedCurrency = currency;
+    });
+
+    debugPrint("Assigned Currency Model: ${selectedCurrency?.code}");
   }
 
   Future<void> _readPaymentTerms() async {

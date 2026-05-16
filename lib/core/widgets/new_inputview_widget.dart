@@ -18,20 +18,24 @@ class NewInputViewWidget extends StatelessWidget {
   final bool isHideImage;
   final TextCapitalization textCapitalization;
 
-  const NewInputViewWidget(
-      {Key? key,
-      this.isHideImage = false,
-      this.isRequired = true,
-      required this.title,
-      required this.hintText,
-      required this.controller,
-      this.isBold = false,
-      this.showDivider = true,
-      this.inputType = TextInputType.text,
-      this.inputAction = TextInputAction.next,
-      this.onChanged,
-      this.textCapitalization = TextCapitalization.none})
-      : super(key: key);
+  // NEW
+  final String? currencyLabel;
+
+  const NewInputViewWidget({
+    Key? key,
+    this.isHideImage = false,
+    this.isRequired = true,
+    required this.title,
+    required this.hintText,
+    required this.controller,
+    this.isBold = false,
+    this.showDivider = true,
+    this.inputType = TextInputType.text,
+    this.inputAction = TextInputAction.next,
+    this.onChanged,
+    this.textCapitalization = TextCapitalization.none,
+    this.currencyLabel, // NEW
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -43,10 +47,9 @@ class NewInputViewWidget extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Container(
-                  constraints: BoxConstraints(maxWidth: 180),
+                  constraints: const BoxConstraints(maxWidth: 180),
                   child: Row(
                     children: [
                       Flexible(
@@ -59,28 +62,29 @@ class NewInputViewWidget extends StatelessWidget {
                             children: [
                               if (isRequired)
                                 TextSpan(
-                                    text: " *",
-                                    style: AppFonts.regularStyle()
-                                        .copyWith(color: AppPallete.red))
+                                  text: " *",
+                                  style: AppFonts.regularStyle()
+                                      .copyWith(color: AppPallete.red),
+                                ),
                             ],
                           ),
                         ),
                       ),
-                      Wrap(children: [
-                        AppConstants.sizeBoxWidth5,
-                        if (isHideImage)
-                          Icon(
-                            Icons.visibility_off_rounded,
-                            color: AppPallete.red,
-                            size: 18,
-                          )
-                      ]),
+                      Wrap(
+                        children: [
+                          AppConstants.sizeBoxWidth5,
+                          if (isHideImage)
+                            Icon(
+                              Icons.visibility_off_rounded,
+                              color: AppPallete.red,
+                              size: 18,
+                            ),
+                        ],
+                      ),
                     ],
                   ),
                 ),
-                const SizedBox(
-                  width: 10,
-                ),
+                const SizedBox(width: 10),
                 Expanded(
                   child: TextFormField(
                     textAlign: TextAlign.right,
@@ -93,20 +97,35 @@ class NewInputViewWidget extends StatelessWidget {
                         : AppFonts.regularStyle(),
                     onChanged: onChanged,
                     decoration: InputDecoration(
-                        isDense: true,
-                        contentPadding: AppConstants.contentViewPadding,
-                        fillColor: AppPallete.white,
-                        filled: true,
-                        border: InputBorder.none,
-                        hintText: hintText,
-                        hintStyle: AppFonts.hintStyle()),
+                      isDense: true,
+                      contentPadding: AppConstants.contentViewPadding,
+                      fillColor: AppPallete.white,
+                      filled: true,
+                      border: InputBorder.none,
+                      hintText: hintText,
+                      hintStyle: AppFonts.hintStyle(),
+                    ),
                   ),
-                )
+                ),
+                if (currencyLabel != null && currencyLabel!.isNotEmpty) ...[
+                  const SizedBox(width: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppPallete.draftColor128.withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Text(
+                      currencyLabel!,
+                      style: AppFonts.mediumStyle(size: 13),
+                    ),
+                  ),
+                ],
               ],
             ),
-            // const SizedBox(
-            //   height: 5,
-            // ),
             if (showDivider) const ItemSeparator(),
           ],
         ),

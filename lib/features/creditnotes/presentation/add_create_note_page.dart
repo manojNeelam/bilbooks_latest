@@ -163,7 +163,7 @@ class _AddCreateNotePageState extends State<AddCreateNotePage> {
                         label: "Custom Date", value: "-1"),
                   );
                   if (selectedExpiry?.value == "-1") {
-                    selectedDate = detail?.expiryDate ?? DateTime.now();
+                    selectedDate = detail?.expiryDate;
                   } else {
                     // If expiry is set to a specific number of days, calculate the date
                     selectedDate = DateTime.now().add(
@@ -180,8 +180,8 @@ class _AddCreateNotePageState extends State<AddCreateNotePage> {
                   selectedProject = null;
                   isSetExpiry = false;
                   selectedExpiry = null;
-                  selectedDate = DateTime.now();
-                  dateAsString = getSelectedDateAsString();
+                  selectedDate = null;
+                  dateAsString = "";
                 }
 
                 rerenderUI();
@@ -250,6 +250,7 @@ class _AddCreateNotePageState extends State<AddCreateNotePage> {
                           ),
                           NewInputViewWidget(
                               isRequired: true,
+                              currencyLabel: selectedClient?.currency ?? "",
                               title: "Amount",
                               hintText: "0.00",
                               inputType: const TextInputType.numberWithOptions(

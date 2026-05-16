@@ -1348,7 +1348,7 @@ emailto_clientstaff:[{"id":"23214","email":"abc@exaple.com"},{"id":"23216","emai
                   } else if (isEstimate()) {
                     invoiceEntity = state.invoiceDetailResEntity.estimate;
                   }
-
+                  terms = invoiceEntity?.terms ?? "";
                   debugPrint(
                       "InvoiceDetailSuccessState: ${invoiceEntity?.no ?? "No invoice number"}");
 
@@ -1883,6 +1883,7 @@ emailto_clientstaff:[{"id":"23214","email":"abc@exaple.com"},{"id":"23216","emai
     } else if (indexPath.section == 5) {
       return TermsCardWidget(
         onPress: () {
+          debugPrint(terms);
           AutoRouter.of(context).push(InvoiceEstimateTermsInoutPageRoute(
               terms: terms,
               callback: (val) {

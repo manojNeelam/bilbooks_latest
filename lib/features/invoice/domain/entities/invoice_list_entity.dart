@@ -105,6 +105,8 @@ class InvoiceEntity {
   bool? isAttachments;
   DateTime? dateCreated;
   //DateTime? dateModified;
+  String? invoiceSignature;
+  bool? isInvoiceSignature;
   String? dueTerms;
   String? dueDate;
   String? overdueDays;
@@ -134,7 +136,9 @@ class InvoiceEntity {
   bool? isProformaSignature;
   String? proformaSignature;
   InvoiceEntity(
-      {this.currencySymbol,
+      {this.invoiceSignature,
+      this.isInvoiceSignature,
+      this.currencySymbol,
       this.id,
       this.date,
       this.dateYmd,
