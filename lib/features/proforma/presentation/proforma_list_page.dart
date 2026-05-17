@@ -33,6 +33,7 @@ enum EnumProformaSwipeOptions { send, duplicate }
 typedef ProformaListBuilder = void Function(
     BuildContext context, Function() refreshList);
 
+@RoutePage()
 class ProformaListPage extends StatefulWidget {
   final InvoiceListBuilder builder;
   const ProformaListPage({
@@ -95,8 +96,8 @@ class _ProformaListPageState extends State<ProformaListPage>
             params: ProformaListReqParams(
           status: selectedType.apiParams,
           query: searchController.text,
-          sortOrder: "desc",
-          columnName: "date",
+          sortOrder: "",
+          columnName: "",
           page: currentPage.toString(),
           startDate: startDateReqParams,
           endDate: endDateReqParams,

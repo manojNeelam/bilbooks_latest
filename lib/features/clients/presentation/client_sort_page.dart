@@ -43,7 +43,7 @@ extension EnumClientTypeExtension on EnumClientType {
   }
 }
 
-enum EnumClientSortBy { name }
+enum EnumClientSortBy { none, name }
 
 @RoutePage()
 class ClientSortPage extends StatefulWidget {
@@ -73,7 +73,7 @@ class _ClientSortPageState extends State<ClientSortPage>
         sectionTitle: "Name",
         isShowSection: false,
         clientSortByModel: [
-          ClientSortByModel(type: EnumClientSortBy.name, isSelected: true)
+          ClientSortByModel(type: EnumClientSortBy.name, isSelected: false)
         ]),
     ClientSortBySectionModel(
         sectionTitle: "ORDER BY",
@@ -134,9 +134,12 @@ class _ClientSortPageState extends State<ClientSortPage>
     });
 
     List<ClientSortByModel> sortByItems = sortyByList.first.clientSortByModel!;
-    ClientSortByModel sortByItem = sortByItems.firstWhere((item) {
+    final selectedSortIndex = sortByItems.indexWhere((item) {
       return item.isSelected == true;
     });
+    final sortByItem = selectedSortIndex >= 0
+        ? sortByItems[selectedSortIndex]
+        : ClientSortByModel(type: EnumClientSortBy.name, isSelected: true);
 
     List<OrderByModel> orderByItems = sortyByList.last.orderByList!;
     OrderByModel orderByItem = orderByItems.firstWhere((item) {
@@ -414,8 +417,19 @@ class ClientFilterItem {
 }
 
 extension EnumClientSortByExtension on EnumClientSortBy {
+  String get apiParams {
+    switch (this) {
+      case EnumClientSortBy.none:
+        return "";
+      case EnumClientSortBy.name:
+        return "name";
+    }
+  }
+
   String get title {
     switch (this) {
+      case EnumClientSortBy.none:
+        return "";
       case EnumClientSortBy.name:
         return "Name";
     }

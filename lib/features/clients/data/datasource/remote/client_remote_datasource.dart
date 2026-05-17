@@ -32,21 +32,14 @@ class ClientRemoteDataSourceImpl implements ClientRemoteDataSource {
   Future<ClientResponseModel> getList(ClientListParams params) async {
     try {
       Map<String, dynamic> queryParameters = {
-        "q": params.query,
-        "sort_column": params.columnName,
-        "sort_order": params.sortOrder,
+        "status": params.status,
         "page": params.page,
+        "q": params.query,
+        "alphabet": "",
+        "sort_order": params.sortOrder,
+        "sort_column": params.columnName,
+        "all_pages": "false",
       };
-
-      if (params.status.isNotEmpty) {
-        queryParameters.addAll({
-          "status": params.status,
-        });
-      } else {
-        queryParameters.addAll({
-          "status": "",
-        });
-      }
 
       debugPrint(queryParameters.toString());
 

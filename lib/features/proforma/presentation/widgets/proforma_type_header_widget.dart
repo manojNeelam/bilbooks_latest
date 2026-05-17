@@ -15,15 +15,15 @@ extension EnumProformaTypeExtension on EnumProformaType {
   String get apiParams {
     switch (this) {
       case EnumProformaType.all:
-        return "";
+        return "All Proformas";
       case EnumProformaType.draft:
-        return "draft";
+        return "Draft";
       case EnumProformaType.sent:
-        return "sent";
+        return "Sent";
       case EnumProformaType.approved:
-        return "approved";
+        return "Approved";
       case EnumProformaType.declined:
-        return "declined";
+        return "Declined";
     }
   }
 

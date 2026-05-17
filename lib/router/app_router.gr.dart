@@ -558,6 +558,16 @@ abstract class _$AppRouter extends RootStackRouter {
         child: const PreferencesPage(),
       );
     },
+    ProformaListPageRoute.name: (routeData) {
+      final args = routeData.argsAs<ProformaListPageRouteArgs>();
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: ProformaListPage(
+          key: args.key,
+          builder: args.builder,
+        ),
+      );
+    },
     ProjectDetailPageRoute.name: (routeData) {
       final args = routeData.argsAs<ProjectDetailPageRouteArgs>();
       return AutoRoutePage<dynamic>(
@@ -2900,6 +2910,50 @@ class PreferencesPageRoute extends PageRouteInfo<void> {
   static const String name = 'PreferencesPageRoute';
 
   static const PageInfo<void> page = PageInfo<void>(name);
+}
+
+/// generated route for
+/// [ProformaListPage]
+class ProformaListPageRoute extends PageRouteInfo<ProformaListPageRouteArgs> {
+  ProformaListPageRoute({
+    Key? key,
+    required void Function(
+      BuildContext,
+      void Function(),
+    ) builder,
+    List<PageRouteInfo>? children,
+  }) : super(
+          ProformaListPageRoute.name,
+          args: ProformaListPageRouteArgs(
+            key: key,
+            builder: builder,
+          ),
+          initialChildren: children,
+        );
+
+  static const String name = 'ProformaListPageRoute';
+
+  static const PageInfo<ProformaListPageRouteArgs> page =
+      PageInfo<ProformaListPageRouteArgs>(name);
+}
+
+class ProformaListPageRouteArgs {
+  const ProformaListPageRouteArgs({
+    this.key,
+    required this.builder,
+  });
+
+  final Key? key;
+
+  final void Function(
+    BuildContext,
+    void Function(),
+  ) builder;
+
+  @override
+  String toString() {
+    return 'ProformaListPageRouteArgs{key: $key, builder: $builder}';
+  }
 }
 
 /// generated route for

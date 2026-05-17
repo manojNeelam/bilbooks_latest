@@ -81,7 +81,7 @@ class _ClientListPageState extends State<ClientListPage>
             clientListParams: ClientListParams(
           query: searchController.text,
           status: selectedType.apiParams,
-          columnName: "name",
+          columnName: selectedClientSortBy.apiParams,
           sortOrder: selectedOrderBy.apiParamsValue,
           page: currentPage.toString(),
         )));

@@ -170,9 +170,9 @@ class MorePage extends StatelessWidget with SectionAdapterMixin {
             AutoRouter.of(context).push(const ExpensesListPageRoute());
           case EnumMoreScreen.proformas:
             debugPrint("Tapped Proformas");
-          // AutoRouter.of(context).push(ProformaListPageRoute(
-          //   builder: (context, refreshList) {},
-          // ));
+            AutoRouter.of(context).push(ProformaListPageRoute(
+              builder: (context, refreshList) {},
+            ));
           case EnumMoreScreen.items:
             debugPrint("Tapped items");
             AutoRouter.of(context).push(const ItemListRoute());
