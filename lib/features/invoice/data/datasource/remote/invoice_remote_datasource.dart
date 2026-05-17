@@ -180,29 +180,15 @@ class InvoiceRemoteDatasourceImpl implements InvoiceRemoteDatasource {
   Future<InvoiceListMainResModel> getInvoices(
       InvoiceListReqParams params) async {
     try {
-      //"status": "sent"
       Map<String, dynamic> queryParameters = {
+        "status": params.status,
+        "page": params.page,
         "q": params.query,
+        "date_start": params.startDate ?? "",
+        "date_end": params.endDate ?? "",
         "sort_column": params.columnName,
         "sort_order": params.sortOrder,
-        "page": params.page,
       };
-
-      if (params.startDate != null) {
-        queryParameters.addAll({"date_start": params.startDate ?? ""});
-      }
-      if (params.endDate != null) {
-        queryParameters.addAll({"date_end": params.endDate ?? ""});
-      }
-      if (params.status.isNotEmpty) {
-        queryParameters.addAll({
-          "status": params.status,
-        });
-      } else {
-        queryParameters.addAll({
-          "status": "",
-        });
-      }
       debugPrint(queryParameters.toString());
 
       final response = await apiClient.getRequest(ApiEndPoints.invoices,

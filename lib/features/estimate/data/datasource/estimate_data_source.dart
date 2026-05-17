@@ -26,33 +26,14 @@ class EstimateDataSourceImpl implements EstimateDataSource {
       EstimateListReqParams params) async {
     try {
       Map<String, dynamic> queryParameters = {
+        "status": params.status,
+        "page": params.page,
         "q": params.query,
+        "date_start": params.startDateStr ?? "",
+        "date_end": params.endDateStr ?? "",
         "sort_column": params.columnName,
         "sort_order": params.sortOrder,
-        "page": params.page,
       };
-
-      if (params.startDateStr != null) {
-        queryParameters.addAll({
-          "date_start": params.startDateStr ?? "",
-        });
-      }
-
-      if (params.endDateStr != null) {
-        queryParameters.addAll({
-          "date_end": params.endDateStr ?? "",
-        });
-      }
-
-      if (params.status.isNotEmpty) {
-        queryParameters.addAll({
-          "status": params.status,
-        });
-      } else {
-        queryParameters.addAll({
-          "status": "",
-        });
-      }
 
       debugPrint(queryParameters.toString());
 

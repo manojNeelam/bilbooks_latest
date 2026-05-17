@@ -48,25 +48,25 @@ extension EnumInvoiceTypeExtension on EnumInvoiceType {
   String get apiParams {
     switch (this) {
       case EnumInvoiceType.all:
-        return "";
+        return "All Invoices";
 
       case EnumInvoiceType.draft:
-        return "draft";
+        return "Draft";
 
       case EnumInvoiceType.unpaid:
-        return "unpaid";
+        return "Unpaid";
 
       case EnumInvoiceType.paid:
-        return "paid";
+        return "Paid";
 
       case EnumInvoiceType.partiallyPaid:
-        return "partial";
+        return "Partially Paid";
 
       case EnumInvoiceType.voidType:
-        return "void";
+        return "Void";
 
       case EnumInvoiceType.recurring:
-        return "recurring";
+        return "Recurring";
     }
   }
 
@@ -114,8 +114,8 @@ class _InvoiceListPageState extends State<InvoiceListPage>
   TextEditingController searchController = TextEditingController();
 
   EnumInvoiceType selectedType = EnumInvoiceType.all;
-  EnumInvoiceSortBy selectedInvoiceSortBy = EnumInvoiceSortBy.date;
-  EnumOrderBy selectedOrderBy = EnumOrderBy.descending;
+  EnumInvoiceSortBy selectedInvoiceSortBy = EnumInvoiceSortBy.none;
+  EnumOrderBy selectedOrderBy = EnumOrderBy.ascending;
   List<InvoiceEntity> invoices = [];
   EnumAllTimes selectedAllTimes = EnumAllTimes.all;
   String allTimesDisplayName = "All";
@@ -158,12 +158,13 @@ class _InvoiceListPageState extends State<InvoiceListPage>
   }
 
   void _getInvoiceList() {
+    final hasExplicitSorting = selectedInvoiceSortBy != EnumInvoiceSortBy.none;
     context.read<InvoiceBloc>().add(GetInvoiceListEvent(
             params: InvoiceListReqParams(
           status: selectedType.apiParams,
           query: searchController.text,
-          sortOrder: selectedOrderBy.apiParamsValue,
-          columnName: selectedInvoiceSortBy.apiParams,
+          sortOrder: hasExplicitSorting ? selectedOrderBy.apiParamsValue : "",
+          columnName: hasExplicitSorting ? selectedInvoiceSortBy.apiParams : "",
           page: currentPage.toString(),
           startDate: startDateReqParams,
           endDate: endDateReqParams,
