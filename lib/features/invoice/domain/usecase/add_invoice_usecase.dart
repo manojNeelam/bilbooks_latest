@@ -41,7 +41,7 @@ class AddInvoiceReqParms {
   final String? id;
   final String? currency;
   final String? exchangeRate;
-  final String? creditNotes;
+  final List<dynamic>? creditNotes;
 
   AddInvoiceReqParms({
     required this.type,

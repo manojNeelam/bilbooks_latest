@@ -40,6 +40,7 @@ class InvoiceAddBasicDetailsWidget extends StatefulWidget {
 
 class _InvoiceAddBasicDetailsWidgetState
     extends State<InvoiceAddBasicDetailsWidget> {
+  static const String _defaultTimezoneId = '24';
   DateTime selectedInvoiceDate = DateTime.now();
   late DeliveryOptionsResModel deliveryOptionsResModel;
   late PaymentReminderResModel paymentReminderResModel;
@@ -187,7 +188,10 @@ class _InvoiceAddBasicDetailsWidgetState
         await rootBundle.loadString('assets/files/time_zones.json');
     timeZoneResModel = timeZoneResModelFromJson(response);
     timeZones = timeZoneResModel.timezone ?? [];
-    selectedTimezones ??= timeZones.firstOrNull;
+    selectedTimezones ??= timeZones.firstWhere(
+      (returnedTimezone) => returnedTimezone.timezoneId == _defaultTimezoneId,
+      orElse: () => timeZones.firstOrNull ?? Timezone(),
+    );
     reRenderUI();
   }
 

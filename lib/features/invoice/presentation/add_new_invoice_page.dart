@@ -30,7 +30,6 @@ import 'package:flutter_section_list/flutter_section_list.dart';
 import 'package:flutter_swipe_action_cell/core/cell.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:toastification/toastification.dart';
-import 'dart:convert';
 import '../../pdfviewer/presentation/widgets/pdf_signature_input_dialog.dart';
 import '../../../core/utils/utils.dart';
 import '../../../core/widgets/app_alert_widget.dart';
@@ -145,7 +144,7 @@ class _AddNewInvoiceEstimatePageState extends State<AddNewInvoiceEstimatePage>
   String totalDiscount = "0.00";
   String totalFinalTaxAmountVal = "0.00";
   ShippingDiscountModel shippingDiscountModel = ShippingDiscountModel(
-      discount: "0.00", shipping: "0.00", isPercentage: false);
+      discount: "0.00", shipping: "0.00", isPercentage: true);
   String terms = "";
   DeliveryOptionsResModel? deliveryOptionsResModel;
   PaymentReminderResModel? paymentReminderResModel;
@@ -520,7 +519,7 @@ class _AddNewInvoiceEstimatePageState extends State<AddNewInvoiceEstimatePage>
     return value < 0 ? 0 : value;
   }
 
-  String? get serializedSelectedCreditNotes {
+  List<dynamic>? get serializedSelectedCreditNotes {
     final rawIds = selectedCreditNotes
         .map((creditnote) => (creditnote.id ?? '').trim())
         .where((id) => id.isNotEmpty)
@@ -535,7 +534,7 @@ class _AddNewInvoiceEstimatePageState extends State<AddNewInvoiceEstimatePage>
       return parsed ?? id;
     }).toList();
 
-    return jsonEncode(normalizedIds);
+    return normalizedIds;
   }
 
   String _creditNoteKey(ClientCreditnoteEntity creditnote) {
@@ -1367,8 +1366,8 @@ class _AddNewInvoiceEstimatePageState extends State<AddNewInvoiceEstimatePage>
     subTotal = widget.invoiceEntity?.subtotal ?? "";
     netTotal = widget.invoiceEntity?.nettotal ?? "";
     totalDiscount = widget.invoiceEntity?.discount ?? "";
-    final discountType = widget.invoiceEntity?.shipping ?? "";
-    bool isPercentage = false;
+    final discountType = widget.invoiceEntity?.discountType ?? "";
+    bool isPercentage = true;
 
     if (discountType == "0") {
       isPercentage = true;
@@ -1430,6 +1429,15 @@ class _AddNewInvoiceEstimatePageState extends State<AddNewInvoiceEstimatePage>
       return;
     }
 
+    final baseCurrency = organizationCurrencyCode.trim().isNotEmpty
+        ? organizationCurrencyCode.trim()
+        : organizationCurrency.trim();
+    final resolvedCurrency = shouldShowExchangeRate
+        ? (selectedClientCurrencyCode ?? '').trim()
+        : baseCurrency;
+    final resolvedExchangeRate =
+        shouldShowExchangeRate ? exchangeRateController.text.trim() : '1';
+
     final reqParams = AddInvoiceReqParms(
       type: widget.type,
       terms: terms,
@@ -1448,9 +1456,8 @@ class _AddNewInvoiceEstimatePageState extends State<AddNewInvoiceEstimatePage>
       subTotal: subTotal,
       taxTotal: totalFinalTaxAmountVal,
       id: doNeedToPassId() ? widget.invoiceEntity?.id ?? "" : "",
-      currency: shouldShowExchangeRate ? selectedClientCurrencyCode : null,
-      exchangeRate:
-          shouldShowExchangeRate ? exchangeRateController.text.trim() : null,
+      currency: resolvedCurrency.isNotEmpty ? resolvedCurrency : null,
+      exchangeRate: resolvedExchangeRate,
       creditNotes: serializedSelectedCreditNotes,
     );
 

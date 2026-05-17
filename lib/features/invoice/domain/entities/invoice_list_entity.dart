@@ -404,21 +404,31 @@ class InvoiceTaxEntity {
 class InvoiceItemEntity {
   Map<String, dynamic> toJson() => {
         "item": itemId ?? "",
-        "desc": description ?? "",
-        "date": date?.getDateString() ?? "",
-        "time": "24:45:45",
-        "custom": "",
-        "qty": qty.toString(),
+        "description": description ?? "",
+        "sku": sku ?? "",
+        "date": date?.getDateString(format: "yyyy-MM-dd") ?? "",
+        "time": _getTimeString(),
+        "custom": custom ?? "",
+        "qty": qty ?? 0,
         "rate": rate ?? "",
         "amount": amount ?? "",
-        "disc": discountValue ?? "",
-        "disctype": discountType ?? "",
-        "discApplied": "",
+        "disc": (discountValue?.isNotEmpty ?? false) ? discountValue : "0",
+        "disctype": (discountType?.isNotEmpty ?? false) ? discountType : "0",
+        "discApplied": false,
         "unit": unit ?? "",
+        "type": (type?.isNotEmpty ?? false) ? type : "service",
         "taxes": taxes == null
             ? []
             : List<dynamic>.from(taxes!.map((x) => x.toJson())),
       };
+
+  String _getTimeString() {
+    final rawTime = time?.trim() ?? "";
+    if (rawTime.isNotEmpty) {
+      return rawTime.length >= 5 ? rawTime.substring(0, 5) : rawTime;
+    }
+    return (date ?? DateTime.now()).getDateString(format: "HH:mm");
+  }
 
   /*
   [{"item":"20636",
