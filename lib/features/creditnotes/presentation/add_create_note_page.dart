@@ -37,12 +37,14 @@ class AddCreateNotePage extends StatefulWidget {
   final CreditNoteScreenType screenType;
   final String creditNoteId;
   final Function()? onrefreshPage;
+  final ClientEntity? selectedClient;
 
   const AddCreateNotePage(
       {super.key,
       required this.screenType,
       this.creditNoteId = "0",
-      this.onrefreshPage});
+      this.onrefreshPage,
+      this.selectedClient});
 
   @override
   State<AddCreateNotePage> createState() => _AddCreateNotePageState();
@@ -62,6 +64,7 @@ class _AddCreateNotePageState extends State<AddCreateNotePage> {
 
   @override
   void initState() {
+    selectedClient = widget.selectedClient;
     _loadNoteNumber();
 
     // if (widget.screenType == CreditNoteScreenType.create) {
@@ -148,14 +151,21 @@ class _AddCreateNotePageState extends State<AddCreateNotePage> {
                   creditNoteController.text = detail?.noteNo ?? "";
                   descriptionController.text = detail?.description ?? "";
                   amountController.text = detail?.amount ?? "";
-                  selectedClient = ClientEntity(
-                    clientId: detail?.clientId,
-                    name: detail?.clientName,
-                  );
-                  selectedProject = ProjectEntity(
-                    id: detail?.projectId,
-                    name: detail?.projectName,
-                  );
+                  if (detail?.clientId != null &&
+                      (detail?.clientId?.isNotEmpty ?? false)) {
+                    selectedClient = ClientEntity(
+                      clientId: detail!.clientId,
+                      name: detail.clientName,
+                    );
+                  }
+
+                  if (detail?.projectId != null &&
+                      (detail?.projectId?.isNotEmpty ?? false)) {
+                    selectedProject = ProjectEntity(
+                      id: detail!.projectId,
+                      name: detail.projectName,
+                    );
+                  }
                   isSetExpiry = detail?.expiryDate != null;
                   selectedExpiry = creditExpiryList.firstWhere(
                     (element) => element.value == detail?.days,

@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'dart:io';
 import 'package:billbooks_app/core/app_constants.dart';
+import 'package:billbooks_app/core/api/api_constants.dart';
 import 'package:billbooks_app/core/models/country_model.dart';
 import 'package:billbooks_app/core/theme/app_fonts.dart';
 import 'package:billbooks_app/core/theme/app_pallete.dart';
@@ -12,6 +13,7 @@ import 'package:billbooks_app/core/widgets/section_header_widget.dart';
 import 'package:billbooks_app/features/clients/domain/entities/client_list_entity.dart';
 import 'package:billbooks_app/features/clients/domain/usecase/client_usecase.dart';
 import 'package:billbooks_app/features/clients/presentation/bloc/client_bloc.dart';
+import 'package:billbooks_app/features/creditnotes/presentation/add_create_note_page.dart';
 import 'package:billbooks_app/features/invoice/data/models/invoice_details_model.dart';
 import 'package:billbooks_app/features/invoice/domain/entities/delivery_options_model.dart';
 import 'package:billbooks_app/features/invoice/domain/entities/invoice_list_entity.dart';
@@ -29,6 +31,7 @@ import 'package:flutter_swipe_action_cell/core/cell.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:toastification/toastification.dart';
 import 'dart:convert';
+import '../../pdfviewer/presentation/widgets/pdf_signature_input_dialog.dart';
 import '../../../core/utils/utils.dart';
 import '../../../core/widgets/app_alert_widget.dart';
 import '../../../core/widgets/notes_widget.dart';
@@ -157,6 +160,11 @@ class _AddNewInvoiceEstimatePageState extends State<AddNewInvoiceEstimatePage>
   String organizationCurrency = "";
   List<CountryModel> countries = [];
   final TextEditingController exchangeRateController = TextEditingController();
+  bool hasInvoiceSignature = false;
+  String invoiceSignature = "";
+  Uint8List? localInvoiceSignatureBytes;
+  String currentUserName = "";
+  bool isOpeningSignatureDialog = false;
   bool hasAttachments = false;
   Uint8List? localAttachmentBytes;
   String? localAttachmentName;
@@ -269,6 +277,7 @@ class _AddNewInvoiceEstimatePageState extends State<AddNewInvoiceEstimatePage>
   void initState() {
     _loadOrganizationCurrency();
     _loadCountries();
+    _loadCurrentUserName();
     if (isNewEstimateInvoice()) {
       context.read<InvoiceBloc>().add(GetInvoiceDetails(
           invoiceDetailRequest: InvoiceDetailRequest(type: widget.type)));
@@ -487,6 +496,25 @@ class _AddNewInvoiceEstimatePageState extends State<AddNewInvoiceEstimatePage>
     });
   }
 
+  double _creditNoteTotalFor(Iterable<ClientCreditnoteEntity> creditnotes) {
+    return creditnotes.fold(0.0, (sum, creditnote) {
+      return sum + _toDouble(creditnote.amount);
+    });
+  }
+
+  bool _isCreditNoteTotalExceeded(
+      Iterable<ClientCreditnoteEntity> creditnotes) {
+    return _creditNoteTotalFor(creditnotes) > _toDouble(netTotal);
+  }
+
+  void _showCreditNoteExceededError() {
+    showToastification(
+      context,
+      'Credit note amount cannot exceed invoice total (${_toDouble(netTotal).toStringAsFixed(2)}).',
+      ToastificationType.error,
+    );
+  }
+
   double get payableNetTotal {
     final value = _toDouble(netTotal) - appliedCreditNoteTotal;
     return value < 0 ? 0 : value;
@@ -574,11 +602,22 @@ class _AddNewInvoiceEstimatePageState extends State<AddNewInvoiceEstimatePage>
     setState(() {});
   }
 
-  Future<void> _openCreditNoteSelector() async {
-    if (unusedCreditNotes.isEmpty) {
-      return;
-    }
+  void _openAddCreditNote() {
+    debugPrint(selectedClient?.name ?? "NAAA");
+    AutoRouter.of(context).push(
+      AddCreateNotePageRoute(
+        screenType: CreditNoteScreenType.create,
+        selectedClient: selectedClient,
+        onrefreshPage: () {
+          if (selectedClient != null) {
+            _fetchSelectedClientDetails(selectedClient);
+          }
+        },
+      ),
+    );
+  }
 
+  Future<void> _openCreditNoteSelector() async {
     final tempSelectedIds = selectedCreditNotes
         .map((creditnote) => _creditNoteKey(creditnote))
         .toSet();
@@ -611,69 +650,113 @@ class _AddNewInvoiceEstimatePageState extends State<AddNewInvoiceEstimatePage>
                                 style: AppFonts.mediumStyle(size: 18),
                               ),
                             ),
-                            Text(
-                              'Available: \$${availableCreditNoteLimit.toStringAsFixed(2)}',
-                              style: AppFonts.regularStyle(
-                                color: AppPallete.k666666,
+                            if (unusedCreditNotes.isNotEmpty)
+                              Text(
+                                'Available: \$${availableCreditNoteLimit.toStringAsFixed(2)}',
+                                style: AppFonts.regularStyle(
+                                  color: AppPallete.k666666,
+                                ),
                               ),
-                            ),
                           ],
                         ),
                       ),
-                      Flexible(
-                        child: ListView.separated(
-                          shrinkWrap: true,
-                          padding: const EdgeInsets.symmetric(vertical: 4),
-                          itemCount: unusedCreditNotes.length,
-                          separatorBuilder: (_, __) => const Divider(height: 1),
-                          itemBuilder: (context, index) {
-                            final creditnote = unusedCreditNotes[index];
-                            final noteKey = _creditNoteKey(creditnote);
-                            final isSelected =
-                                tempSelectedIds.contains(noteKey);
+                      if (unusedCreditNotes.isEmpty)
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+                          child: Text(
+                            'No unused credit notes found. Add a new credit note to use it later.',
+                            style: AppFonts.regularStyle(
+                              color: AppPallete.k666666,
+                            ),
+                          ),
+                        )
+                      else
+                        Flexible(
+                          child: ListView.separated(
+                            shrinkWrap: true,
+                            padding: const EdgeInsets.symmetric(vertical: 4),
+                            itemCount: unusedCreditNotes.length,
+                            separatorBuilder: (_, __) =>
+                                const Divider(height: 1),
+                            itemBuilder: (context, index) {
+                              final creditnote = unusedCreditNotes[index];
+                              final noteKey = _creditNoteKey(creditnote);
+                              final isSelected =
+                                  tempSelectedIds.contains(noteKey);
 
-                            return CheckboxListTile(
-                              value: isSelected,
-                              activeColor: AppPallete.blueColor,
-                              controlAffinity: ListTileControlAffinity.leading,
-                              title: Text(
-                                creditnote.noteNo?.trim().isNotEmpty == true
-                                    ? creditnote.noteNo!
-                                    : 'Credit Note',
-                                style: AppFonts.mediumStyle(size: 16),
-                              ),
-                              subtitle: (creditnote.description ?? '')
-                                      .trim()
-                                      .isNotEmpty
-                                  ? Text(
-                                      creditnote.description ?? '',
-                                      style: AppFonts.regularStyle(
-                                        color: AppPallete.k666666,
-                                      ),
-                                    )
-                                  : null,
-                              secondary: Text(
-                                '\$${_toDouble(creditnote.amount).toStringAsFixed(2)}',
-                                style: AppFonts.mediumStyle(size: 16),
-                              ),
-                              onChanged: (value) {
-                                setModalState(() {
-                                  if (value == true) {
-                                    tempSelectedIds.add(noteKey);
-                                  } else {
-                                    tempSelectedIds.remove(noteKey);
-                                  }
-                                });
-                              },
-                            );
-                          },
+                              return CheckboxListTile(
+                                value: isSelected,
+                                activeColor: AppPallete.blueColor,
+                                controlAffinity:
+                                    ListTileControlAffinity.leading,
+                                title: Text(
+                                  creditnote.noteNo?.trim().isNotEmpty == true
+                                      ? creditnote.noteNo!
+                                      : 'Credit Note',
+                                  style: AppFonts.mediumStyle(size: 16),
+                                ),
+                                subtitle: (creditnote.description ?? '')
+                                        .trim()
+                                        .isNotEmpty
+                                    ? Text(
+                                        creditnote.description ?? '',
+                                        style: AppFonts.regularStyle(
+                                          color: AppPallete.k666666,
+                                        ),
+                                      )
+                                    : null,
+                                secondary: Text(
+                                  '\$${_toDouble(creditnote.amount).toStringAsFixed(2)}',
+                                  style: AppFonts.mediumStyle(size: 16),
+                                ),
+                                onChanged: (value) {
+                                  setModalState(() {
+                                    if (value == true) {
+                                      final updatedIds = {
+                                        ...tempSelectedIds,
+                                        noteKey,
+                                      };
+                                      final updatedCreditNotes =
+                                          unusedCreditNotes.where((creditnote) {
+                                        return updatedIds.contains(
+                                          _creditNoteKey(creditnote),
+                                        );
+                                      }).toList();
+
+                                      if (_isCreditNoteTotalExceeded(
+                                          updatedCreditNotes)) {
+                                        _showCreditNoteExceededError();
+                                        return;
+                                      }
+
+                                      tempSelectedIds.add(noteKey);
+                                    } else {
+                                      tempSelectedIds.remove(noteKey);
+                                    }
+                                  });
+                                },
+                              );
+                            },
+                          ),
                         ),
-                      ),
                       Padding(
                         padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(sheetContext).pop();
+                                _openAddCreditNote();
+                              },
+                              child: Text(
+                                'Add new credit note',
+                                style: AppFonts.regularStyle(
+                                  color: AppPallete.blueColor,
+                                ),
+                              ),
+                            ),
+                            AppConstants.sizeBoxWidth10,
                             TextButton(
                               onPressed: () {
                                 Navigator.of(sheetContext).pop();
@@ -686,37 +769,48 @@ class _AddNewInvoiceEstimatePageState extends State<AddNewInvoiceEstimatePage>
                               ),
                             ),
                             AppConstants.sizeBoxWidth10,
-                            ElevatedButton(
-                              onPressed: () {
-                                selectedCreditNotes = unusedCreditNotes.where(
-                                  (creditnote) {
-                                    return tempSelectedIds
-                                        .contains(_creditNoteKey(creditnote));
-                                  },
-                                ).toList();
-                                setState(() {});
-                                Navigator.of(sheetContext).pop();
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppPallete.blueColor,
-                                foregroundColor: AppPallete.white,
-                                elevation: 0,
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 24,
-                                  vertical: 12,
+                            if (unusedCreditNotes.isNotEmpty)
+                              ElevatedButton(
+                                onPressed: () {
+                                  final updatedCreditNotes =
+                                      unusedCreditNotes.where(
+                                    (creditnote) {
+                                      return tempSelectedIds.contains(
+                                        _creditNoteKey(creditnote),
+                                      );
+                                    },
+                                  ).toList();
+
+                                  if (_isCreditNoteTotalExceeded(
+                                      updatedCreditNotes)) {
+                                    _showCreditNoteExceededError();
+                                    return;
+                                  }
+
+                                  selectedCreditNotes = updatedCreditNotes;
+                                  setState(() {});
+                                  Navigator.of(sheetContext).pop();
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppPallete.blueColor,
+                                  foregroundColor: AppPallete.white,
+                                  elevation: 0,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 24,
+                                    vertical: 12,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
                                 ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
+                                child: Text(
+                                  'Apply',
+                                  style: AppFonts.mediumStyle(
+                                    size: 16,
+                                    color: AppPallete.white,
+                                  ),
                                 ),
                               ),
-                              child: Text(
-                                'Apply',
-                                style: AppFonts.mediumStyle(
-                                  size: 16,
-                                  color: AppPallete.white,
-                                ),
-                              ),
-                            ),
                           ],
                         ),
                       )
@@ -744,6 +838,53 @@ class _AddNewInvoiceEstimatePageState extends State<AddNewInvoiceEstimatePage>
       organizationCurrency = (organization?.currency ?? '').trim();
       _syncExchangeRateValue();
     });
+  }
+
+  Future<void> _loadCurrentUserName() async {
+    final session = await HiveFunctions.getUserSessionData();
+    final user = session?.user;
+    final resolvedName = (user?.name ?? '').trim().isNotEmpty
+        ? (user?.name ?? '').trim()
+        : (user?.firstname ?? '').trim().isNotEmpty
+            ? (user?.firstname ?? '').trim()
+            : (user?.email ?? '').trim();
+
+    if (!mounted) {
+      return;
+    }
+
+    setState(() {
+      currentUserName = resolvedName;
+    });
+  }
+
+  Future<void> _openInvoiceSignaturePicker() async {
+    debugPrint(invoiceSignature);
+    debugPrint("invoiceSignature");
+
+    if (isOpeningSignatureDialog) {
+      return;
+    }
+
+    isOpeningSignatureDialog = true;
+    try {
+      final signatureBytes = await showInvoiceSignatureInputDialog(
+        context,
+        userName: currentUserName,
+        existingSignatureUrl: _resolveSignatureUrl(invoiceSignature),
+      );
+
+      if (signatureBytes == null || !mounted) {
+        return;
+      }
+
+      setState(() {
+        localInvoiceSignatureBytes = signatureBytes;
+        hasInvoiceSignature = true;
+      });
+    } finally {
+      isOpeningSignatureDialog = false;
+    }
   }
 
   Future<void> _loadCountries() async {
@@ -878,6 +1019,26 @@ class _AddNewInvoiceEstimatePageState extends State<AddNewInvoiceEstimatePage>
         lower.endsWith('.webp');
   }
 
+  String _resolveSignatureUrl(String value) {
+    final trimmedValue = value.trim();
+    if (trimmedValue.isEmpty) {
+      return '';
+    }
+
+    final parsedUri = Uri.tryParse(trimmedValue);
+    if (parsedUri != null && parsedUri.hasScheme) {
+      return trimmedValue;
+    }
+
+    final baseUri = Uri.parse(ApiConstant.mainUrl);
+    final origin = '${baseUri.scheme}://${baseUri.host}';
+    if (trimmedValue.startsWith('/')) {
+      return '$origin$trimmedValue';
+    }
+
+    return '$origin/$trimmedValue';
+  }
+
   Widget _buildAttachmentPreview() {
     if (localAttachmentBytes != null && localAttachmentIsImage) {
       return Container(
@@ -927,6 +1088,49 @@ class _AddNewInvoiceEstimatePageState extends State<AddNewInvoiceEstimatePage>
     return _buildEmptyAttachmentPreview(message: 'Add a file or image');
   }
 
+  Widget _buildInvoiceSignaturePreview() {
+    if (localInvoiceSignatureBytes != null) {
+      return Container(
+        width: double.infinity,
+        color: AppPallete.white,
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        child: Image.memory(
+          localInvoiceSignatureBytes!,
+          height: 96,
+          fit: BoxFit.contain,
+        ),
+      );
+    }
+
+    if (hasInvoiceSignature && invoiceSignature.isNotEmpty) {
+      return Image.network(
+        _resolveSignatureUrl(invoiceSignature),
+        height: 96,
+        fit: BoxFit.contain,
+        errorBuilder: (context, error, stackTrace) {
+          return _buildEmptySignaturePreview(message: 'Signature available');
+        },
+      );
+    }
+
+    return _buildEmptySignaturePreview(message: 'Add a signature or name');
+  }
+
+  Widget _buildEmptySignaturePreview({required String message}) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: AppPallete.kF2F2F2,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Text(
+        message,
+        style: AppFonts.regularStyle(),
+      ),
+    );
+  }
+
   Widget _buildEmptyAttachmentPreview({required String message}) {
     return Container(
       width: double.infinity,
@@ -943,6 +1147,8 @@ class _AddNewInvoiceEstimatePageState extends State<AddNewInvoiceEstimatePage>
   }
 
   Widget _buildAdditionalDocumentInfo() {
+    final shouldShowSignaturePreview =
+        localInvoiceSignatureBytes != null || hasInvoiceSignature;
     final shouldShowAttachmentPreview =
         localAttachmentBytes != null || hasAttachments;
 
@@ -952,6 +1158,43 @@ class _AddNewInvoiceEstimatePageState extends State<AddNewInvoiceEstimatePage>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          if (!isEstimate()) ...[
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    'Invoice Signature',
+                    style: AppFonts.mediumStyle(size: 16),
+                  ),
+                ),
+                TextButton(
+                  onPressed: _openInvoiceSignaturePicker,
+                  child: Text(
+                    shouldShowSignaturePreview ? 'Change' : 'Add',
+                    style: AppFonts.regularStyle(color: AppPallete.blueColor),
+                  ),
+                ),
+              ],
+            ),
+            AppConstants.sizeBoxHeight10,
+            InkWell(
+              onTap: _openInvoiceSignaturePicker,
+              borderRadius: BorderRadius.circular(8),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: _buildInvoiceSignaturePreview(),
+              ),
+            ),
+            AppConstants.sizeBoxHeight10,
+            Text(
+              'Tap above to switch between Signature and Name.',
+              style: AppFonts.regularStyle(
+                size: 14,
+                color: AppPallete.k666666,
+              ),
+            ),
+            const SizedBox(height: 20),
+          ],
           Row(
             children: [
               Expanded(
@@ -1138,6 +1381,12 @@ class _AddNewInvoiceEstimatePageState extends State<AddNewInvoiceEstimatePage>
         isPercentage: isPercentage);
     notesController.text = widget.invoiceEntity?.notes ?? "";
     hasAttachments = widget.invoiceEntity?.isAttachments == true;
+    invoiceSignature = (widget.invoiceEntity?.invoiceSignature ?? '')
+        .replaceAll('\n', '')
+        .trim();
+    hasInvoiceSignature = invoiceSignature.isNotEmpty &&
+        (widget.invoiceEntity?.isInvoiceSignature == true ||
+            invoiceSignature.isNotEmpty);
     _syncExchangeRateValue(
         existingExchangeRate: widget.invoiceEntity?.exchangeRate?.toString());
 
@@ -1204,6 +1453,8 @@ class _AddNewInvoiceEstimatePageState extends State<AddNewInvoiceEstimatePage>
           shouldShowExchangeRate ? exchangeRateController.text.trim() : null,
       creditNotes: serializedSelectedCreditNotes,
     );
+
+    debugPrint(reqParams.toString());
 
     debugPrint("${reqParams.invoiceRequestModel?.date ?? DateTime.now()}");
 
@@ -1371,6 +1622,7 @@ emailto_clientstaff:[{"id":"23214","email":"abc@exaple.com"},{"id":"23216","emai
                   invoiceDetailResEntity = state.invoiceDetailResEntity;
                   invoiceRequestModel.no = invoiceEntity?.no;
                   invoiceRequestModel.heading = invoiceEntity?.heading;
+                  invoiceSignature = invoiceEntity?.invoiceSignature ?? "";
                 } else if (state is InvoiceDetailsFailureState) {
                   debugPrint("Error occured: ${state.errorMessage}");
                   showToastification(
@@ -1533,82 +1785,80 @@ emailto_clientstaff:[{"id":"23214","email":"abc@exaple.com"},{"id":"23216","emai
               subTitle: "",
               value: "\$${shippingDiscountModel.shipping}",
               isSubTotal: false),
-          if (shouldShowCreditNoteOption) ...[
-            AppConstants.sepSizeBox5,
-            GestureDetector(
-              onTap: _openCreditNoteSelector,
-              child: Row(
-                children: [
-                  Expanded(
-                    flex: 3,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Text(
-                          '(-) ',
-                          style: AppFonts.regularStyle(),
-                        ),
-                        Text(
-                          'Credit Note',
-                          style: AppFonts.regularStyle(
-                            color: AppPallete.blueColor,
-                          ),
-                        ),
-                        const Icon(
-                          Icons.keyboard_arrow_down,
-                          color: AppPallete.textColor,
-                        ),
-                      ],
-                    ),
-                  ),
-                  Expanded(
-                    flex: 2,
-                    child: Text(
-                      appliedCreditNoteTotal > 0
-                          ? '-\$${appliedCreditNoteTotal.toStringAsFixed(2)}'
-                          : '\$0.00',
-                      textAlign: TextAlign.end,
-                      style: AppFonts.mediumStyle(size: 16),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            if (selectedCreditNotes.isNotEmpty) ...[
-              AppConstants.sepSizeBox5,
-              ...selectedCreditNotes.map((creditnote) {
-                return Padding(
-                  padding: const EdgeInsets.only(left: 16, bottom: 6),
+          AppConstants.sepSizeBox5,
+          GestureDetector(
+            onTap: _openCreditNoteSelector,
+            child: Row(
+              children: [
+                Expanded(
+                  flex: 3,
                   child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      Expanded(
-                        child: Text(
-                          creditnote.noteNo?.trim().isNotEmpty == true
-                              ? creditnote.noteNo!
-                              : 'Credit Note',
-                          style: AppFonts.regularStyle(),
-                        ),
-                      ),
                       Text(
-                        '\$${_toDouble(creditnote.amount).toStringAsFixed(2)}',
+                        '(-) ',
                         style: AppFonts.regularStyle(),
                       ),
-                      InkWell(
-                        onTap: () => _removeSelectedCreditNote(creditnote),
-                        child: const Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 8),
-                          child: Icon(
-                            Icons.close,
-                            size: 18,
-                            color: Colors.red,
-                          ),
+                      Text(
+                        'Credit Note',
+                        style: AppFonts.regularStyle(
+                          color: AppPallete.blueColor,
                         ),
+                      ),
+                      const Icon(
+                        Icons.keyboard_arrow_down,
+                        color: AppPallete.textColor,
                       ),
                     ],
                   ),
-                );
-              }),
-            ],
+                ),
+                Expanded(
+                  flex: 2,
+                  child: Text(
+                    appliedCreditNoteTotal > 0
+                        ? '-\$${appliedCreditNoteTotal.toStringAsFixed(2)}'
+                        : '\$0.00',
+                    textAlign: TextAlign.end,
+                    style: AppFonts.mediumStyle(size: 16),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (selectedCreditNotes.isNotEmpty) ...[
+            AppConstants.sepSizeBox5,
+            ...selectedCreditNotes.map((creditnote) {
+              return Padding(
+                padding: const EdgeInsets.only(left: 16, bottom: 6),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        creditnote.noteNo?.trim().isNotEmpty == true
+                            ? creditnote.noteNo!
+                            : 'Credit Note',
+                        style: AppFonts.regularStyle(),
+                      ),
+                    ),
+                    Text(
+                      '\$${_toDouble(creditnote.amount).toStringAsFixed(2)}',
+                      style: AppFonts.regularStyle(),
+                    ),
+                    InkWell(
+                      onTap: () => _removeSelectedCreditNote(creditnote),
+                      child: const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 8),
+                        child: Icon(
+                          Icons.close,
+                          size: 18,
+                          color: Colors.red,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }),
           ],
           AppConstants.sizeBoxHeight15,
           const ItemSeparator(),

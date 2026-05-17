@@ -65,4 +65,31 @@ class AddInvoiceReqParms {
     this.exchangeRate,
     this.creditNotes,
   });
+
+  @override
+  String toString() {
+    return '''
+            AddInvoiceReqParms(
+              type: $type,
+              invoiceRequestModel: $invoiceRequestModel,
+              selectedClient: $selectedClient,
+              selectedProject: $selectedProject,
+              selectedMyStaffList: $selectedMyStaffList,
+              selectedClientStaff: $selectedClientStaff,
+              selectedLineItems: $selectedLineItems,
+              terms: $terms,
+              notes: $notes,
+              subTotal: $subTotal,
+              discountType: $discountType,
+              discountValue: $discountValue,
+              discount: $discount,
+              taxTotal: $taxTotal,
+              shipping: $shipping,
+              netTotal: $netTotal,
+              id: $id,
+              currency: $currency,
+              exchangeRate: $exchangeRate,
+              creditNotes: $creditNotes
+            )''';
+  }
 }

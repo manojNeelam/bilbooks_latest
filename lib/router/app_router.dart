@@ -145,7 +145,7 @@ class AppRouter extends _$AppRouter {
         AutoRoute(
             page: AddNewInvoiceEstimatePageRoute.page, fullscreenDialog: true),
         AutoRoute(page: AddProformaPageRoute.page, fullscreenDialog: true),
-        AutoRoute(page: ProformaListPageRoute.page),
+        // AutoRoute(page: ProformaListPageRoute.page),
         AutoRoute(page: ProjectPopupRoute.page, fullscreenDialog: true),
         AutoRoute(page: ClientPopupRoute.page, fullscreenDialog: true),
         AutoRoute(page: CategoryListPageRoute.page, fullscreenDialog: true),

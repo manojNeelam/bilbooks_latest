@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math' as math;
 import 'dart:typed_data';
 import 'dart:ui' as ui;
@@ -17,6 +18,21 @@ Future<Uint8List?> showPdfSignatureInputDialog(
     context: context,
     barrierDismissible: false,
     builder: (context) => _PdfSignatureInputDialog(userName: userName),
+  );
+}
+
+Future<Uint8List?> showInvoiceSignatureInputDialog(
+  BuildContext context, {
+  required String userName,
+  String existingSignatureUrl = '',
+}) {
+  return showDialog<Uint8List>(
+    context: context,
+    barrierDismissible: false,
+    builder: (context) => _InvoiceSignatureInputDialog(
+      userName: userName,
+      existingSignatureUrl: existingSignatureUrl,
+    ),
   );
 }
 
@@ -51,7 +67,6 @@ class _PdfSignatureInputDialogState extends State<_PdfSignatureInputDialog> {
     if (!_canSave || _isSaving) {
       return;
     }
-
     setState(() {
       _isSaving = true;
     });
@@ -217,6 +232,193 @@ class _PdfSignatureInputDialogState extends State<_PdfSignatureInputDialog> {
   }
 }
 
+class _InvoiceSignatureInputDialog extends StatefulWidget {
+  const _InvoiceSignatureInputDialog({
+    required this.userName,
+    this.existingSignatureUrl = '',
+  });
+
+  final String userName;
+  final String existingSignatureUrl;
+
+  @override
+  State<_InvoiceSignatureInputDialog> createState() =>
+      _InvoiceSignatureInputDialogState();
+}
+
+class _InvoiceSignatureInputDialogState
+    extends State<_InvoiceSignatureInputDialog> {
+  PdfSignatureInputMode _selectedMode = PdfSignatureInputMode.signature;
+  bool _isSaving = false;
+
+  bool get _hasExistingSignature {
+    return widget.existingSignatureUrl.trim().isNotEmpty;
+  }
+
+  bool get _canSave {
+    switch (_selectedMode) {
+      case PdfSignatureInputMode.signature:
+        return _hasExistingSignature;
+      case PdfSignatureInputMode.name:
+        return widget.userName.trim().isNotEmpty;
+    }
+  }
+
+  Future<void> _save() async {
+    if (!_canSave || _isSaving) {
+      return;
+    }
+
+    setState(() {
+      _isSaving = true;
+    });
+
+    try {
+      Uint8List? bytes;
+      switch (_selectedMode) {
+        case PdfSignatureInputMode.signature:
+          if (widget.existingSignatureUrl.trim().isNotEmpty) {
+            final networkImage = NetworkImage(widget.existingSignatureUrl);
+            final imageStream =
+                networkImage.resolve(const ImageConfiguration());
+            final completer = Completer<ImageInfo>();
+            late final ImageStreamListener listener;
+            listener = ImageStreamListener(
+              (imageInfo, _) {
+                completer.complete(imageInfo);
+                imageStream.removeListener(listener);
+              },
+              onError: (exception, stackTrace) {
+                completer.completeError(exception, stackTrace);
+                imageStream.removeListener(listener);
+              },
+            );
+            imageStream.addListener(listener);
+            final imageInfo = await completer.future;
+            final byteData = await imageInfo.image.toByteData(
+              format: ui.ImageByteFormat.png,
+            );
+            bytes = byteData?.buffer.asUint8List();
+          }
+          break;
+        case PdfSignatureInputMode.name:
+          bytes = await _buildTypedNameSignature(widget.userName.trim());
+          break;
+      }
+
+      if (!mounted) {
+        return;
+      }
+      Navigator.of(context).pop(bytes);
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isSaving = false;
+        });
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      backgroundColor: AppPallete.white,
+      titlePadding: const EdgeInsets.fromLTRB(20, 20, 12, 0),
+      title: Row(
+        children: [
+          Expanded(
+            child: Text(
+              'Add Digital Signature',
+              style: AppFonts.mediumStyle(size: 20),
+            ),
+          ),
+          IconButton(
+            onPressed: _isSaving ? null : () => Navigator.of(context).pop(),
+            icon: const Icon(Icons.close, color: AppPallete.k666666),
+          ),
+        ],
+      ),
+      contentPadding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
+      content: SizedBox(
+        width: 360,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              height: 180,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: AppPallete.white,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: AppPallete.itemDividerColor),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: _selectedMode == PdfSignatureInputMode.signature
+                    ? _ExistingInvoiceSignaturePreview(
+                        existingSignatureUrl: widget.existingSignatureUrl,
+                      )
+                    : _TypedNamePreview(name: widget.userName.trim()),
+              ),
+            ),
+            const SizedBox(height: 12),
+            _ModeTabBar(
+              selectedMode: _selectedMode,
+              onModeChanged: (mode) {
+                setState(() {
+                  _selectedMode = mode;
+                });
+              },
+            ),
+            const SizedBox(height: 10),
+            Text(
+              _selectedMode == PdfSignatureInputMode.signature
+                  ? 'Existing signature image will be used for invoice.'
+                  : 'Your logged in user name will be used as the signature image.',
+              style: AppFonts.regularStyle(
+                size: 14,
+                color: AppPallete.k666666,
+              ),
+            ),
+          ],
+        ),
+      ),
+      actionsPadding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+      actions: [
+        TextButton(
+          onPressed: _isSaving ? null : () => Navigator.of(context).pop(),
+          child: Text(
+            'Cancel',
+            style: AppFonts.buttonTextStyle(color: AppPallete.k666666),
+          ),
+        ),
+        ElevatedButton(
+          onPressed: _canSave && !_isSaving ? _save : null,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppPallete.blueColor,
+            foregroundColor: AppPallete.white,
+            disabledBackgroundColor: AppPallete.blueColor50,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+          child: _isSaving
+              ? const SizedBox(
+                  width: 18,
+                  height: 18,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : Text(
+                  'Save',
+                  style: AppFonts.buttonTextStyle(color: AppPallete.white),
+                ),
+        ),
+      ],
+    );
+  }
+}
+
 class _ModeTabBar extends StatelessWidget {
   const _ModeTabBar({
     required this.selectedMode,
@@ -320,6 +522,41 @@ class _TypedNamePreview extends StatelessWidget {
             child: const SizedBox.expand(),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _ExistingInvoiceSignaturePreview extends StatelessWidget {
+  const _ExistingInvoiceSignaturePreview({
+    this.existingSignatureUrl = '',
+  });
+
+  final String existingSignatureUrl;
+
+  @override
+  Widget build(BuildContext context) {
+    if (existingSignatureUrl.trim().isNotEmpty) {
+      return Image.network(
+        existingSignatureUrl,
+        fit: BoxFit.contain,
+        errorBuilder: (context, error, stackTrace) {
+          return Center(
+            child: Text(
+              'Existing signature image is unavailable.',
+              style: AppFonts.regularStyle(color: AppPallete.k666666),
+              textAlign: TextAlign.center,
+            ),
+          );
+        },
+      );
+    }
+
+    return Center(
+      child: Text(
+        'Existing signature image is unavailable.',
+        style: AppFonts.regularStyle(color: AppPallete.k666666),
+        textAlign: TextAlign.center,
       ),
     );
   }

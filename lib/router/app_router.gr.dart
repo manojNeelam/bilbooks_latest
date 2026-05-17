@@ -24,6 +24,7 @@ abstract class _$AppRouter extends RootStackRouter {
           screenType: args.screenType,
           creditNoteId: args.creditNoteId,
           onrefreshPage: args.onrefreshPage,
+          selectedClient: args.selectedClient,
         ),
       );
     },
@@ -421,8 +422,8 @@ abstract class _$AppRouter extends RootStackRouter {
         child: LineItemTotalSelectionPage(
           key: args.key,
           shippingDiscountModel: args.shippingDiscountModel,
-          currencyPrefix: args.currencyPrefix,
           callBack: args.callBack,
+          currencyPrefix: args.currencyPrefix,
         ),
       );
     },
@@ -555,16 +556,6 @@ abstract class _$AppRouter extends RootStackRouter {
       return AutoRoutePage<dynamic>(
         routeData: routeData,
         child: const PreferencesPage(),
-      );
-    },
-    ProformaListPageRoute.name: (routeData) {
-      final args = routeData.argsAs<ProformaListPageRouteArgs>();
-      return AutoRoutePage<dynamic>(
-        routeData: routeData,
-        child: ProformaListPage(
-          key: args.key,
-          builder: args.builder,
-        ),
       );
     },
     ProjectDetailPageRoute.name: (routeData) {
@@ -700,12 +691,6 @@ abstract class _$AppRouter extends RootStackRouter {
         ),
       );
     },
-    SubscriptionPageRoute.name: (routeData) {
-      return AutoRoutePage<dynamic>(
-        routeData: routeData,
-        child: const SubscriptionPage(),
-      );
-    },
     ShippingAddressPageRoute.name: (routeData) {
       final args = routeData.argsAs<ShippingAddressPageRouteArgs>();
       return AutoRoutePage<dynamic>(
@@ -739,6 +724,12 @@ abstract class _$AppRouter extends RootStackRouter {
           onlinePaymentsEntity: args.onlinePaymentsEntity,
           refreshList: args.refreshList,
         ),
+      );
+    },
+    SubscriptionPageRoute.name: (routeData) {
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: const SubscriptionPage(),
       );
     },
     TaxesListPageRoute.name: (routeData) {
@@ -817,6 +808,7 @@ class AddCreateNotePageRoute extends PageRouteInfo<AddCreateNotePageRouteArgs> {
     required CreditNoteScreenType screenType,
     String creditNoteId = "0",
     dynamic Function()? onrefreshPage,
+    ClientEntity? selectedClient,
     List<PageRouteInfo>? children,
   }) : super(
           AddCreateNotePageRoute.name,
@@ -825,6 +817,7 @@ class AddCreateNotePageRoute extends PageRouteInfo<AddCreateNotePageRouteArgs> {
             screenType: screenType,
             creditNoteId: creditNoteId,
             onrefreshPage: onrefreshPage,
+            selectedClient: selectedClient,
           ),
           initialChildren: children,
         );
@@ -841,6 +834,7 @@ class AddCreateNotePageRouteArgs {
     required this.screenType,
     this.creditNoteId = "0",
     this.onrefreshPage,
+    this.selectedClient,
   });
 
   final Key? key;
@@ -851,9 +845,11 @@ class AddCreateNotePageRouteArgs {
 
   final dynamic Function()? onrefreshPage;
 
+  final ClientEntity? selectedClient;
+
   @override
   String toString() {
-    return 'AddCreateNotePageRouteArgs{key: $key, screenType: $screenType, creditNoteId: $creditNoteId, onrefreshPage: $onrefreshPage}';
+    return 'AddCreateNotePageRouteArgs{key: $key, screenType: $screenType, creditNoteId: $creditNoteId, onrefreshPage: $onrefreshPage, selectedClient: $selectedClient}';
   }
 }
 
@@ -2401,16 +2397,16 @@ class LineItemTotalSelectionPageRoute
   LineItemTotalSelectionPageRoute({
     Key? key,
     required ShippingDiscountModel shippingDiscountModel,
-    String currencyPrefix = r'$',
     required dynamic Function(ShippingDiscountModel) callBack,
+    String currencyPrefix = r'$',
     List<PageRouteInfo>? children,
   }) : super(
           LineItemTotalSelectionPageRoute.name,
           args: LineItemTotalSelectionPageRouteArgs(
             key: key,
             shippingDiscountModel: shippingDiscountModel,
-            currencyPrefix: currencyPrefix,
             callBack: callBack,
+            currencyPrefix: currencyPrefix,
           ),
           initialChildren: children,
         );
@@ -2425,21 +2421,21 @@ class LineItemTotalSelectionPageRouteArgs {
   const LineItemTotalSelectionPageRouteArgs({
     this.key,
     required this.shippingDiscountModel,
-    this.currencyPrefix = r'$',
     required this.callBack,
+    this.currencyPrefix = r'$',
   });
 
   final Key? key;
 
   final ShippingDiscountModel shippingDiscountModel;
 
-  final String currencyPrefix;
-
   final dynamic Function(ShippingDiscountModel) callBack;
+
+  final String currencyPrefix;
 
   @override
   String toString() {
-    return 'LineItemTotalSelectionPageRouteArgs{key: $key, shippingDiscountModel: $shippingDiscountModel, currencyPrefix: $currencyPrefix, callBack: $callBack}';
+    return 'LineItemTotalSelectionPageRouteArgs{key: $key, shippingDiscountModel: $shippingDiscountModel, callBack: $callBack, currencyPrefix: $currencyPrefix}';
   }
 }
 
@@ -2907,50 +2903,6 @@ class PreferencesPageRoute extends PageRouteInfo<void> {
 }
 
 /// generated route for
-/// [ProformaListPage]
-class ProformaListPageRoute extends PageRouteInfo<ProformaListPageRouteArgs> {
-  ProformaListPageRoute({
-    Key? key,
-    required void Function(
-      BuildContext,
-      dynamic Function(),
-    ) builder,
-    List<PageRouteInfo>? children,
-  }) : super(
-          ProformaListPageRoute.name,
-          args: ProformaListPageRouteArgs(
-            key: key,
-            builder: builder,
-          ),
-          initialChildren: children,
-        );
-
-  static const String name = 'ProformaListPageRoute';
-
-  static const PageInfo<ProformaListPageRouteArgs> page =
-      PageInfo<ProformaListPageRouteArgs>(name);
-}
-
-class ProformaListPageRouteArgs {
-  const ProformaListPageRouteArgs({
-    this.key,
-    required this.builder,
-  });
-
-  final Key? key;
-
-  final void Function(
-    BuildContext,
-    dynamic Function(),
-  ) builder;
-
-  @override
-  String toString() {
-    return 'ProformaListPageRouteArgs{key: $key, builder: $builder}';
-  }
-}
-
-/// generated route for
 /// [ProjectDetailPage]
 class ProjectDetailPageRoute extends PageRouteInfo<ProjectDetailPageRouteArgs> {
   ProjectDetailPageRoute({
@@ -3408,20 +3360,6 @@ class SettingsPageRouteArgs {
 }
 
 /// generated route for
-/// [SubscriptionPage]
-class SubscriptionPageRoute extends PageRouteInfo<void> {
-  const SubscriptionPageRoute({List<PageRouteInfo>? children})
-      : super(
-          SubscriptionPageRoute.name,
-          initialChildren: children,
-        );
-
-  static const String name = 'SubscriptionPageRoute';
-
-  static const PageInfo<void> page = PageInfo<void>(name);
-}
-
-/// generated route for
 /// [ShippingAddressPage]
 class ShippingAddressPageRoute
     extends PageRouteInfo<ShippingAddressPageRouteArgs> {
@@ -3539,6 +3477,20 @@ class StripePageRouteArgs {
   String toString() {
     return 'StripePageRouteArgs{key: $key, onlinePaymentsEntity: $onlinePaymentsEntity, refreshList: $refreshList}';
   }
+}
+
+/// generated route for
+/// [SubscriptionPage]
+class SubscriptionPageRoute extends PageRouteInfo<void> {
+  const SubscriptionPageRoute({List<PageRouteInfo>? children})
+      : super(
+          SubscriptionPageRoute.name,
+          initialChildren: children,
+        );
+
+  static const String name = 'SubscriptionPageRoute';
+
+  static const PageInfo<void> page = PageInfo<void>(name);
 }
 
 /// generated route for
