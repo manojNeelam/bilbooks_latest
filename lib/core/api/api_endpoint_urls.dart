@@ -24,6 +24,7 @@ class ApiEndPoints {
   static const String invoiceDetails = "invoices/details";
   static const String invoices = "invoices";
   static const String addinvoice = "invoices/entry";
+  static const String addProforma = "proformas/entry";
 
   //Items
   static const String itemList = "items";

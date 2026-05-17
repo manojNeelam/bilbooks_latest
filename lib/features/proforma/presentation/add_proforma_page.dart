@@ -112,7 +112,7 @@ class _AddProformaPageState extends State<AddProformaPage>
   String totalDiscount = "0.00";
   String totalFinalTaxAmountVal = "0.00";
   ShippingDiscountModel shippingDiscountModel = ShippingDiscountModel(
-      discount: "0.00", shipping: "0.00", isPercentage: false);
+      discount: "0.00", shipping: "0.00", isPercentage: true);
   bool isProformaDetailsLoading = false;
   bool hasAttachments = false;
   bool hasProformaSignature = false;
@@ -637,12 +637,10 @@ class _AddProformaPageState extends State<AddProformaPage>
     subTotal = widget.proformaEntity?.subtotal ?? "";
     netTotal = widget.proformaEntity?.nettotal ?? "";
     totalDiscount = widget.proformaEntity?.discount ?? "";
-    final discountType = widget.proformaEntity?.shipping ?? "";
-    bool isPercentage = false;
+    final discountType = widget.proformaEntity?.discountType ?? "";
+    bool isPercentage = true;
 
-    if (discountType == "0") {
-      isPercentage = true;
-    } else if (discountType == "1") {
+    if (discountType == "1") {
       isPercentage = false;
     }
     shippingDiscountModel = ShippingDiscountModel(
@@ -702,11 +700,9 @@ class _AddProformaPageState extends State<AddProformaPage>
     netTotal = proformaEntity.nettotal ?? "0.00";
     totalDiscount = proformaEntity.discount ?? "0.00";
 
-    final discountType = proformaEntity.shipping ?? "";
-    bool isPercentage = false;
-    if (discountType == "0") {
-      isPercentage = true;
-    } else if (discountType == "1") {
+    final discountType = proformaEntity.discountType ?? "";
+    bool isPercentage = true;
+    if (discountType == "1") {
       isPercentage = false;
     }
 
@@ -733,6 +729,17 @@ class _AddProformaPageState extends State<AddProformaPage>
             proformaSignature.isNotEmpty);
   }
 
+  String? _resolveProformaDueTerms() {
+    final dueTerms = (widget.proformaEntity?.dueTerms ??
+            proformaDetailsResEntity?.proforma?.dueTerms ??
+            "")
+        .trim();
+    if (dueTerms.isEmpty) {
+      return null;
+    }
+    return dueTerms;
+  }
+
   void addProforma() {
     if (shouldShowExchangeRate && exchangeRateController.text.trim().isEmpty) {
       showToastification(
@@ -745,6 +752,7 @@ class _AddProformaPageState extends State<AddProformaPage>
 
     final reqParams = AddInvoiceReqParms(
       type: EnumNewInvoiceEstimateType.invoice,
+      isProforma: true,
       terms: terms,
       selectedClient: selectedClient,
       notes: notesController.text,
@@ -781,7 +789,8 @@ class _AddProformaPageState extends State<AddProformaPage>
       subTotal: subTotal,
       taxTotal: totalFinalTaxAmountVal,
       id: doNeedToPassId() ? widget.proformaEntity?.id ?? "" : "",
-      currency: shouldShowExchangeRate ? selectedClientCurrencyCode : null,
+      dueTerms: _resolveProformaDueTerms(),
+      currency: displayCurrencyCode.isNotEmpty ? displayCurrencyCode : null,
       exchangeRate:
           shouldShowExchangeRate ? exchangeRateController.text.trim() : null,
     );

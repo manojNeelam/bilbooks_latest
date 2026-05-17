@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:billbooks_app/core/api/api_constants.dart';
 import 'package:billbooks_app/core/app_constants.dart';
 import 'package:billbooks_app/features/invoice/data/models/add_invoice_model.dart';
 import 'package:billbooks_app/features/invoice/data/models/client_staff_model.dart';
@@ -276,11 +277,13 @@ let payment_reminders: String
 
       if (params.invoiceRequestModel != null) {
         final req = params.invoiceRequestModel!;
+        final isProformaPayload = params.isProforma;
 
         map.addAll({
           "id": _resolveRequestId(params),
           "estimate": _resolveEstimateReference(params),
-          "recurring": req.isRecurring == true ? "true" : "false",
+          if (!isProformaPayload)
+            "recurring": req.isRecurring == true ? "true" : "false",
 
           // keep these as plain scalar form fields
           "client": params.selectedClient?.clientId ?? "",
@@ -288,16 +291,19 @@ let payment_reminders: String
 
           "date": _formatPayloadDate(req.date),
           "expiry_date": _formatPayloadDate(req.expiryDate ?? req.date),
-          "dueterms": req.selectedPaymentTerms?.value ?? "0",
+          "dueterms": isProformaPayload
+              ? (params.dueTerms ?? "0")
+              : (req.selectedPaymentTerms?.value ?? "0"),
           "payment_reminders": req.selectedPaymentReminder?.value ?? "0",
           "heading": req.heading ?? "",
-          "repeat": _resolveRepeat(req),
-          "howmany": _resolveHowMany(req),
+          if (!isProformaPayload) "repeat": _resolveRepeat(req),
+          if (!isProformaPayload) "howmany": _resolveHowMany(req),
           "no": req.no ?? "",
           "pono": req.poNumber ?? "",
           "summary": req.title ?? "",
           "exchange_rate": params.exchangeRate ?? "1",
-          "timezone": req.selectedTimezones?.timezoneId ?? "",
+          if (!isProformaPayload)
+            "timezone": req.selectedTimezones?.timezoneId ?? "",
           "delivery_options": req.selectedDeliveryOption?.value ?? "0",
           "subtotal": params.subTotal ?? "",
           "discount_type": params.discountType ?? "0",
@@ -322,8 +328,8 @@ let payment_reminders: String
           "emailto_mystaff": jsonEncode(
             _serializeStaff(params.selectedMyStaffList),
           ),
-
-          "creditnotes": jsonEncode(params.creditNotes ?? []),
+          if (!isProformaPayload)
+            "creditnotes": jsonEncode(params.creditNotes ?? []),
         });
 
         if (params.type ==
@@ -339,9 +345,11 @@ let payment_reminders: String
 
       debugPrint("Map: $map");
 
-      final path = _isInvoiceType(params.type)
-          ? ApiEndPoints.addinvoice
-          : ApiEndPoints.addEstimate;
+      final path = params.isProforma
+          ? ApiEndPoints.addProforma
+          : _isInvoiceType(params.type)
+              ? ApiEndPoints.addinvoice
+              : ApiEndPoints.addEstimate;
 
       debugPrint("Path: $path");
 

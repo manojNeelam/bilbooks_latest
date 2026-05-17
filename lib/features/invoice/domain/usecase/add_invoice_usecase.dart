@@ -23,6 +23,7 @@ class AddInvoiceUsecase
 
 class AddInvoiceReqParms {
   final EnumNewInvoiceEstimateType type;
+  final bool isProforma;
   final InvoiceRequestModel? invoiceRequestModel;
   final ClientEntity? selectedClient;
   final ProjectEntity? selectedProject;
@@ -39,12 +40,14 @@ class AddInvoiceReqParms {
   final String? shipping;
   final String? netTotal;
   final String? id;
+  final String? dueTerms;
   final String? currency;
   final String? exchangeRate;
   final List<dynamic>? creditNotes;
 
   AddInvoiceReqParms({
     required this.type,
+    this.isProforma = false,
     this.invoiceRequestModel,
     this.selectedClient,
     this.selectedProject,
@@ -61,6 +64,7 @@ class AddInvoiceReqParms {
     required this.subTotal,
     required this.taxTotal,
     required this.id,
+    this.dueTerms,
     this.currency,
     this.exchangeRate,
     this.creditNotes,
@@ -71,6 +75,7 @@ class AddInvoiceReqParms {
     return '''
             AddInvoiceReqParms(
               type: $type,
+              isProforma: $isProforma,
               invoiceRequestModel: $invoiceRequestModel,
               selectedClient: $selectedClient,
               selectedProject: $selectedProject,
@@ -87,6 +92,7 @@ class AddInvoiceReqParms {
               shipping: $shipping,
               netTotal: $netTotal,
               id: $id,
+              dueTerms: $dueTerms,
               currency: $currency,
               exchangeRate: $exchangeRate,
               creditNotes: $creditNotes
