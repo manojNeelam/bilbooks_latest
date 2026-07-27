@@ -94,6 +94,8 @@ void main() async {
         create: (context) => EmailTemplatesBloc(
               emailTemplateUsecase: serviceLocator(),
               upDateEmailTemplateUsecase: serviceLocator(),
+              getFollowUpeEstimateEmailTemplateUseCase: serviceLocator(),
+              setFollowUpeEstimateEmailTemplateUseCase: serviceLocator(),
             )),
     BlocProvider(
         create: (context) => ProjectBloc(
@@ -201,15 +203,15 @@ void main() async {
     ),
     BlocProvider(
         create: (context) => OrganizationBloc(
-              organizationListUsecase: serviceLocator(),
-              updateOrganizationUsecase: serviceLocator(),
-              preferenceUpdateUsecase: serviceLocator(),
-              preferenceDetailsUsecase: serviceLocator(),
-              updatePreferenceColumnUsecase: serviceLocator(),
-              updatePreferenceEstimateUsecase: serviceLocator(),
-              updatePrefGeneralUsecase: serviceLocator(),
-              updatePrefInvoiceUsecase: serviceLocator(),
-            )),
+            organizationListUsecase: serviceLocator(),
+            updateOrganizationUsecase: serviceLocator(),
+            preferenceUpdateUsecase: serviceLocator(),
+            preferenceDetailsUsecase: serviceLocator(),
+            updatePreferenceColumnUsecase: serviceLocator(),
+            updatePreferenceEstimateUsecase: serviceLocator(),
+            updatePrefGeneralUsecase: serviceLocator(),
+            updatePrefInvoiceUsecase: serviceLocator(),
+            updateInvEstSettingsUsecase: serviceLocator())),
     BlocProvider(
       create: (context) => InvoiceBloc(
         invoiceDetailUsecase: serviceLocator(),

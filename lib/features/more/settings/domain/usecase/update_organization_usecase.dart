@@ -1,8 +1,12 @@
 import 'package:billbooks_app/core/error/failures.dart';
 import 'package:billbooks_app/core/usecase/usecase.dart';
+import 'package:billbooks_app/features/more/settings/domain/entity/preference_update_entity.dart';
 import 'package:billbooks_app/features/more/settings/domain/entity/update_organization_entity.dart';
 import 'package:billbooks_app/features/more/settings/domain/repository/organization_repository.dart';
+import 'package:billbooks_app/features/more/settings/presentation/preferences_page.dart';
 import 'package:fpdart/fpdart.dart';
+
+import '../../data/model/preference_update_model.dart';
 
 class UpdateOrganizationUsecase
     implements
@@ -71,3 +75,13 @@ language:2
 primarycontact_name:Dhananjay Supe
 primarycontact_email:dhananjaysupe@webwingz.com
 */
+
+class UpdateInvEstSettingsUsecase
+    implements UseCase<PreferenceUpdateMainResEntity, InvEstReqParams> {
+  final OrganizationRepository organizationRepository;
+  UpdateInvEstSettingsUsecase({required this.organizationRepository});
+  @override
+  Future<Either<Failure, PreferenceUpdateMainResEntity>> call(params) {
+    return organizationRepository.updateInvEstDetails(params);
+  }
+}

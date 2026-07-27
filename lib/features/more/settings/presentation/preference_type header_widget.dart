@@ -17,6 +17,7 @@ class PreferencesTypeHeaderWidget extends StatelessWidget {
     const EnumPreferencesType general = EnumPreferencesType.general;
     const EnumPreferencesType invioce = EnumPreferencesType.invoice;
     const EnumPreferencesType estimate = EnumPreferencesType.estimate;
+    const EnumPreferencesType invoiceEstimate = EnumPreferencesType.invEst;
 
     Color getColorFor(EnumPreferencesType type) {
       return type == selectedType ? AppPallete.blueColor : AppPallete.clear;
@@ -24,8 +25,8 @@ class PreferencesTypeHeaderWidget extends StatelessWidget {
 
     TextStyle getStyleFor(EnumPreferencesType type) {
       return type == selectedType
-          ? AppFonts.regularStyle(color: AppPallete.blueColor, size: 16)
-          : AppFonts.regularStyle(color: AppPallete.textColor, size: 16);
+          ? AppFonts.regularStyle(color: AppPallete.blueColor, size: 13)
+          : AppFonts.regularStyle(color: AppPallete.textColor, size: 13);
     }
 
     return Column(
@@ -83,6 +84,23 @@ class PreferencesTypeHeaderWidget extends StatelessWidget {
                     Container(
                       height: 2,
                       color: getColorFor(estimate),
+                    )
+                  ],
+                ),
+              ),
+              AppConstants.sizeBoxWidth5,
+              Expanded(
+                child: Column(
+                  children: [
+                    TextButton(
+                        onPressed: () {
+                          callBack(invoiceEstimate);
+                        },
+                        child: Text(invoiceEstimate.title,
+                            style: getStyleFor(invoiceEstimate))),
+                    Container(
+                      height: 2,
+                      color: getColorFor(invoiceEstimate),
                     )
                   ],
                 ),

@@ -8,12 +8,14 @@ import 'package:billbooks_app/features/more/settings/domain/usecase/update_organ
 import 'package:billbooks_app/features/more/settings/domain/usecase/update_pref_general_usecase.dart';
 import 'package:billbooks_app/features/more/settings/domain/usecase/update_pref_invoice_usecase.dart';
 import 'package:billbooks_app/features/more/settings/domain/usecase/update_preference_column_usecase.dart';
+import 'package:billbooks_app/features/more/settings/presentation/preferences_page.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../../core/api/api_client.dart';
 import '../../../../../core/api/api_endpoint_urls.dart';
 import '../../../../../core/api/api_exception.dart';
+import '../../domain/entity/preference_update_entity.dart';
 import '../../domain/usecase/update_preference_estimate_usecase.dart';
 import '../model/update_organization_model.dart';
 
@@ -42,6 +44,9 @@ abstract interface class OrganizationRemoteDatasource {
   //Update Preference Column Settings
   Future<PreferenceUpdateMainResModel> updateGeneralSettingss(
       UpdatePrefGeneralReqParams params);
+
+  Future<PreferenceUpdateMainResModel> updateInvEstDetails(
+      InvEstReqParams params);
 }
 
 class OrganizationRemoteDatasourceImpl implements OrganizationRemoteDatasource {
@@ -342,6 +347,55 @@ estimate_notes:
     } catch (e) {
       debugPrint(e.toString());
       debugPrint("PreferenceUpdateMainResModel General error");
+      throw ApiException(message: e.toString());
+    }
+  }
+
+  @override
+  Future<PreferenceUpdateMainResModel> updateInvEstDetails(
+      InvEstReqParams params) async {
+    try {
+      Map<String, dynamic> map = {
+        "type": "column",
+        "portal_name": "manoj",
+        "column_items_title": params.columnItemTitle,
+        "column_items_other": params.columnItemOther,
+        "column_units_title": params.columnUnitTitle,
+        "column_units_other": params.columnUnitOther,
+        "column_rate_title": params.columnRateTitle,
+        "column_rate_other": params.columnRateOther,
+        "column_amount_title": params.columnAmountTitle,
+        "column_amount_other": params.columnAmountOther,
+        "column_date": params.columnDate,
+        "column_time": params.columnTime,
+        "column_custom": params.columnCustom,
+        "column_custom_title": params.columnCustomTitle,
+        "hide_column_qty": params.columnQty,
+        "hide_column_rate": params.columnRate,
+        "hide_column_amount": params.columnAmount,
+      };
+
+      debugPrint("update inv/est req params: $map");
+      FormData formData = FormData.fromMap(map);
+      final response = await apiClient.postRequest(
+          path: ApiEndPoints.preferences, body: formData);
+      debugPrint("UpdateOrganizationMainResModel General");
+      debugPrint(response.statusCode.toString());
+      if (response.statusCode == 200) {
+        final resModel = PreferenceUpdateMainResModel.fromJson(response.data);
+        if (resModel.data?.success != true) {
+          throw ApiException(
+              message:
+                  resModel.data?.message ?? "Request failed please try again!");
+        }
+        return resModel;
+      } else {
+        throw ApiException(
+            message: 'Invalid status code : ${response.statusCode}');
+      }
+    } catch (e) {
+      debugPrint(e.toString());
+      debugPrint("UpdateOrganizationMainResModel General error");
       throw ApiException(message: e.toString());
     }
   }

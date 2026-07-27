@@ -4,7 +4,6 @@ import 'package:billbooks_app/core/theme/app_fonts.dart';
 import 'package:billbooks_app/core/theme/app_pallete.dart';
 import 'package:billbooks_app/features/email%20templates/domain/usecase/email_template_usecase.dart';
 import 'package:billbooks_app/features/email%20templates/presentation/bloc/email_templates_bloc.dart';
-import 'package:billbooks_app/features/line%20item/presentation/add_new_line_item_page.dart';
 import 'package:billbooks_app/router/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,7 +11,13 @@ import 'package:skeletonizer/skeletonizer.dart';
 
 import '../domain/entity/email_template_entity.dart';
 
-enum EnumEmailTemplate { invoice, estimate, remainder, thankyou }
+enum EnumEmailTemplate {
+  invoice,
+  estimate,
+  remainder,
+  thankyou,
+  followUpEstimate
+}
 
 extension EnumEmailTemplateExtension on EnumEmailTemplate {
   bool get isSendInvoice {
@@ -30,6 +35,9 @@ extension EnumEmailTemplateExtension on EnumEmailTemplate {
   bool get isPaymentThankyou {
     return this == EnumEmailTemplate.thankyou;
   }
+  // bool get is {
+  //   return this == EnumEmailTemplate.thankyou;
+  // }
 
   List<String> get emailTemplateList {
     switch (this) {
@@ -44,6 +52,8 @@ extension EnumEmailTemplateExtension on EnumEmailTemplate {
 
       case EnumEmailTemplate.thankyou:
         return paymentThankYouList;
+      case EnumEmailTemplate.followUpEstimate:
+        return sendFollowUpEstimateList;
     }
   }
 
@@ -61,6 +71,8 @@ extension EnumEmailTemplateExtension on EnumEmailTemplate {
 
       case EnumEmailTemplate.thankyou:
         return "paymentthankyou";
+      case EnumEmailTemplate.followUpEstimate:
+        return "sendfollowupestimate";
     }
   }
 
@@ -84,6 +96,11 @@ extension EnumEmailTemplateExtension on EnumEmailTemplate {
       case EnumEmailTemplate.thankyou:
         return (
           "Payment Thank-you",
+          "Message sent upon receiving a successful payment"
+        );
+      case EnumEmailTemplate.followUpEstimate:
+        return (
+          "Send Follow-Up Estimate",
           "Message sent upon receiving a successful payment"
         );
     }
@@ -158,6 +175,24 @@ final List<String> paymentThankYouList = [
   'payment-received',
   'payment-method',
   'payment-refno',
+  'client-name',
+  'client-contact-name',
+  'organization-name',
+  'user-name',
+];
+final List<String> sendFollowUpEstimateList = [
+  'estimate-number',
+  'po-number',
+  'due-date',
+  'total-amount',
+  'shipping-charge',
+  'balance-due',
+  'overdue-days',
+  'estimate-title',
+  'estimate-date',
+  'estimate-notes',
+  'estimate-url',
+  'project-name',
   'client-name',
   'client-contact-name',
   'organization-name',
@@ -275,6 +310,22 @@ class _EmailTemplatePageState extends State<EmailTemplatePage> {
                                     refreshPage: () {
                                       _getEmailTemplates();
                                     }));
+                          case EnumEmailTemplate.followUpEstimate:
+                            AutoRouter.of(context)
+                                .push(SendFollowUpEstimatePageRoute());
+                          // AutoRouter.of(context).push(
+                          //     UpdateEmailTemplatePageRoute(
+                          //         title: "Payment Thank-you",
+                          //         message: emailtemplatesEntity
+                          //                 ?.emailMessagePaymentthankyou ??
+                          //             "",
+                          //         subject: emailtemplatesEntity
+                          //                 ?.emailSubjectPaymentthankyou ??
+                          //             "",
+                          //         type: EnumEmailTemplate.thankyou,
+                          //         refreshPage: () {
+                          //           _getEmailTemplates();
+                          //         }));
                         }
                       },
                       child: EmailTemplateWidget(title: title, desc: desc));

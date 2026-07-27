@@ -77,7 +77,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         throw ApiException(
             message: "Invalid status code ${response.statusCode}");
       }
-      final resModel = resetPasswordResModelFromJson(response.data);
+      final resModel = ResetPasswordResModel.fromJson(response.data);
       if (resModel.data?.success != true) {
         throw ApiException(
             message:
@@ -106,7 +106,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         throw ApiException(
             message: "Invalid status code ${response.statusCode}");
       }
-      final resModel = forgotPasswordResModelFromJson(response.data);
+      final resModel = ForgotPasswordReqResModel.fromJson(response.data);
       if (resModel.data?.success != true) {
         throw ApiException(
             message:
@@ -149,7 +149,7 @@ request_from:mobile-app
         throw ApiException(
             message: "Invalid status code ${response.statusCode}");
       }
-      final resModel = registerUserResModelFromJson(response.data);
+      final resModel = RegisterUserResModel.fromJson(response.data);
       if (resModel.data?.success != true) {
         throw ApiException(
             message:

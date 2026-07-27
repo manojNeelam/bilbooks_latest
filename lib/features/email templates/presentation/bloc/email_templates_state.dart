@@ -28,3 +28,20 @@ final class UpdateEmailTemplatesSuccessState extends EmailTemplatesState {
   final UpdateEmailTemplateMainResponseEntity updateEmailTemplateEntity;
   UpdateEmailTemplatesSuccessState({required this.updateEmailTemplateEntity});
 }
+
+final class GetFollowUpEstimateEmailTemplateLoadingState
+    extends EmailTemplatesState {}
+
+final class GetFollowUpEstimateEmailTemplatesErrorState
+    extends EmailTemplatesState {
+  final String errorMessage;
+  GetFollowUpEstimateEmailTemplatesErrorState({required this.errorMessage});
+}
+
+final class GetFollowUpEstimateEmailTemplatesSuccessState
+    extends EmailTemplatesState {
+  final FollowUpEstimateEmailTemplateResponseEntity
+      followUpEstimateEmailTemplateResponseEntity;
+  GetFollowUpEstimateEmailTemplatesSuccessState(
+      {required this.followUpEstimateEmailTemplateResponseEntity});
+}

@@ -2,6 +2,7 @@ import 'package:billbooks_app/core/error/failures.dart';
 import 'package:billbooks_app/features/more/settings/data/model/preference_update_model.dart';
 import 'package:billbooks_app/features/more/settings/data/remote/organization_remote_datasource.dart';
 import 'package:billbooks_app/features/more/settings/domain/entity/preference_update_entity.dart';
+import 'package:billbooks_app/features/more/settings/domain/entity/update_organization_entity.dart';
 import 'package:billbooks_app/features/more/settings/domain/repository/organization_repository.dart';
 import 'package:billbooks_app/features/more/settings/domain/usecase/organization_list_usecase.dart';
 import 'package:billbooks_app/features/more/settings/domain/usecase/preference_details_usecase.dart';
@@ -11,6 +12,7 @@ import 'package:billbooks_app/features/more/settings/domain/usecase/update_pref_
 import 'package:billbooks_app/features/more/settings/domain/usecase/update_pref_invoice_usecase.dart';
 import 'package:billbooks_app/features/more/settings/domain/usecase/update_preference_column_usecase.dart';
 import 'package:billbooks_app/features/more/settings/domain/usecase/update_preference_estimate_usecase.dart';
+import 'package:billbooks_app/features/more/settings/presentation/preferences_page.dart';
 import 'package:fpdart/fpdart.dart';
 
 import '../../../../../core/api/api_exception.dart';
@@ -125,6 +127,20 @@ class OrganizationRepositoryimpl implements OrganizationRepository {
     try {
       final responseBody =
           await organizationRemoteDatasource.updateInvoiceSettingss(params);
+      return right(responseBody);
+    } on ApiException catch (e) {
+      return left(Failure(e.message));
+    } catch (e) {
+      return left(Failure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, PreferenceUpdateMainResModel>> updateInvEstDetails(
+      InvEstReqParams params) async {
+    try {
+      final responseBody =
+          await organizationRemoteDatasource.updateInvEstDetails(params);
       return right(responseBody);
     } on ApiException catch (e) {
       return left(Failure(e.message));

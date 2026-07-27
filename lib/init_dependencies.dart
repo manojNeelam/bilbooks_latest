@@ -200,9 +200,20 @@ void _emailTemplate() {
   serviceLocator.registerFactory(
       () => EmailTemplateUsecase(emailTemplateRepository: serviceLocator()));
 
-  serviceLocator.registerLazySingleton(() => EmailTemplatesBloc(
+  serviceLocator.registerFactory(() => GetFollowUpeEstimateEmailTemplateUseCase(
+      emailTemplateRepository: serviceLocator()));
+
+  serviceLocator.registerFactory(() => SetFollowUpeEstimateEmailTemplateUseCase(
+      emailTemplateRepository: serviceLocator()));
+
+  serviceLocator.registerLazySingleton(
+    () => EmailTemplatesBloc(
       emailTemplateUsecase: serviceLocator(),
-      upDateEmailTemplateUsecase: serviceLocator()));
+      upDateEmailTemplateUsecase: serviceLocator(),
+      getFollowUpeEstimateEmailTemplateUseCase: serviceLocator(),
+      setFollowUpeEstimateEmailTemplateUseCase: serviceLocator(),
+    ),
+  );
 }
 
 void _notification() {
@@ -278,6 +289,8 @@ void _initOrganization() {
 
   serviceLocator.registerFactory(
       () => UpdatePrefGeneralUsecase(organizationRepository: serviceLocator()));
+  serviceLocator.registerFactory(() =>
+      UpdateInvEstSettingsUsecase(organizationRepository: serviceLocator()));
 
   serviceLocator.registerLazySingleton(() => OrganizationBloc(
       organizationListUsecase: serviceLocator(),
@@ -287,7 +300,8 @@ void _initOrganization() {
       updatePreferenceColumnUsecase: serviceLocator(),
       updatePreferenceEstimateUsecase: serviceLocator(),
       updatePrefGeneralUsecase: serviceLocator(),
-      updatePrefInvoiceUsecase: serviceLocator()));
+      updatePrefInvoiceUsecase: serviceLocator(),
+      updateInvEstSettingsUsecase: serviceLocator()));
 }
 
 void _initOnlinePayments() {

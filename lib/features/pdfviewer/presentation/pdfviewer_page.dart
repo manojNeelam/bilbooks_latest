@@ -6,7 +6,7 @@ import 'package:billbooks_app/core/theme/app_pallete.dart';
 import 'package:billbooks_app/core/widgets/loading_page.dart';
 import 'package:flutter/material.dart';
 import 'package:html_to_pdf/html_to_pdf.dart';
-import 'package:pdfrx/pdfrx.dart';
+// import 'package:pdfrx/pdfrx.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 

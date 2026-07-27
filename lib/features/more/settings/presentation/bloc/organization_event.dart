@@ -45,3 +45,8 @@ final class UpdatePreferenceGeneralDetailsEvent extends OrganizationEvent {
   UpdatePreferenceGeneralDetailsEvent(
       {required this.preferenceUpdateReqParams});
 }
+
+final class UpdateInvEstDetailsEvent extends OrganizationEvent {
+  final InvEstReqParams invEstReqParams;
+  UpdateInvEstDetailsEvent({required this.invEstReqParams});
+}

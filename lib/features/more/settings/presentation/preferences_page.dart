@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:auto_route/auto_route.dart';
 import 'package:billbooks_app/core/app_constants.dart';
 import 'package:billbooks_app/core/theme/app_fonts.dart';
@@ -44,7 +42,12 @@ import '../domain/usecase/update_pref_general_usecase.dart';
 import '../domain/usecase/update_pref_invoice_usecase.dart';
 import '../domain/usecase/update_preference_column_usecase.dart';
 
-enum EnumPreferencesType { general, invoice, estimate }
+enum EnumPreferencesType {
+  general,
+  invoice,
+  estimate,
+  invEst,
+}
 
 extension EnumPreferencesTypeExtension on EnumPreferencesType {
   String get title {
@@ -55,6 +58,8 @@ extension EnumPreferencesTypeExtension on EnumPreferencesType {
         return "Invoice";
       case EnumPreferencesType.estimate:
         return "Estimate";
+      case EnumPreferencesType.invEst:
+        return "Inv/Est";
     }
   }
 }
@@ -102,6 +107,40 @@ class _PreferencesPageState extends State<PreferencesPage> {
   UpdatePreferenceColumnReqParams? updatePreferenceColumnReqParams;
   String invoiceTerms = "";
   String estimateTerms = "";
+  var _unitSelected = "";
+  var _itemSelected = "";
+  var _amountSelected = "";
+  var _rateSelected = "";
+
+  bool isDateChecked = false;
+  bool isTimeChecked = false;
+  bool isCustomChecked = false;
+  bool isHideQtyChecked = false;
+  bool isHideRateChecked = false;
+  bool isHideAmountChecked = false;
+
+  bool isBusinessSnapshotChecked = false;
+  bool isTotalSalesSnapshotChecked = false;
+  bool isUnvoicedAmountChecked = false;
+  bool isEstimatedEarningsChecked = false;
+  bool isTotalExpensesChecked = false;
+  bool isConversionRateChecked = false;
+  bool isTotalRecurringChecked = false;
+
+  bool isItemsChecked = false;
+  bool isClientChecked = false;
+  bool isTotalIncomeChecked = false;
+  bool isReceivalesChecked = false;
+  bool isOverdueChecked = false;
+  bool isSchduledChecked = false;
+
+  final TextEditingController customController = TextEditingController();
+  final TextEditingController _itemOtherController = TextEditingController();
+  final TextEditingController _unitOtherController = TextEditingController();
+  final TextEditingController _amountOtherController = TextEditingController();
+  final TextEditingController _rateOtherController = TextEditingController();
+
+  var radioOptionsStyle = AppFonts.regularStyle(size: 14);
 
   @override
   void initState() {
@@ -114,6 +153,64 @@ class _PreferencesPageState extends State<PreferencesPage> {
     _loadEstimateName();
     _loadPreference();
     super.initState();
+  }
+
+  void printInvEstResponse() {
+    debugPrint("TODO");
+    if (_itemSelected == "Other") {
+      debugPrint("Selected Items: ${_itemOtherController.text}");
+    } else {
+      debugPrint("Selected Items: $_itemSelected");
+    }
+    var isItemOtherSelected = _itemSelected == "Other";
+
+    if (_unitSelected == "Other") {
+      debugPrint("Selected Units: ${_unitOtherController.text}");
+    } else {
+      debugPrint("Selected Units: $_unitSelected");
+    }
+    var isUnitOtherSelected = _itemSelected == "Other";
+
+    if (_rateSelected == "Other") {
+      debugPrint("Selected Rate: ${_rateOtherController.text}");
+    } else {
+      debugPrint("Selected Rate: $_rateSelected");
+    }
+    var isRateOtherSelected = _rateSelected == "Other";
+
+    if (_amountSelected == "Other") {
+      debugPrint("Selected Amount: ${_amountOtherController.text}");
+    } else {
+      debugPrint("Selected Amount : $_amountSelected");
+    }
+    var isAmountOtherSelected = _amountSelected == "Other";
+
+    var model = InvEstReqParams(
+      columnItemTitle: isItemOtherSelected == false ? _itemSelected : "",
+      columnItemOther:
+          isItemOtherSelected == true ? _itemOtherController.text : "",
+      columnUnitTitle: isUnitOtherSelected == false ? _unitSelected : "",
+      columnUnitOther:
+          isUnitOtherSelected == true ? _unitOtherController.text : "",
+      columnRateTitle: isRateOtherSelected == false ? _rateSelected : "",
+      columnRateOther:
+          isRateOtherSelected == true ? _rateOtherController.text : "",
+      columnAmountTitle: isAmountOtherSelected == false ? _amountSelected : "",
+      columnAmountOther:
+          isAmountOtherSelected == true ? _amountOtherController.text : "",
+      columnDate: isDateChecked,
+      columnTime: isTimeChecked,
+      columnCustom: isCustomChecked,
+      columnCustomTitle: customController.text,
+      columnQty: isHideQtyChecked,
+      columnRate: isHideRateChecked,
+      columnAmount: isHideAmountChecked,
+    );
+    debugPrint(model.toString());
+
+    context
+        .read<OrganizationBloc>()
+        .add(UpdateInvEstDetailsEvent(invEstReqParams: model));
   }
 
   void _updatePreference() {
@@ -167,6 +264,285 @@ class _PreferencesPageState extends State<PreferencesPage> {
     void updateUI() {
       setState(() {});
     }
+
+/*
+ Container(
+      //padding: EdgeInsets.all(15),
+      color: AppPallete.kF2F2F2,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            height: 10,
+          ),
+          Container(
+            color: Colors.white,
+            padding: EdgeInsets.all(15),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '1. Items',
+                  style: AppFonts.regularStyle(),
+                ),
+*/
+    var dashboardSettings = Container(
+        color: AppPallete.kF2F2F2,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(height: 18),
+            Container(
+              color: Colors.white,
+              padding: EdgeInsets.all(15),
+              child: Padding(
+                padding: EdgeInsets.only(left: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text("1. Business Snapshot"),
+                    SizedBox(height: 8),
+                    Text(
+                        "Choose the key metrics and charts to display for an overview of your business performance."),
+                    SizedBox(height: 8),
+                    CheckboxListTile(
+                      controlAffinity:
+                          ListTileControlAffinity.leading, // 👈 checkbox left
+                      contentPadding: EdgeInsets.zero,
+                      dense: true,
+                      visualDensity:
+                          const VisualDensity(horizontal: -4, vertical: -4),
+                      title: Text(
+                        'Business Snapshot',
+                        style: radioOptionsStyle,
+                      ),
+                      value: isBusinessSnapshotChecked,
+                      onChanged: (value) =>
+                          setState(() => isBusinessSnapshotChecked = value!),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            SizedBox(height: 12),
+            Container(
+              color: Colors.white,
+              padding: EdgeInsets.all(15),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text("2. Totals"),
+                  SizedBox(height: 8),
+                  Padding(
+                    padding: EdgeInsets.only(left: 16),
+                    child: Text(
+                        "Select which total figures like sales, expenses, and revenue you want visible on your dashboard."),
+                  ),
+                  SizedBox(height: 8),
+                  CheckboxListTile(
+                    controlAffinity:
+                        ListTileControlAffinity.leading, // 👈 checkbox left
+                    contentPadding: EdgeInsets.zero,
+                    dense: true,
+                    visualDensity:
+                        const VisualDensity(horizontal: -4, vertical: -4),
+                    title: Text(
+                      'Total Sales',
+                      style: radioOptionsStyle,
+                    ),
+                    value: isTotalSalesSnapshotChecked,
+                    onChanged: (value) =>
+                        setState(() => isTotalSalesSnapshotChecked = value!),
+                  ),
+                  CheckboxListTile(
+                    controlAffinity:
+                        ListTileControlAffinity.leading, // 👈 checkbox left
+                    contentPadding: EdgeInsets.zero,
+                    dense: true,
+                    visualDensity:
+                        const VisualDensity(horizontal: -4, vertical: -4),
+                    title: Text(
+                      'Unvoiced Amount',
+                      style: radioOptionsStyle,
+                    ),
+                    value: isUnvoicedAmountChecked,
+                    onChanged: (value) =>
+                        setState(() => isUnvoicedAmountChecked = value!),
+                  ),
+                  CheckboxListTile(
+                    controlAffinity:
+                        ListTileControlAffinity.leading, // 👈 checkbox left
+                    contentPadding: EdgeInsets.zero,
+                    dense: true,
+                    visualDensity:
+                        const VisualDensity(horizontal: -4, vertical: -4),
+                    title: Text(
+                      'Estimated Earnings',
+                      style: radioOptionsStyle,
+                    ),
+                    value: isEstimatedEarningsChecked,
+                    onChanged: (value) =>
+                        setState(() => isEstimatedEarningsChecked = value!),
+                  ),
+                  CheckboxListTile(
+                    controlAffinity:
+                        ListTileControlAffinity.leading, // 👈 checkbox left
+                    contentPadding: EdgeInsets.zero,
+                    dense: true,
+                    visualDensity:
+                        const VisualDensity(horizontal: -4, vertical: -4),
+                    title: Text(
+                      'Total Expenses',
+                      style: radioOptionsStyle,
+                    ),
+                    value: isTotalExpensesChecked,
+                    onChanged: (value) =>
+                        setState(() => isTotalExpensesChecked = value!),
+                  ),
+                  CheckboxListTile(
+                    controlAffinity:
+                        ListTileControlAffinity.leading, // 👈 checkbox left
+                    contentPadding: EdgeInsets.zero,
+                    dense: true,
+                    visualDensity:
+                        const VisualDensity(horizontal: -4, vertical: -4),
+                    title: Text(
+                      'Conversion Rate',
+                      style: radioOptionsStyle,
+                    ),
+                    value: isConversionRateChecked,
+                    onChanged: (value) =>
+                        setState(() => isConversionRateChecked = value!),
+                  ),
+                  CheckboxListTile(
+                    controlAffinity:
+                        ListTileControlAffinity.leading, // 👈 checkbox left
+                    contentPadding: EdgeInsets.zero,
+                    dense: true,
+                    visualDensity:
+                        const VisualDensity(horizontal: -4, vertical: -4),
+                    title: Text(
+                      'Total Recurring',
+                      style: radioOptionsStyle,
+                    ),
+                    value: isTotalRecurringChecked,
+                    onChanged: (value) =>
+                        setState(() => isTotalRecurringChecked = value!),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 12),
+            Container(
+              color: Colors.white,
+              padding: EdgeInsets.all(15),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text("3. Date & Time Module"),
+                  SizedBox(height: 8),
+                  Padding(
+                    padding: EdgeInsets.only(left: 16),
+                    child: Text(
+                        "Control which date-related filters or modules appear for reporting and tracking."),
+                  ),
+                  SizedBox(height: 8),
+                  CheckboxListTile(
+                    controlAffinity:
+                        ListTileControlAffinity.leading, // 👈 checkbox left
+                    contentPadding: EdgeInsets.zero,
+                    dense: true,
+                    visualDensity:
+                        const VisualDensity(horizontal: -4, vertical: -4),
+                    title: Text(
+                      'Items',
+                      style: radioOptionsStyle,
+                    ),
+                    value: isItemsChecked,
+                    onChanged: (value) =>
+                        setState(() => isItemsChecked = value!),
+                  ),
+                  CheckboxListTile(
+                    controlAffinity:
+                        ListTileControlAffinity.leading, // 👈 checkbox left
+                    contentPadding: EdgeInsets.zero,
+                    dense: true,
+                    visualDensity:
+                        const VisualDensity(horizontal: -4, vertical: -4),
+                    title: Text(
+                      'Client',
+                      style: radioOptionsStyle,
+                    ),
+                    value: isClientChecked,
+                    onChanged: (value) =>
+                        setState(() => isClientChecked = value!),
+                  ),
+                  CheckboxListTile(
+                    controlAffinity:
+                        ListTileControlAffinity.leading, // 👈 checkbox left
+                    contentPadding: EdgeInsets.zero,
+                    dense: true,
+                    visualDensity:
+                        const VisualDensity(horizontal: -4, vertical: -4),
+                    title: Text(
+                      'Total Income',
+                      style: radioOptionsStyle,
+                    ),
+                    value: isTotalIncomeChecked,
+                    onChanged: (value) =>
+                        setState(() => isTotalIncomeChecked = value!),
+                  ),
+                  CheckboxListTile(
+                    controlAffinity:
+                        ListTileControlAffinity.leading, // 👈 checkbox left
+                    contentPadding: EdgeInsets.zero,
+                    dense: true,
+                    visualDensity:
+                        const VisualDensity(horizontal: -4, vertical: -4),
+                    title: Text(
+                      'Receivables',
+                      style: radioOptionsStyle,
+                    ),
+                    value: isReceivalesChecked,
+                    onChanged: (value) =>
+                        setState(() => isReceivalesChecked = value!),
+                  ),
+                  CheckboxListTile(
+                    controlAffinity:
+                        ListTileControlAffinity.leading, // 👈 checkbox left
+                    contentPadding: EdgeInsets.zero,
+                    dense: true,
+                    visualDensity:
+                        const VisualDensity(horizontal: -4, vertical: -4),
+                    title: Text(
+                      'Overdue',
+                      style: radioOptionsStyle,
+                    ),
+                    value: isOverdueChecked,
+                    onChanged: (value) =>
+                        setState(() => isOverdueChecked = value!),
+                  ),
+                  CheckboxListTile(
+                    controlAffinity:
+                        ListTileControlAffinity.leading, // 👈 checkbox left
+                    contentPadding: EdgeInsets.zero,
+                    dense: true,
+                    visualDensity:
+                        const VisualDensity(horizontal: -4, vertical: -4),
+                    title: Text(
+                      'Scheduled',
+                      style: radioOptionsStyle,
+                    ),
+                    value: isSchduledChecked,
+                    onChanged: (value) =>
+                        setState(() => isSchduledChecked = value!),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 18),
+          ],
+        ));
 
     var general = Container(
       color: AppPallete.kF2F2F2,
@@ -366,6 +742,559 @@ class _PreferencesPageState extends State<PreferencesPage> {
       ),
     );
 
+    var invoiceEstimateColumn = Container(
+      //padding: EdgeInsets.all(15),
+      color: AppPallete.kF2F2F2,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            height: 10,
+          ),
+          Container(
+            color: Colors.white,
+            padding: EdgeInsets.all(15),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '1. Items',
+                  style: AppFonts.regularStyle(),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 3.0),
+                  child: Column(
+                    children: [
+                      RadioListTile<String>(
+                        title: Text(
+                          'Items (default)',
+                          style: radioOptionsStyle,
+                        ),
+                        value: 'Items',
+                        groupValue: _itemSelected,
+                        onChanged: (value) {
+                          setState(() {
+                            _itemSelected = value!;
+                          });
+                        },
+                        visualDensity:
+                            VisualDensity(horizontal: -4, vertical: -4),
+                        contentPadding: EdgeInsets.zero,
+                      ),
+                      RadioListTile<String>(
+                        title: Text('Products', style: radioOptionsStyle),
+                        value: 'Products',
+                        groupValue: _itemSelected,
+                        onChanged: (value) {
+                          setState(() {
+                            _itemSelected = value!;
+                          });
+                        },
+                        visualDensity:
+                            VisualDensity(horizontal: -4, vertical: -4),
+                        contentPadding: EdgeInsets.zero,
+                      ),
+                      RadioListTile<String>(
+                        title: Text(
+                          'Services',
+                          style: radioOptionsStyle,
+                        ),
+                        value: 'Services',
+                        groupValue: _itemSelected,
+                        onChanged: (value) {
+                          setState(() {
+                            _itemSelected = value!;
+                          });
+                        },
+                        visualDensity:
+                            VisualDensity(horizontal: -4, vertical: -4),
+                        contentPadding: EdgeInsets.zero,
+                      ),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 0),
+                  child: Row(
+                    children: [
+                      Radio<String>(
+                        value: 'Other',
+                        groupValue: _itemSelected,
+                        onChanged: (value) {
+                          setState(() {
+                            _itemSelected = value!;
+                          });
+                        },
+                      ),
+                      GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _itemSelected = 'Other';
+                            });
+                          },
+                          child: Text('Other:', style: radioOptionsStyle)),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: TextField(
+                          controller: _itemOtherController,
+                          enabled: _itemSelected == 'Other',
+                          decoration: const InputDecoration(
+                            hintText: 'Enter custom value',
+                            isDense: true,
+                            border: OutlineInputBorder(),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 10),
+                //Text('Selected: $_selected'),
+                if (_itemSelected == 'Other' &&
+                    _itemOtherController.text.isNotEmpty)
+                  Text('Other value: ${_itemOtherController.text}'),
+              ],
+            ),
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          Container(
+            color: Colors.white,
+            padding: EdgeInsets.all(15),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '2. Units',
+                  style: AppFonts.regularStyle(),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 3.0),
+                  child: Column(
+                    children: [
+                      RadioListTile<String>(
+                        title: Text(
+                          'Qty (default)',
+                          style: radioOptionsStyle,
+                        ),
+                        value: 'Qty',
+                        groupValue: _unitSelected,
+                        onChanged: (value) {
+                          setState(() {
+                            _unitSelected = value!;
+                          });
+                        },
+                        visualDensity:
+                            VisualDensity(horizontal: -4, vertical: -4),
+                        contentPadding: EdgeInsets.zero,
+                      ),
+                      RadioListTile<String>(
+                        title: Text(
+                          'Hours',
+                          style: radioOptionsStyle,
+                        ),
+                        value: 'Hours',
+                        groupValue: _unitSelected,
+                        onChanged: (value) {
+                          setState(() {
+                            _unitSelected = value!;
+                          });
+                        },
+                        visualDensity:
+                            VisualDensity(horizontal: -4, vertical: -4),
+                        contentPadding: EdgeInsets.zero,
+                      ),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 0),
+                  child: Row(
+                    children: [
+                      Radio<String>(
+                        value: 'Other',
+                        groupValue: _unitSelected,
+                        onChanged: (value) {
+                          setState(() {
+                            _unitSelected = value!;
+                          });
+                        },
+                      ),
+                      GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _unitSelected = 'Other';
+                            });
+                          },
+                          child: Text(
+                            'Other:',
+                            style: radioOptionsStyle,
+                          )),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: TextField(
+                          controller: _unitOtherController,
+                          enabled: _unitSelected == 'Other',
+                          decoration: const InputDecoration(
+                            hintText: 'Enter custom value',
+                            isDense: true,
+                            border: OutlineInputBorder(),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 10),
+                //Text('Selected: $_selected'),
+                if (_unitSelected == 'Other' &&
+                    _unitOtherController.text.isNotEmpty)
+                  Text('Other value: ${_unitOtherController.text}'),
+              ],
+            ),
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          Container(
+            color: Colors.white,
+            padding: EdgeInsets.all(15),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '3. Rate',
+                  style: AppFonts.regularStyle(),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 3.0),
+                  child: Column(
+                    children: [
+                      RadioListTile<String>(
+                        title: Text(
+                          'Rate (default)',
+                          style: radioOptionsStyle,
+                        ),
+                        value: 'Rate',
+                        groupValue: _rateSelected,
+                        onChanged: (value) {
+                          setState(() {
+                            _rateSelected = value!;
+                          });
+                        },
+                        visualDensity:
+                            VisualDensity(horizontal: -4, vertical: -4),
+                        contentPadding: EdgeInsets.zero,
+                      ),
+                      RadioListTile<String>(
+                        title: Text(
+                          'Price',
+                          style: radioOptionsStyle,
+                        ),
+                        value: 'Price',
+                        groupValue: _rateSelected,
+                        onChanged: (value) {
+                          setState(() {
+                            _rateSelected = value!;
+                          });
+                        },
+                        visualDensity:
+                            VisualDensity(horizontal: -4, vertical: -4),
+                        contentPadding: EdgeInsets.zero,
+                      ),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 0),
+                  child: Row(
+                    children: [
+                      Radio<String>(
+                        value: 'Other',
+                        groupValue: _rateSelected,
+                        onChanged: (value) {
+                          setState(() {
+                            _rateSelected = value!;
+                          });
+                        },
+                      ),
+                      GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _rateSelected = 'Other';
+                            });
+                          },
+                          child: Text(
+                            'Other:',
+                            style: radioOptionsStyle,
+                          )),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: TextField(
+                          controller: _rateOtherController,
+                          enabled: _rateSelected == 'Other',
+                          decoration: const InputDecoration(
+                            hintText: 'Enter custom value',
+                            isDense: true,
+                            border: OutlineInputBorder(),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 10),
+                //Text('Selected: $_selected'),
+                if (_rateSelected == 'Other' &&
+                    _rateOtherController.text.isNotEmpty)
+                  Text('Other value: ${_rateOtherController.text}'),
+              ],
+            ),
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          Container(
+            color: Colors.white,
+            padding: EdgeInsets.all(15),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '4. Amount',
+                  style: AppFonts.regularStyle(),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 3.0),
+                  child: Column(
+                    children: [
+                      RadioListTile<String>(
+                        title: Text(
+                          'Amount (default)', style: radioOptionsStyle,
+                          //style: AppFonts.regularStyle(size: 14),
+                        ),
+                        value: 'Amount',
+                        groupValue: _amountSelected,
+                        onChanged: (value) {
+                          setState(() {
+                            _amountSelected = value!;
+                          });
+                        },
+                        visualDensity:
+                            VisualDensity(horizontal: -4, vertical: -4),
+                        contentPadding: EdgeInsets.zero,
+                      ),
+                      // RadioListTile<String>(
+                      //   title: const Text('Price'),
+                      //   value: 'Price',
+                      //   groupValue: _selected,
+                      //   onChanged: (value) {
+                      //     setState(() {
+                      //       _selected = value!;
+                      //     });
+                      //   },
+                      //   visualDensity: VisualDensity(horizontal: -4, vertical: -4),
+                      //   contentPadding: EdgeInsets.zero,
+                      // ),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 0),
+                  child: Row(
+                    children: [
+                      Radio<String>(
+                        value: 'Other',
+                        groupValue: _amountSelected,
+                        onChanged: (value) {
+                          setState(() {
+                            _amountSelected = value!;
+                          });
+                        },
+                      ),
+                      GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _amountSelected = 'Other';
+                            });
+                          },
+                          child: Text(
+                            'Other:', style: radioOptionsStyle,
+                            //style: AppFonts.regularStyle(size: 14),
+                          )),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: TextField(
+                          controller: _amountOtherController,
+                          enabled: _amountSelected == 'Other',
+                          decoration: const InputDecoration(
+                            hintText: 'Enter custom value',
+                            isDense: true,
+                            border: OutlineInputBorder(),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 10),
+                //Text('Selected: $_selected'),
+                if (_amountSelected == 'Other' &&
+                    _amountOtherController.text.isNotEmpty)
+                  Text('Other value: ${_amountOtherController.text}'),
+              ],
+            ),
+          ),
+          SizedBox(height: 10),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                color: Colors.white,
+                padding: EdgeInsets.all(15),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Choose custom fields:', style: AppFonts.regularStyle(),
+                      //style:
+                      //TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                    ),
+                    const SizedBox(height: 8),
+                    CheckboxListTile(
+                      controlAffinity:
+                          ListTileControlAffinity.leading, // 👈 checkbox left
+                      contentPadding: EdgeInsets.zero,
+                      dense: true,
+                      visualDensity:
+                          const VisualDensity(horizontal: -4, vertical: -4),
+                      title: Text(
+                        'Date',
+                        style: radioOptionsStyle,
+                      ),
+                      value: isDateChecked,
+                      onChanged: (value) =>
+                          setState(() => isDateChecked = value!),
+                    ),
+                    CheckboxListTile(
+                      controlAffinity:
+                          ListTileControlAffinity.leading, // 👈 checkbox left
+                      contentPadding: EdgeInsets.zero,
+                      dense: true,
+                      visualDensity:
+                          const VisualDensity(horizontal: -4, vertical: -4),
+                      title: Text(
+                        'Time',
+                        style: radioOptionsStyle,
+                      ),
+                      value: isTimeChecked,
+                      onChanged: (value) =>
+                          setState(() => isTimeChecked = value!),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 3),
+                      child: Row(
+                        children: [
+                          Checkbox(
+                            value: isCustomChecked,
+                            onChanged: (value) =>
+                                setState(() => isCustomChecked = value!),
+                            visualDensity: const VisualDensity(
+                                horizontal: -4, vertical: -4),
+                          ),
+                          const SizedBox(width: 10),
+                          Text(
+                            'Custom:',
+                            style: radioOptionsStyle,
+                          ),
+                          const SizedBox(width: 5),
+                          Expanded(
+                            child: TextField(
+                              controller: customController,
+                              enabled: isCustomChecked,
+                              decoration: const InputDecoration(
+                                isDense: true,
+                                hintText: 'Custom',
+                                border: OutlineInputBorder(),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 10),
+              Container(
+                color: Colors.white,
+                padding: EdgeInsets.all(15),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Choose columns you wish to hide on invoices and estimates:',
+                      style: AppFonts.regularStyle(),
+                      // style:
+                      //     TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                    ),
+                    const SizedBox(height: 8),
+                    CheckboxListTile(
+                      controlAffinity: ListTileControlAffinity.leading,
+                      contentPadding: EdgeInsets.zero,
+                      dense: true,
+                      visualDensity:
+                          const VisualDensity(horizontal: -4, vertical: -4),
+                      title: Text(
+                        'Hide quantity',
+                        style: radioOptionsStyle,
+                      ),
+                      value: isHideQtyChecked,
+                      onChanged: (value) =>
+                          setState(() => isHideQtyChecked = value!),
+                    ),
+                    CheckboxListTile(
+                      controlAffinity: ListTileControlAffinity.leading,
+                      contentPadding: EdgeInsets.zero,
+                      dense: true,
+                      visualDensity:
+                          const VisualDensity(horizontal: -4, vertical: -4),
+                      title: Text(
+                        'Hide rate',
+                        style: radioOptionsStyle,
+                      ),
+                      value: isHideRateChecked,
+                      onChanged: (value) =>
+                          setState(() => isHideRateChecked = value!),
+                    ),
+                    CheckboxListTile(
+                      controlAffinity: ListTileControlAffinity.leading,
+                      contentPadding: EdgeInsets.zero,
+                      dense: true,
+                      visualDensity:
+                          const VisualDensity(horizontal: -4, vertical: -4),
+                      title: Text(
+                        'Hide amount',
+                        style: radioOptionsStyle,
+                      ),
+                      activeColor: Colors.blue,
+                      value: isHideAmountChecked,
+                      onChanged: (value) =>
+                          setState(() => isHideAmountChecked = value!),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: 15,
+              )
+            ],
+          ),
+        ],
+      ),
+    );
+
     return Scaffold(
       backgroundColor: AppPallete.kF2F2F2,
       appBar: AppBar(
@@ -373,7 +1302,7 @@ class _PreferencesPageState extends State<PreferencesPage> {
         actions: [
           TextButton(
               onPressed: () {
-                _updatePreference();
+                printInvEstResponse();
               },
               child: Text(
                 "Save",
@@ -483,6 +1412,9 @@ class _PreferencesPageState extends State<PreferencesPage> {
             invoiceTerms = preferencesEntity?.invoiceTerms ?? "";
             estimateTerms = preferencesEntity?.estimateTerms ?? "";
 
+            _itemSelected = preferencesEntity?.columnItemsTitle ?? "";
+            _unitSelected = preferencesEntity?.columnUnitsTitle ?? "";
+            _rateSelected = preferencesEntity?.columnRateTitle ?? "";
             selectedCurrency = currencies.firstWhere(
               (returnedCurrency) {
                 if (returnedCurrency.currencyId ==
@@ -584,11 +1516,12 @@ class _PreferencesPageState extends State<PreferencesPage> {
             child: SingleChildScrollView(
               keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
               child: Container(
-                color: AppPallete.greenColor,
+                color: AppPallete.white,
                 child: switch (selectedType) {
                   EnumPreferencesType.general => general,
                   EnumPreferencesType.invoice => invoice,
                   EnumPreferencesType.estimate => estimate,
+                  EnumPreferencesType.invEst => dashboardSettings,
                 },
               ),
             ),
@@ -845,5 +1778,46 @@ class PreferenceTitleArroaWidget extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class InvEstReqParams {
+  final String columnItemTitle;
+  final String columnItemOther;
+  final String columnUnitTitle;
+  final String columnUnitOther;
+  final String columnRateTitle;
+  final String columnRateOther;
+  final String columnAmountTitle;
+  final String columnAmountOther;
+  final bool columnDate;
+  final bool columnTime;
+  final bool columnCustom;
+  final String columnCustomTitle;
+  final bool columnQty;
+  final bool columnRate;
+  final bool columnAmount;
+
+  InvEstReqParams({
+    required this.columnItemOther,
+    required this.columnItemTitle,
+    required this.columnUnitTitle,
+    required this.columnUnitOther,
+    required this.columnRateTitle,
+    required this.columnRateOther,
+    required this.columnAmountTitle,
+    required this.columnAmountOther,
+    required this.columnDate,
+    required this.columnTime,
+    required this.columnCustom,
+    required this.columnCustomTitle,
+    required this.columnQty,
+    required this.columnRate,
+    required this.columnAmount,
+  });
+
+  @override
+  String toString() {
+    return "selected item name: $columnItemTitle,  selected item other: $columnItemOther";
   }
 }

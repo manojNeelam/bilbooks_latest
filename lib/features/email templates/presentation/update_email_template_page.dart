@@ -259,7 +259,7 @@ class _UpdateEmailTemplatePageState extends State<UpdateEmailTemplatePage> {
                       child: ChipList(
                           //padding: EdgeInsets.all(10),
                           extraOnToggle: (index) {
-                            debugPrint(sendInvoiceList[index]);
+                            debugPrint(widget.type.emailTemplateList[index]);
                             _currentIndex = index;
                             setState(() {});
 
@@ -269,7 +269,7 @@ class _UpdateEmailTemplatePageState extends State<UpdateEmailTemplatePage> {
                               final offset = selection.baseOffset;
                               messageController.value = messageController.value
                                   .replaced(TextRange.collapsed(offset),
-                                      " [${sendInvoiceList[index]}] ");
+                                      " [${widget.type.emailTemplateList[index]}] ");
                             }
                             if (subjectFocusNode!.hasFocus) {
                               debugPrint("Subject is active");
@@ -277,7 +277,7 @@ class _UpdateEmailTemplatePageState extends State<UpdateEmailTemplatePage> {
                               final offset = selection.baseOffset;
                               subjectController.value = subjectController.value
                                   .replaced(TextRange.collapsed(offset),
-                                      " [${sendInvoiceList[index]}] ");
+                                      " [${widget.type.emailTemplateList[index]}] ");
                             }
 
                             Future.delayed(Duration(milliseconds: 200), () {

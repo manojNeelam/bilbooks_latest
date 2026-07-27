@@ -8,12 +8,14 @@ import 'package:billbooks_app/core/widgets/list_empty_page.dart';
 import 'package:billbooks_app/features/users/domain/entities/user_list_entity.dart';
 import 'package:billbooks_app/features/users/domain/usecases/user_list_usecase.dart';
 import 'package:billbooks_app/features/users/presentation/bloc/user_bloc.dart';
+import 'package:billbooks_app/router/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_section_list/flutter_section_list.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../../core/widgets/title_subtitle_header_widget.dart';
+//import 'add_new_user_page.dart';
 
 @RoutePage()
 // ignore: must_be_immutable
@@ -46,6 +48,16 @@ class _UsersListPageState extends State<UsersListPage>
     return Scaffold(
       appBar: AppBar(
         title: const Text("Users"),
+        actions: [
+          // IconButton(
+          //     onPressed: () {
+          //       AutoRouter.of(context).push(AddNewUserPageRoute());
+          //     },
+          //     icon: const Icon(
+          //       Icons.add,
+          //       color: AppPallete.blueColor,
+          //     ))
+        ],
       ),
       body: BlocConsumer<UserBloc, UserState>(
         listener: (context, state) {

@@ -119,3 +119,16 @@ final class UpdateGeneralSettingsSuccessState extends OrganizationState {
       {required this.preferenceUpdateMainResEntity});
 }
 // Update organization general settings
+
+final class UpdateInvEstSettingsLoadingState extends OrganizationState {}
+
+final class UpdateInvEstSettingsErrorState extends OrganizationState {
+  final String errorMessage;
+  UpdateInvEstSettingsErrorState({required this.errorMessage});
+}
+
+final class UpdateInvEstSettingsSuccessState extends OrganizationState {
+  final PreferenceUpdateMainResEntity preferenceUpdateMainResEntity;
+  UpdateInvEstSettingsSuccessState(
+      {required this.preferenceUpdateMainResEntity});
+}

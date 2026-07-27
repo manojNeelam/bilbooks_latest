@@ -5,6 +5,7 @@ import 'package:billbooks_app/features/email%20templates/domain/repository/email
 import 'package:fpdart/fpdart.dart';
 import '../../presentation/email_template_page.dart';
 import '../entity/email_template_entity.dart';
+import '../entity/follow_up_estimate_email_template_entity.dart';
 
 class EmailTemplateUsecase
     implements
@@ -43,4 +44,48 @@ class UpdateEmailTemplateReqParams {
     required this.message,
     required this.subject,
   });
+}
+
+class GetFollowUpeEstimateEmailTemplateUseCase
+    implements
+        UseCase<FollowUpEstimateEmailTemplateResponseEntity,
+            GetFollowUpeEstimateEmailTemplateReqParams> {
+  final EmailTemplateRepository emailTemplateRepository;
+  GetFollowUpeEstimateEmailTemplateUseCase(
+      {required this.emailTemplateRepository});
+  @override
+  Future<Either<Failure, FollowUpEstimateEmailTemplateResponseEntity>> call(
+      GetFollowUpeEstimateEmailTemplateReqParams params) {
+    return emailTemplateRepository.getFollowUpEstimateEmailTemplate(params);
+  }
+}
+
+class GetFollowUpeEstimateEmailTemplateReqParams {
+  final String type;
+  GetFollowUpeEstimateEmailTemplateReqParams({required this.type});
+}
+
+class SetFollowUpeEstimateEmailTemplateUseCase
+    implements
+        UseCase<UpdateEmailTemplateMainResponseEntity,
+            SetFollowUpeEstimateEmailTemplateReqParams> {
+  final EmailTemplateRepository emailTemplateRepository;
+  SetFollowUpeEstimateEmailTemplateUseCase(
+      {required this.emailTemplateRepository});
+
+  @override
+  Future<Either<Failure, UpdateEmailTemplateMainResponseEntity>> call(
+      SetFollowUpeEstimateEmailTemplateReqParams params) {
+    return emailTemplateRepository.updateFollowUpEstimateEmailTemplate(params);
+  }
+}
+
+class SetFollowUpeEstimateEmailTemplateReqParams {
+  final String emailTemplate;
+  final String emailSubjectFollowupestimate;
+  final String emailMessageFollowupestimate;
+  SetFollowUpeEstimateEmailTemplateReqParams(
+      {required this.emailTemplate,
+      required this.emailSubjectFollowupestimate,
+      required this.emailMessageFollowupestimate});
 }

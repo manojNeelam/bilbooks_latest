@@ -1,4 +1,5 @@
 import 'package:billbooks_app/features/email%20templates/data/model/email_template_model.dart';
+import 'package:billbooks_app/features/email%20templates/data/model/follow_up_eatimate_email_template_model.dart';
 import 'package:billbooks_app/features/email%20templates/data/model/update_email_template_model.dart';
 import 'package:billbooks_app/features/email%20templates/domain/usecase/email_template_usecase.dart';
 import 'package:billbooks_app/features/email%20templates/presentation/email_template_page.dart';
@@ -15,6 +16,14 @@ abstract interface class EmailTemplateRemotedatasource {
       EmailTemplateReqParams params);
   Future<UpdateEmailTemplateMainResponseModel> updateEmailTemplate(
       UpdateEmailTemplateReqParams params);
+
+  Future<FollowUpEstimateEmailTemplateResponseModel>
+      getFollowUpEstimateEmailTemplate(
+          GetFollowUpeEstimateEmailTemplateReqParams params);
+
+  Future<UpdateEmailTemplateMainResponseModel>
+      updateFollowUpEstimateEmailTemplate(
+          SetFollowUpeEstimateEmailTemplateReqParams params);
 }
 
 class EmailTemplateRemotedatasourceImpl
@@ -93,6 +102,81 @@ email_message_paymentthankyou:
       // final response = await apiClient.getRequest(ApiEndPoints.emailTemplates,
       //     queryParameters: queryParameters);
       debugPrint("UpdateEmailTemplateMainResponseModel ");
+      debugPrint(response.statusCode.toString());
+      if (response.statusCode == 200) {
+        final resModel =
+            UpdateEmailTemplateMainResponseModel.fromJson(response.data);
+        if (resModel.data?.success != true) {
+          throw ApiException(message: "Request failed please try again!");
+        }
+        return resModel;
+      } else {
+        throw ApiException(
+            message: 'Invalid status code : ${response.statusCode}');
+      }
+    } catch (e) {
+      debugPrint(e.toString());
+
+      debugPrint("UpdateEmailTemplateMainResponseModel error");
+      throw ApiException(message: e.toString());
+    }
+  }
+
+  @override
+  Future<FollowUpEstimateEmailTemplateResponseModel>
+      getFollowUpEstimateEmailTemplate(
+          GetFollowUpeEstimateEmailTemplateReqParams params) async {
+    try {
+      Map<String, dynamic> queryParameters = {
+        "emailtemplate": params.type,
+      };
+
+      final response = await apiClient.getRequest(
+          ApiEndPoints.orgemailtemplates,
+          queryParameters: queryParameters);
+      debugPrint("EmailTemplateMainResponseModel ");
+      debugPrint(response.statusCode.toString());
+      if (response.statusCode == 200) {
+        final resModel =
+            FollowUpEstimateEmailTemplateResponseModel.fromJson(response.data);
+        if (resModel.data?.success != true) {
+          throw ApiException(message: "Request failed please try again!");
+        }
+        return resModel;
+      } else {
+        throw ApiException(
+            message: 'Invalid status code : ${response.statusCode}');
+      }
+    } catch (e) {
+      debugPrint(e.toString());
+
+      debugPrint("AccountsReceivablesMainResModel error");
+      throw ApiException(message: e.toString());
+    }
+  }
+
+  @override
+  Future<UpdateEmailTemplateMainResponseModel>
+      updateFollowUpEstimateEmailTemplate(
+          SetFollowUpeEstimateEmailTemplateReqParams params) async {
+    try {
+      final subject = params.emailSubjectFollowupestimate;
+      final message = params.emailMessageFollowupestimate;
+
+      Map<String, dynamic> reqPrams = {
+        "emailtemplate": params.emailTemplate,
+        "email_subject_followupestimate": subject,
+        "email_message_followupestimate": message,
+      };
+      final body = FormData.fromMap(reqPrams);
+      const path = ApiEndPoints.orgemailtemplates;
+      final response = await apiClient.postRequest(
+        path: path,
+        body: body,
+      );
+      // final response = await apiClient.getRequest(ApiEndPoints.emailTemplates,
+      //     queryParameters: queryParameters);
+      debugPrint("updateFollowUpEstimateEmailTemplate Response ");
       debugPrint(response.statusCode.toString());
       if (response.statusCode == 200) {
         final resModel =

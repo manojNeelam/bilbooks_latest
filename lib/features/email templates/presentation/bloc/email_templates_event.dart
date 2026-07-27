@@ -12,3 +12,13 @@ class SetEmailTemplateEvent extends EmailTemplatesEvent {
   final UpdateEmailTemplateReqParams params;
   SetEmailTemplateEvent({required this.params});
 }
+
+class GetFollowUpEstimateEvent extends EmailTemplatesEvent {
+  final GetFollowUpeEstimateEmailTemplateReqParams params;
+  GetFollowUpEstimateEvent({required this.params});
+}
+
+class SetFollowUpEstimateEmailTemplateEvent extends EmailTemplatesEvent {
+  final SetFollowUpeEstimateEmailTemplateReqParams params;
+  SetFollowUpEstimateEmailTemplateEvent({required this.params});
+}

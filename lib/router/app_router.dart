@@ -1,4 +1,5 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:billbooks_app/features/email%20templates/presentation/send_follow_up_estimate_page.dart';
 import 'package:billbooks_app/features/line%20item/presentation/add_new_line_item_page.dart';
 import 'package:billbooks_app/features/more/reports/presentation/report_item_sales_page.dart';
 import 'package:billbooks_app/features/splash/splash_page.dart';
@@ -93,6 +94,7 @@ import '../features/project/presentation/project_list_page.dart';
 import '../features/project/presentation/project_sort_page.dart';
 import '../features/taxes/presentation/add_tax_page.dart';
 import '../features/taxes/presentation/taxes_list_page.dart';
+import '../features/users/presentation/add_new_user_page.dart';
 import '../features/users/presentation/users_list_page.dart';
 
 part 'app_router.gr.dart';
@@ -197,5 +199,7 @@ class AppRouter extends _$AppRouter {
         AutoRoute(
             page: OrganizationProfilePageRoute.page, fullscreenDialog: true),
         AutoRoute(page: PreferencesPageRoute.page),
+        AutoRoute(page: AddNewUserPageRoute.page),
+        AutoRoute(page: SendFollowUpEstimatePageRoute.page)
       ];
 }

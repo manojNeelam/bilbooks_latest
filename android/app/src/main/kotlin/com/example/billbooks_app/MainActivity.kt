@@ -1,4 +1,4 @@
-package com.example.billbooks_app
+package com.billbooks.app
 
 import io.flutter.embedding.android.FlutterActivity
 

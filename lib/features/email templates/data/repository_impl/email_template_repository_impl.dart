@@ -2,6 +2,7 @@ import 'package:billbooks_app/core/error/failures.dart';
 import 'package:billbooks_app/features/email%20templates/data/datasource/remote/email_template_remotedatasource.dart';
 
 import 'package:billbooks_app/features/email%20templates/domain/entity/email_template_entity.dart';
+import 'package:billbooks_app/features/email%20templates/domain/entity/follow_up_estimate_email_template_entity.dart';
 import 'package:billbooks_app/features/email%20templates/domain/entity/update_email_template_entity.dart';
 import 'package:billbooks_app/features/email%20templates/domain/usecase/email_template_usecase.dart';
 import 'package:flutter/foundation.dart';
@@ -37,6 +38,42 @@ class EmailTemplateRepositoryImpl implements EmailTemplateRepository {
     try {
       final res =
           await emailTemplateRemotedatasource.updateEmailTemplate(params);
+      debugPrint("Email Templates Repository: success");
+      return right(res);
+    } on ApiException catch (e) {
+      debugPrint("Email Templates: api exception error");
+      return left(Failure(e.message));
+    } catch (e) {
+      debugPrint("Email Templates Repository: default error");
+      return left(Failure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, FollowUpEstimateEmailTemplateResponseEntity>>
+      getFollowUpEstimateEmailTemplate(
+          GetFollowUpeEstimateEmailTemplateReqParams params) async {
+    try {
+      final res = await emailTemplateRemotedatasource
+          .getFollowUpEstimateEmailTemplate(params);
+      debugPrint("Email Templates Repository: success");
+      return right(res);
+    } on ApiException catch (e) {
+      debugPrint("Email Templates: api exception error");
+      return left(Failure(e.message));
+    } catch (e) {
+      debugPrint("Email Templates Repository: default error");
+      return left(Failure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, UpdateEmailTemplateMainResponseEntity>>
+      updateFollowUpEstimateEmailTemplate(
+          SetFollowUpeEstimateEmailTemplateReqParams params) async {
+    try {
+      final res = await emailTemplateRemotedatasource
+          .updateFollowUpEstimateEmailTemplate(params);
       debugPrint("Email Templates Repository: success");
       return right(res);
     } on ApiException catch (e) {

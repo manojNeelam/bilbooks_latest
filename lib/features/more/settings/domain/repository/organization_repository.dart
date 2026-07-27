@@ -9,6 +9,7 @@ import 'package:billbooks_app/features/more/settings/domain/usecase/update_organ
 import 'package:billbooks_app/features/more/settings/domain/usecase/update_pref_invoice_usecase.dart';
 import 'package:billbooks_app/features/more/settings/domain/usecase/update_preference_column_usecase.dart';
 import 'package:billbooks_app/features/more/settings/presentation/bloc/organization_bloc.dart';
+import 'package:billbooks_app/features/more/settings/presentation/preferences_page.dart';
 import 'package:fpdart/fpdart.dart';
 
 import '../../../../../core/error/failures.dart';
@@ -36,4 +37,7 @@ abstract interface class OrganizationRepository {
       UpdatePrefInvoiceReqParams params);
   Future<Either<Failure, PreferenceUpdateMainResEntity>> updateGeneralSettings(
       UpdatePrefGeneralReqParams params);
+
+  Future<Either<Failure, PreferenceUpdateMainResEntity>> updateInvEstDetails(
+      InvEstReqParams params);
 }

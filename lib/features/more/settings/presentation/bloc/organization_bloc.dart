@@ -9,6 +9,7 @@ import 'package:billbooks_app/features/more/settings/domain/usecase/update_organ
 import 'package:billbooks_app/features/more/settings/domain/usecase/update_pref_general_usecase.dart';
 import 'package:billbooks_app/features/more/settings/domain/usecase/update_pref_invoice_usecase.dart';
 import 'package:billbooks_app/features/more/settings/domain/usecase/update_preference_column_usecase.dart';
+import 'package:billbooks_app/features/more/settings/presentation/preferences_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -27,6 +28,8 @@ class OrganizationBloc extends Bloc<OrganizationEvent, OrganizationState> {
   final UpdatePrefGeneralUsecase _updatePrefGeneralUsecase;
   final UpdatePrefInvoiceUsecase _updatePrefInvoiceUsecase;
 
+  final UpdateInvEstSettingsUsecase _updateInvEstSettingsUsecase;
+
   OrganizationBloc({
     required OrganizationListUsecase organizationListUsecase,
     required UpdateOrganizationUsecase updateOrganizationUsecase,
@@ -36,6 +39,7 @@ class OrganizationBloc extends Bloc<OrganizationEvent, OrganizationState> {
     required UpdatePreferenceEstimateUsecase updatePreferenceEstimateUsecase,
     required UpdatePrefGeneralUsecase updatePrefGeneralUsecase,
     required UpdatePrefInvoiceUsecase updatePrefInvoiceUsecase,
+    required UpdateInvEstSettingsUsecase updateInvEstSettingsUsecase,
   })  : _preferenceUpdateUsecase = preferenceUpdateUsecase,
         _organizationListUsecase = organizationListUsecase,
         _updateOrganizationUsecase = updateOrganizationUsecase,
@@ -44,6 +48,7 @@ class OrganizationBloc extends Bloc<OrganizationEvent, OrganizationState> {
         _updatePreferenceEstimateUsecase = updatePreferenceEstimateUsecase,
         _updatePrefGeneralUsecase = updatePrefGeneralUsecase,
         _updatePrefInvoiceUsecase = updatePrefInvoiceUsecase,
+        _updateInvEstSettingsUsecase = updateInvEstSettingsUsecase,
         super(OrganizationInitial()) {
     on<GetOrganizationDetailsEvent>((event, emit) async {
       emit(OrganizationLoadingState());
@@ -122,6 +127,16 @@ class OrganizationBloc extends Bloc<OrganizationEvent, OrganizationState> {
       response.fold(
           (l) => emit(UpdateGeneralSettingsErrorState(errorMessage: l.message)),
           (r) => emit(UpdateGeneralSettingsSuccessState(
+              preferenceUpdateMainResEntity: r)));
+    });
+
+    on<UpdateInvEstDetailsEvent>((event, emit) async {
+      emit(UpdateInvEstSettingsLoadingState());
+      final response =
+          await _updateInvEstSettingsUsecase.call(event.invEstReqParams);
+      response.fold(
+          (l) => emit(UpdateInvEstSettingsErrorState(errorMessage: l.message)),
+          (r) => emit(UpdateInvEstSettingsSuccessState(
               preferenceUpdateMainResEntity: r)));
     });
   }

@@ -1,9 +1,11 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:billbooks_app/core/theme/app_fonts.dart';
 import 'package:billbooks_app/core/theme/app_pallete.dart';
+import 'package:billbooks_app/core/widgets/followup_popup_widget.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../core/app_constants.dart';
+import '../../../../core/widgets/credit_note_expiry_popup_widget.dart';
 import '../../../../core/widgets/input_dropdown_view.dart';
 import '../../../../core/widgets/new_inputview_widget.dart';
 import '../../../../core/widgets/new_multiline_input_widget.dart';
@@ -32,6 +34,7 @@ class _EstimateAddInfoDetailsState extends State<EstimateAddInfoDetails> {
   DateTime selectedEstimateDate = DateTime.now();
   DateTime? expiryDate;
   bool isValidateFormData = false;
+  FollowUpModel? selectedFollowUp;
 
   @override
   void initState() {
@@ -138,9 +141,37 @@ class _EstimateAddInfoDetailsState extends State<EstimateAddInfoDetails> {
             inputType: TextInputType.name,
             inputAction: TextInputAction.done,
           ),
+          InputDropdownView(
+              title: "Follow Up",
+              defaultText: "None",
+              value: selectedFollowUp?.label ?? "",
+              isRequired: false,
+              onPress: () {
+                _showExpiryRangePopup();
+              }),
         ],
       ),
     );
+  }
+
+  void _showExpiryRangePopup() {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return FollowupPopupWidget(
+              followUpList: [
+                FollowUpModel(label: "None", value: "0"),
+                FollowUpModel(label: "Every 7 Days", value: "7"),
+                FollowUpModel(label: "Every 15 Days", value: "15"),
+                FollowUpModel(label: "Every 30 Days", value: "30"),
+                FollowUpModel(label: "Every 45 Days", value: "45"),
+              ],
+              defaultFollowUp: null,
+              callBack: (followup) {
+                selectedFollowUp = followup;
+                setState(() {});
+              });
+        });
   }
 
   /// This builds material date picker in Android

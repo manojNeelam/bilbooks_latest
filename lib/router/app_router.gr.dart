@@ -57,6 +57,12 @@ abstract class _$AppRouter extends RootStackRouter {
         ),
       );
     },
+    AddNewUserPageRoute.name: (routeData) {
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: const AddNewUserPage(),
+      );
+    },
     AddPaymentPageRoute.name: (routeData) {
       final args = routeData.argsAs<AddPaymentPageRouteArgs>();
       return AutoRoutePage<dynamic>(
@@ -633,6 +639,12 @@ abstract class _$AppRouter extends RootStackRouter {
         child: const ReportSalesTaxPage(),
       );
     },
+    SendFollowUpEstimatePageRoute.name: (routeData) {
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: const SendFollowUpEstimatePage(),
+      );
+    },
     SendInvoiceEstimatePageRoute.name: (routeData) {
       final args = routeData.argsAs<SendInvoiceEstimatePageRouteArgs>();
       return AutoRoutePage<dynamic>(
@@ -958,6 +970,20 @@ class AddNewLineItemPageRouteArgs {
   String toString() {
     return 'AddNewLineItemPageRouteArgs{key: $key, items: $items, enterItemModel: $enterItemModel, taxes: $taxes, updateLineItem: $updateLineItem, updateIndex: $updateIndex}';
   }
+}
+
+/// generated route for
+/// [AddNewUserPage]
+class AddNewUserPageRoute extends PageRouteInfo<void> {
+  const AddNewUserPageRoute({List<PageRouteInfo>? children})
+      : super(
+          AddNewUserPageRoute.name,
+          initialChildren: children,
+        );
+
+  static const String name = 'AddNewUserPageRoute';
+
+  static const PageInfo<void> page = PageInfo<void>(name);
 }
 
 /// generated route for
@@ -3101,6 +3127,20 @@ class ReportSalesTaxPageRoute extends PageRouteInfo<void> {
         );
 
   static const String name = 'ReportSalesTaxPageRoute';
+
+  static const PageInfo<void> page = PageInfo<void>(name);
+}
+
+/// generated route for
+/// [SendFollowUpEstimatePage]
+class SendFollowUpEstimatePageRoute extends PageRouteInfo<void> {
+  const SendFollowUpEstimatePageRoute({List<PageRouteInfo>? children})
+      : super(
+          SendFollowUpEstimatePageRoute.name,
+          initialChildren: children,
+        );
+
+  static const String name = 'SendFollowUpEstimatePageRoute';
 
   static const PageInfo<void> page = PageInfo<void>(name);
 }
