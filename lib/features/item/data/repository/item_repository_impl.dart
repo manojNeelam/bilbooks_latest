@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:billbooks_app/core/api/api_exception.dart';
 import 'package:billbooks_app/core/error/failures.dart';
 import 'package:billbooks_app/features/item/data/datasource/remote/item_remote_datasource.dart';
@@ -32,7 +34,7 @@ class ItemRepositoryImpl implements ItemRepository {
   @override
   Future<Either<Failure, AddItemMainResModel>> addItem(
       AddIemReqModel addItemReqModel) async {
-    Map<String, String> map = {
+    Map<String, dynamic> map = {
       "type": addItemReqModel.type ?? "",
       "name": addItemReqModel.name ?? "",
       "description": addItemReqModel.description ?? "",
@@ -46,6 +48,20 @@ class ItemRepositoryImpl implements ItemRepository {
     if (addItemReqModel.id != null && addItemReqModel.id!.isNotEmpty) {
       map.addAll({
         "id": addItemReqModel.id ?? "",
+      });
+    }
+
+    final File? image = addItemReqModel.image;
+    if (image != null && image.path.isNotEmpty) {
+      map.addAll({
+        "image": await MultipartFile.fromFile(
+          image.path,
+          filename: image.path.split(Platform.pathSeparator).last,
+        ),
+      });
+    } else if (addItemReqModel.removeImage) {
+      map.addAll({
+        "image": "",
       });
     }
 

@@ -7,10 +7,10 @@ import 'package:billbooks_app/core/utils/show_toast.dart';
 import 'package:billbooks_app/core/utils/utils.dart';
 import 'package:billbooks_app/core/widgets/loading_page.dart';
 import 'package:billbooks_app/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:billbooks_app/features/auth/presentation/pages/signup_page.dart';
 import 'package:billbooks_app/features/auth/presentation/widgets/auth_field.dart';
 import 'package:billbooks_app/features/auth/presentation/widgets/auth_header.dart';
 import 'package:billbooks_app/features/dashboard/domain/entity/authinfo_entity.dart';
+import 'package:billbooks_app/features/more/settings/subscription/presentation/bloc/revenuecat_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localization/flutter_localization.dart';
@@ -37,8 +37,6 @@ class _LoginPageState extends State<LoginPage> {
   final formKey = GlobalKey<FormState>();
   bool isRemeberMe = false;
   bool isValidData = false;
-
-  void _saveToken(String token) {}
 
   @override
   void dispose() {
@@ -81,6 +79,8 @@ class _LoginPageState extends State<LoginPage> {
                 Utils.setIsPremiumUser(isPremiumUser: isUserPremium);
                 HiveFunctions.saveUserSessionData(
                     state.user.data!.sessionData!);
+                context.read<RevenueCatCubit>().initialize(
+                    appUserId: state.user.data!.sessionData?.user?.id);
               }
 
               if (token != null) {

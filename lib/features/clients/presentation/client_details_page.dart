@@ -28,6 +28,7 @@ import '../../../core/widgets/section_header_widget.dart';
 import '../../../router/app_router.dart';
 import '../domain/entities/client_details_entity.dart';
 import 'Models/client_currencies.dart';
+import 'package:intl/intl.dart';
 
 @RoutePage()
 class ClientDetailPage extends StatefulWidget {
@@ -128,30 +129,40 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
   }
 
   String _getCurrencyName() {
-    String currencySymbol = "-";
+    if ((clientEntity.currencyCode ?? "").isNotEmpty) {
+      return clientEntity.currencyCode!;
+    }
+
+    if ((clientEntity.currency ?? "").isNotEmpty) {
+      return clientEntity.currency!;
+    }
+
     if (clientEntity.currency != null) {
-      final index = currencies.indexWhere((returnedCurrency) {
-        return returnedCurrency.currencyId == clientEntity.currency;
-      });
+      final index = currencies.indexWhere(
+        (item) => item.currencyId == clientEntity.currency,
+      );
+
       if (index >= 0) {
-        currencySymbol = currencies[index].code ?? "-";
-        debugPrint(currencySymbol);
+        return currencies[index].code ?? "-";
       }
     }
-    return currencySymbol;
+
+    return "-";
   }
 
   String _getLanguageName() {
-    if (clientEntity.language != null) {
-      final index = languages.indexWhere((returnedLang) {
-        return returnedLang.languageId == clientEntity.language;
-      });
+    if ((clientEntity.language ?? "").isNotEmpty) {
+      final index = languages.indexWhere(
+        (item) => item.languageId == clientEntity.language,
+      );
+
       if (index >= 0) {
-        String name = languages[index].code ?? "-";
-        debugPrint(name);
-        return name;
+        return languages[index].code ?? clientEntity.language!;
       }
+
+      return clientEntity.language!;
     }
+
     return "-";
   }
 
@@ -243,23 +254,74 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
     return "";
   }
 
+  String formatAmount(double amount) {
+    return NumberFormat.currency(
+      symbol: clientCurrencySymbol.isNotEmpty ? clientCurrencySymbol : '\$',
+      decimalDigits: 2,
+    ).format(amount);
+  }
+
   String get getTotalSales {
-    if (clientDetailsDataEntity?.totals != null) {
-      return "${clientDetailsDataEntity?.totals?.sales ?? "0"}";
-    }
-    return "0";
+    final invoices =
+        clientDetailsDataEntity?.invoices ?? <ClientInvoiceEntity>[];
+
+    final total = invoices
+        .where((invoice) => invoice.status?.toLowerCase() != "draft")
+        .fold<double>(
+          0.0,
+          (sum, invoice) =>
+              sum + (double.tryParse(invoice.netTotal ?? "0") ?? 0.0),
+        );
+
+    return formatAmount(total);
   }
 
   String get getTotalReceipts {
-    if (clientDetailsDataEntity?.totals != null) {
-      return "${clientDetailsDataEntity?.totals?.receipts ?? "0"}";
-    }
-    return "0";
+    final invoices =
+        clientDetailsDataEntity?.invoices ?? <ClientInvoiceEntity>[];
+
+    final total = invoices
+        .where((invoice) => invoice.status?.toLowerCase() == "paid")
+        .fold<double>(
+          0.0,
+          (sum, invoice) => sum + (double.tryParse(invoice.paid ?? "0") ?? 0.0),
+        );
+
+    return formatAmount(total);
   }
 
   String get getTotalBalanceDue {
-    return "0";
+    final invoices =
+        clientDetailsDataEntity?.invoices ?? <ClientInvoiceEntity>[];
+
+    final total = invoices
+        .where((invoice) => invoice.status?.toLowerCase() != "draft")
+        .fold<double>(
+          0.0,
+          (sum, invoice) =>
+              sum + (double.tryParse(invoice.balance ?? "0") ?? 0.0),
+        );
+
+    return formatAmount(total);
   }
+
+  // String get getTotalSales {
+  //   if (clientDetailsDataEntity?.totals != null) {
+  //     return "${clientDetailsDataEntity?.totals?.sales ?? "0"}";
+  //   }
+  //   return "0";
+  // }
+
+  // String get getTotalReceipts {
+  //   if (clientDetailsDataEntity?.totals != null) {
+  //     return "${clientDetailsDataEntity?.totals?.receipts ?? "0"}";
+  //   }
+  //   return "0";
+  // }
+
+  // String get getTotalBalanceDue {
+  //   return "0";
+  // }
 
   String get getInvoiceTotalCount {
     if (clientDetailsDataEntity?.invoices != null) {
@@ -290,33 +352,18 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
   }
 
   String getClientAddress() {
-    final address = clientEntity.address ?? "";
-    if (address.isNotEmpty) {
-      return address;
-    }
-    var fullAddress = "";
-    final city = clientEntity.city ?? "";
-    final state = clientEntity.state ?? "";
-    final zipCode = clientEntity.zipcode ?? "";
-    if (city.isNotEmpty) {
-      fullAddress = city;
-    }
-    if (state.isNotEmpty) {
-      if (fullAddress.isNotEmpty) {
-        fullAddress = "$fullAddress, $state";
-      } else {
-        fullAddress = state;
-      }
-    }
+    final parts = [
+      clientEntity.address,
+      clientEntity.city,
+      clientEntity.state,
+      clientEntity.zipcode,
+      clientEntity.countryName,
+    ]
+        .where((part) => part != null && part.trim().isNotEmpty)
+        .map((part) => part!.trim().replaceAll(RegExp(r',$'), ''))
+        .toList();
 
-    if (zipCode.isNotEmpty) {
-      if (fullAddress.isNotEmpty) {
-        fullAddress = "$fullAddress, $zipCode";
-      } else {
-        fullAddress = zipCode;
-      }
-    }
-    return fullAddress;
+    return parts.join(', ');
   }
 
   @override
@@ -635,18 +682,17 @@ class _ClientDetailPageState extends State<ClientDetailPage> {
                         children: [
                           summaryItem(context,
                               title: 'Total Sales',
-                              value: "$clientCurrencySymbol $getTotalSales",
+                              value: getTotalSales,
                               textColor: AppPallete.blueColor),
                           AppConstants.sepSizeBox5,
                           summaryItem(context,
                               title: 'Total Receipts',
-                              value: "$clientCurrencySymbol $getTotalReceipts",
+                              value: getTotalReceipts,
                               textColor: AppPallete.greenColor),
                           AppConstants.sepSizeBox5,
                           summaryItem(context,
                               title: "Balance Due",
-                              value:
-                                  "$clientCurrencySymbol $getTotalBalanceDue",
+                              value: getTotalBalanceDue,
                               textColor: AppPallete.red),
                         ],
                       )),

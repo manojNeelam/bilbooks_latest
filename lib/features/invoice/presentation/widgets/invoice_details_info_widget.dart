@@ -1,10 +1,12 @@
 import 'package:billbooks_app/core/app_constants.dart';
 import 'package:billbooks_app/core/theme/app_fonts.dart';
 import 'package:billbooks_app/core/theme/app_pallete.dart';
+import 'package:billbooks_app/core/utils/utils.dart';
 import 'package:billbooks_app/features/invoice/presentation/add_new_invoice_page.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:super_banners/super_banners.dart';
+import '../../../../core/widgets/build_if_exist_widget.dart';
 import '../../domain/entities/invoice_list_entity.dart';
 
 class InvoiceDetailsInfoWidget extends StatelessWidget {
@@ -47,12 +49,13 @@ class InvoiceDetailsInfoWidget extends StatelessWidget {
                   children: [
                     RichText(
                         text: TextSpan(
-                            text: type.getName(estimateTitle: estimateTitle),
+                            text:
+                                "${type.getName(estimateTitle: estimateTitle)} #",
                             style: AppFonts.regularStyle(size: 15),
                             children: [
                           const TextSpan(text: " "),
                           TextSpan(
-                              text: "#${invoiceEntity.no ?? "-"}",
+                              text: invoiceEntity.no ?? "-",
                               style: AppFonts.regularStyle(
                                   color: AppPallete.blueColor, size: 15))
                         ])),
@@ -86,53 +89,122 @@ class InvoiceDetailsInfoWidget extends StatelessWidget {
           ),
           AppConstants.sizeBoxHeight10,
           Padding(
-            padding: const EdgeInsets.only(left: 16, bottom: 16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Bill To",
-                  style: AppFonts.regularStyle(
-                      color: AppPallete.k666666, size: 15),
-                ),
-                Text(
-                  "${invoiceEntity.clientName}",
-                  style: AppFonts.mediumStyle(
-                      size: 16, color: AppPallete.blueColor),
-                ),
-                Text(
-                  "${invoiceEntity.clientAddress}",
-                  style: AppFonts.regularStyle(
-                      color: AppPallete.textColor, size: 15),
-                ),
-                if (invoiceEntity.summary != null) AppConstants.sizeBoxHeight15,
-                if (invoiceEntity.summary != null)
-                  RichText(
+              padding: const EdgeInsets.only(left: 16, bottom: 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Bill To",
+                    style: AppFonts.regularStyle(
+                      color: AppPallete.k666666,
+                      size: 15,
+                    ),
+                  ),
+                  buildTextIfNotEmpty(
+                    invoiceEntity.clientName,
+                    style: AppFonts.mediumStyle(
+                      size: 16,
+                      color: AppPallete.blueColor,
+                    ),
+                  ),
+                  buildTextIfNotEmpty(
+                    invoiceEntity.clientAddress,
+                    style: AppFonts.regularStyle(
+                      color: AppPallete.textColor,
+                      size: 15,
+                    ),
+                  ),
+                  buildTextIfNotEmpty(
+                    "${invoiceEntity.clientCity ?? ""} ${invoiceEntity.clientState ?? ""} ${invoiceEntity.clientZipcode ?? ""}"
+                        .trim(),
+                    style: AppFonts.regularStyle(
+                      color: AppPallete.textColor,
+                      size: 15,
+                    ),
+                  ),
+                  buildTextIfNotEmpty(
+                    invoiceEntity.clientCountry,
+                    style: AppFonts.regularStyle(
+                      color: AppPallete.textColor,
+                      size: 15,
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      Utils.openLink("tel:${invoiceEntity.clientPhone}");
+                    },
+                    child: buildTextIfNotEmpty(
+                      invoiceEntity.clientPhone,
+                      prefix: "Phone: ",
+                      style: AppFonts.regularStyle(
+                        color: AppPallete.textColor,
+                        size: 15,
+                      ),
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () =>
+                        Utils.openLink(invoiceEntity.clientWebsite ?? ""),
+                    child: buildTextIfNotEmpty(
+                      invoiceEntity.clientWebsite,
+                      prefix: "Website: ",
+                      style: AppFonts.regularStyle(
+                        color: AppPallete.textColor,
+                        size: 15,
+                      ),
+                    ),
+                  ),
+                  buildTextIfNotEmpty(
+                    invoiceEntity.clientTaxId,
+                    style: AppFonts.regularStyle(
+                      color: AppPallete.textColor,
+                      size: 15,
+                    ),
+                  ),
+                  if (invoiceEntity.summary?.isNotEmpty == true) ...[
+                    AppConstants.sizeBoxHeight15,
+                    RichText(
                       text: TextSpan(
-                          text: "Title: ",
-                          style: AppFonts.regularStyle(
-                              color: AppPallete.k666666, size: 15),
-                          children: [
-                        TextSpan(
-                            text: "${invoiceEntity.summary}",
+                        text: "Title: ",
+                        style: AppFonts.regularStyle(
+                          color: AppPallete.k666666,
+                          size: 15,
+                        ),
+                        children: [
+                          TextSpan(
+                            text: invoiceEntity.summary!,
                             style: AppFonts.regularStyle(
-                                size: 15, color: AppPallete.textColor))
-                      ])),
-                if (invoiceEntity.projectName != null)
-                  RichText(
+                              size: 15,
+                              color: AppPallete.textColor,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                  if (invoiceEntity.projectName?.isNotEmpty == true) ...[
+                    const SizedBox(height: 20),
+                    RichText(
                       text: TextSpan(
-                          text: "Project: ",
-                          style: AppFonts.regularStyle(
-                              color: AppPallete.k666666, size: 15),
-                          children: [
-                        TextSpan(
-                            text: "${invoiceEntity.projectName}",
+                        text: "Project: ",
+                        style: AppFonts.regularStyle(
+                          color: AppPallete.k666666,
+                          size: 15,
+                        ),
+                        children: [
+                          TextSpan(
+                            text: invoiceEntity.projectName!,
                             style: AppFonts.regularStyle(
-                                size: 15, color: AppPallete.textColor))
-                      ]))
-              ],
-            ),
-          )
+                              size: 15,
+                              color: AppPallete.textColor,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ],
+              ))
         ],
       ),
     );

@@ -3,7 +3,6 @@ import 'package:billbooks_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:billbooks_app/features/categories/presentation/bloc/category_bloc.dart';
 import 'package:billbooks_app/features/clients/presentation/bloc/client_bloc.dart';
 import 'package:billbooks_app/features/creditnotes/presentation/bloc/creditnote_bloc.dart';
-import 'package:billbooks_app/features/dashboard/domain/entity/authinfo_entity.dart';
 import 'package:billbooks_app/features/dashboard/domain/entity/column_settings_data.dart';
 import 'package:billbooks_app/features/dashboard/domain/entity/company_data.dart';
 import 'package:billbooks_app/features/dashboard/domain/entity/organization_data.dart';
@@ -23,8 +22,11 @@ import 'package:billbooks_app/features/integrations/presentation/bloc/online_pay
 import 'package:billbooks_app/features/more/expenses/presentation/bloc/expenses_bloc.dart';
 import 'package:billbooks_app/features/more/reports/presentation/bloc/reports_bloc.dart';
 import 'package:billbooks_app/features/more/settings/presentation/bloc/organization_bloc.dart';
+import 'package:billbooks_app/features/more/settings/subscription/presentation/bloc/revenuecat_cubit.dart';
+import 'package:billbooks_app/features/more/settings/subscription/presentation/bloc/subscription_bloc.dart';
 import 'package:billbooks_app/features/notifications/bloc/notification_bloc.dart';
 import 'package:billbooks_app/features/profile/presentation/bloc/profile_bloc.dart';
+import 'package:billbooks_app/features/proforma/presentation/bloc/proforma_bloc.dart';
 import 'package:billbooks_app/features/project/presentation/bloc/project_bloc.dart';
 import 'package:billbooks_app/features/taxes/presentation/bloc/tax_bloc.dart';
 import 'package:billbooks_app/features/users/presentation/bloc/user_bloc.dart';
@@ -213,6 +215,13 @@ void main() async {
             updatePrefInvoiceUsecase: serviceLocator(),
             updateInvEstSettingsUsecase: serviceLocator())),
     BlocProvider(
+      create: (context) =>
+          SubscriptionBloc(getSubscriptionUsecase: serviceLocator()),
+    ),
+    BlocProvider(
+      create: (context) => RevenueCatCubit(revenueCatService: serviceLocator()),
+    ),
+    BlocProvider(
       create: (context) => InvoiceBloc(
         invoiceDetailUsecase: serviceLocator(),
         invoiceListUsecase: serviceLocator(),
@@ -229,6 +238,11 @@ void main() async {
         addPaymentUsecase: serviceLocator(),
         sendDocumentUsecase: serviceLocator(),
       ),
+    ),
+    BlocProvider(
+      create: (context) => ProformaBloc(
+          proformaListUsecase: serviceLocator(),
+          getProformaDetailsUsecase: serviceLocator()),
     ),
     BlocProvider(
         create: (context) => ClientBloc(

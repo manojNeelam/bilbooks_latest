@@ -10,10 +10,12 @@ import 'package:flutter/material.dart';
 class LineItemTotalSelectionPage extends StatefulWidget {
   final Function(ShippingDiscountModel) callBack;
   final ShippingDiscountModel shippingDiscountModel;
+  final String currencyPrefix;
   const LineItemTotalSelectionPage({
     super.key,
     required this.shippingDiscountModel,
     required this.callBack,
+    this.currencyPrefix = r'$',
   });
 
   @override
@@ -79,14 +81,15 @@ class _LineItemTotalSelectionPageState
           InputDiscountWidget(
               controller: discountController,
               isPercentage: isPercentage,
+              amountSymbol: widget.currencyPrefix,
               callback: () {
                 isPercentage = !isPercentage;
                 _reRenderUI();
               }),
           AppConstants.sizeBoxHeight10,
           NewInputViewWidget(
-              title: "Shipping",
-              hintText: "Shipping",
+              title: "Shipping (${widget.currencyPrefix.trim()})",
+              hintText: "0.00",
               isRequired: false,
               showDivider: false,
               controller: shippingController),

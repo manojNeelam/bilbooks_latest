@@ -48,19 +48,19 @@ extension EnumEstimateTypeExtension on EnumEstimateType {
   String get apiParams {
     switch (this) {
       case EnumEstimateType.all:
-        return "";
+        return "All Estimates";
       case EnumEstimateType.draft:
-        return "draft";
+        return "Draft";
       case EnumEstimateType.sent:
-        return "sent";
+        return "Sent";
       case EnumEstimateType.approved:
-        return "approved";
+        return "Approved";
       case EnumEstimateType.invoiced:
-        return "invoiced";
+        return "Invoiced";
       case EnumEstimateType.declined:
-        return "declined";
+        return "Declined";
       case EnumEstimateType.expired:
-        return "expired";
+        return "Expired";
     }
   }
 
@@ -97,7 +97,7 @@ class _EstimateListPageState extends State<EstimateListPage>
   TextEditingController searchController = TextEditingController();
 
   EnumEstimateType selectedType = EnumEstimateType.all;
-  EnumEstimateSortBy selectedEstimateSortBy = EnumEstimateSortBy.date;
+  EnumEstimateSortBy selectedEstimateSortBy = EnumEstimateSortBy.none;
   EnumOrderBy selectedOrderBy = EnumOrderBy.ascending;
   EstimateListDataEntity? estimateListDataEntity;
   List<InvoiceEntity> estimates = [];
@@ -400,12 +400,15 @@ class _EstimateListPageState extends State<EstimateListPage>
   }
 
   void _loadEstimates() {
+    final hasExplicitSorting =
+        selectedEstimateSortBy != EnumEstimateSortBy.none;
     context.read<EstimateBloc>().add(GetEstimateListEvent(
             estimateListReqParams: EstimateListReqParams(
           query: searchController.text,
           status: selectedType.apiParams,
-          columnName: "date",
-          sortOrder: selectedOrderBy.apiParamsValue,
+          columnName:
+              hasExplicitSorting ? selectedEstimateSortBy.apiParams : "",
+          sortOrder: hasExplicitSorting ? selectedOrderBy.apiParamsValue : "",
           page: currentPage.toString(),
           endDateStr: endDateReqParams,
           startDateStr: startDateReqParams,

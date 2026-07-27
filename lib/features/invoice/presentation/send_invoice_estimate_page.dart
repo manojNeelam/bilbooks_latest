@@ -1,5 +1,4 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:billbooks_app/core/api/api_constants.dart';
 import 'package:billbooks_app/core/api/api_endpoint_urls.dart';
 import 'package:billbooks_app/core/app_constants.dart';
 import 'package:billbooks_app/core/theme/app_fonts.dart';
@@ -20,12 +19,13 @@ import 'package:toastification/toastification.dart';
 import '../domain/entities/get_document_entity.dart';
 import '../domain/usecase/send_document_usecase.dart';
 
-enum EnumSendPageType { send, reminder, thankyou }
+enum EnumSendPageType { send, forward, reminder, thankyou }
 
 extension EnumSendPageTypeExtension on EnumSendPageType {
   String get path {
     switch (this) {
       case EnumSendPageType.send:
+      case EnumSendPageType.forward:
         return ApiEndPoints.getDocuments;
       case EnumSendPageType.reminder:
         return ApiEndPoints.sendReminder;
@@ -38,6 +38,8 @@ extension EnumSendPageTypeExtension on EnumSendPageType {
     switch (this) {
       case EnumSendPageType.send:
         return "Email";
+      case EnumSendPageType.forward:
+        return "Forward";
       case EnumSendPageType.reminder:
         return "Email Reminder";
       case EnumSendPageType.thankyou:
@@ -59,6 +61,7 @@ class SendInvoiceEstimatePage extends StatefulWidget {
 class _SendInvoiceEstimatePageState extends State<SendInvoiceEstimatePage> {
   TextEditingController subjectController = TextEditingController();
   TextEditingController messageController = TextEditingController();
+  TextEditingController forwardSendToController = TextEditingController();
   GetDocumentData? documentData;
   List<ContactEntity> selectedBccMails = [];
   List<ContactEntity> selectedSendTo = [];
@@ -71,9 +74,23 @@ class _SendInvoiceEstimatePageState extends State<SendInvoiceEstimatePage> {
     super.initState();
   }
 
+  bool get isForwardPage => widget.params.pageType == EnumSendPageType.forward;
+
+  bool get isSendPage => widget.params.pageType == EnumSendPageType.send;
+
+  @override
+  void dispose() {
+    subjectController.dispose();
+    messageController.dispose();
+    forwardSendToController.dispose();
+    super.dispose();
+  }
+
   void _populateData() {
     subjectController.text = documentData?.subject ?? "";
     messageController.text = documentData?.message ?? "";
+    isAttachPDF = documentData?.attachPdf ?? false;
+
     final fromIndex = documentData?.from ?? "";
     if (fromIndex.isNotEmpty) {
       final fromObjIndex = documentData?.fromContacts?.indexWhere((element) {
@@ -82,43 +99,40 @@ class _SendInvoiceEstimatePageState extends State<SendInvoiceEstimatePage> {
       if (fromObjIndex != null && fromObjIndex >= 0) {
         selectedFrom = documentData?.fromContacts?[fromObjIndex];
       }
-      final sendToMails = documentData?.sendtoMails ?? [];
-      debugPrint("sendToMails : $sendToMails");
-      final sendToContacts = documentData?.sendtoContacts ?? [];
-      final List<ContactEntity> defaultSelContacts = [];
-      for (final element in sendToMails) {
-        final contactIndex = sendToContacts.indexWhere((contactElement) {
-          debugPrint("sendToContacts ID : $element");
-
-          debugPrint("contactElement List ID : ${contactElement.id}");
-
-          return contactElement.id == element;
-        });
-        if (contactIndex >= 0) {
-          defaultSelContacts.add(sendToContacts[contactIndex]);
-        }
-      }
-      selectedSendTo = defaultSelContacts;
-
-      final bccMails = documentData?.bccMails ?? [];
-      debugPrint("bccMails : $bccMails");
-      final bccContacts = documentData?.bccContacts ?? [];
-      final List<ContactEntity> defaultSelBccContacts = [];
-      for (final element in bccMails) {
-        final contactIndex = bccContacts.indexWhere((contactElement) {
-          debugPrint("bccContacts ID : $element");
-
-          debugPrint("bccContacts List ID : ${contactElement.id}");
-
-          return contactElement.id == element;
-        });
-        if (contactIndex >= 0) {
-          defaultSelBccContacts.add(bccContacts[contactIndex]);
-        }
-      }
-      selectedBccMails = defaultSelBccContacts;
     }
+
+    selectedSendTo = _resolveSelectedContacts(
+      selectedIds: documentData?.sendtoMails ?? [],
+      contacts: documentData?.sendtoContacts ?? [],
+    );
+    selectedBccMails = _resolveSelectedContacts(
+      selectedIds: documentData?.bccMails ?? [],
+      contacts: documentData?.bccContacts ?? [],
+    );
+
+    if (isForwardPage) {
+      forwardSendToController.clear();
+    }
+
     setState(() {});
+  }
+
+  List<ContactEntity> _resolveSelectedContacts({
+    required List<String> selectedIds,
+    required List<ContactEntity> contacts,
+  }) {
+    final List<ContactEntity> selectedContacts = [];
+
+    for (final selectedId in selectedIds) {
+      final contactIndex = contacts.indexWhere((contact) {
+        return contact.id == selectedId;
+      });
+      if (contactIndex >= 0) {
+        selectedContacts.add(contacts[contactIndex]);
+      }
+    }
+
+    return selectedContacts;
   }
 
   String _getBccMailsValue() {
@@ -133,13 +147,33 @@ class _SendInvoiceEstimatePageState extends State<SendInvoiceEstimatePage> {
     return "$selectedLength of $totalLength";
   }
 
+  List<ContactEntity> _buildForwardSendToContacts() {
+    return forwardSendToController.text
+        .split(',')
+        .map((email) => email.trim())
+        .where((email) => email.isNotEmpty)
+        .map((email) => ContactEntity(id: email, email: email, name: email))
+        .toList();
+  }
+
   void _sendDocument() {
+    final forwardSendTo = isForwardPage ? _buildForwardSendToContacts() : null;
+
+    if (isForwardPage && (forwardSendTo == null || forwardSendTo.isEmpty)) {
+      showToastification(
+        context,
+        'Please enter at least one email address.',
+        ToastificationType.error,
+      );
+      return;
+    }
+
     context.read<InvoiceBloc>().add(SendDocumentEvent(
             params: SendDocumentUsecaseReqParams(
           id: widget.params.id,
           from: selectedFrom?.id ?? "",
-          bcc: selectedBccMails,
-          sendTo: selectedSendTo,
+          bcc: isForwardPage ? [] : selectedBccMails,
+          sendTo: forwardSendTo ?? selectedSendTo,
           message: messageController.text,
           subject: subjectController.text,
           type: widget.params.type,
@@ -147,15 +181,183 @@ class _SendInvoiceEstimatePageState extends State<SendInvoiceEstimatePage> {
         )));
   }
 
+  String _getDynamicDocumentTitle() {
+    final documentTypeTitle = widget.params.type.title;
+    final documentNo = (documentData?.no ?? '').trim();
+
+    if ((!isSendPage && !isForwardPage) || documentNo.isEmpty) {
+      return 'Send $documentTypeTitle';
+    }
+
+    final actionTitle = isForwardPage ? 'Forward' : 'Send';
+
+    return '$actionTitle $documentTypeTitle ($documentTypeTitle #$documentNo)';
+  }
+
   String _getScreenTitle() {
     switch (widget.params.pageType) {
       case EnumSendPageType.send:
-        return widget.params.type == EnumDocumentType.invoice
-            ? "Email Invoice"
-            : "Email Estimate";
+      case EnumSendPageType.forward:
+        return _getDynamicDocumentTitle();
       case EnumSendPageType.reminder || EnumSendPageType.thankyou:
         return widget.params.pageType.title;
     }
+  }
+
+  String _getPrimaryActionTitle() {
+    return isForwardPage ? 'Forward' : 'Send';
+  }
+
+  Widget _buildForwardBody() {
+    return SingleChildScrollView(
+      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+      child: Column(
+        children: [
+          const SectionHeaderWidget(title: 'Send To'),
+          Container(
+            color: AppPallete.white,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+            child: TextField(
+              controller: forwardSendToController,
+              style: AppFonts.regularStyle(),
+              keyboardType: TextInputType.emailAddress,
+              textInputAction: TextInputAction.next,
+              maxLines: 2,
+              minLines: 1,
+              decoration: const InputDecoration(
+                hintText: 'e.g. email@example.com, email2@example.com',
+                border: InputBorder.none,
+              ),
+            ),
+          ),
+          const SectionHeaderWidget(title: 'Subject'),
+          Container(
+            color: AppPallete.white,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+            child: TextField(
+              controller: subjectController,
+              style: AppFonts.regularStyle(),
+              decoration: const InputDecoration(
+                  hintText: 'Subject', border: InputBorder.none),
+              textInputAction: TextInputAction.next,
+              maxLines: 1,
+            ),
+          ),
+          const SectionHeaderWidget(title: 'Message'),
+          Container(
+            color: AppPallete.white,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+            child: TextField(
+              controller: messageController,
+              style: AppFonts.regularStyle(),
+              decoration: const InputDecoration(
+                  hintText: 'Message', border: InputBorder.none),
+              textInputAction: TextInputAction.newline,
+              maxLines: 10,
+              minLines: 10,
+            ),
+          ),
+          AppConstants.sizeBoxHeight10,
+          InPutSwitchWidget(
+              title: 'Attach PDF copy',
+              context: context,
+              isRecurringOn: isAttachPDF,
+              onChanged: (val) {
+                isAttachPDF = val;
+                setState(() {});
+              },
+              showDivider: false),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSendBody() {
+    return SingleChildScrollView(
+      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+      child: Column(
+        children: [
+          AppConstants.sizeBoxHeight10,
+          InputDropdownView(
+              title: 'From',
+              dropDownImageName: Icons.arrow_drop_down,
+              isRequired: true,
+              defaultText: 'Tap to Select',
+              value: selectedFrom?.name ?? '',
+              onPress: () {
+                _showContactPopup();
+              }),
+          InputDropdownView(
+              title: 'Send To',
+              isRequired: true,
+              defaultText: '',
+              value: _getSendToMailsValue(),
+              dropDownImageName: Icons.chevron_right,
+              onPress: () {
+                AutoRouter.of(context).push(SendtoBccPageRoute(
+                    onpressDone: (list) {
+                      selectedSendTo = list;
+                      setState(() {});
+                    },
+                    list: documentData?.sendtoContacts ?? [],
+                    selectedList: selectedSendTo));
+              }),
+          InputDropdownView(
+              title: 'Bcc',
+              isRequired: false,
+              defaultText: '',
+              showDivider: false,
+              value: _getBccMailsValue(),
+              dropDownImageName: Icons.chevron_right,
+              onPress: () {
+                AutoRouter.of(context).push(SendtoBccPageRoute(
+                    onpressDone: (list) {
+                      selectedBccMails = list;
+                      setState(() {});
+                    },
+                    list: documentData?.bccContacts ?? [],
+                    selectedList: selectedBccMails));
+              }),
+          const SectionHeaderWidget(title: 'Subject'),
+          Container(
+            color: AppPallete.white,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+            child: TextField(
+              controller: subjectController,
+              style: AppFonts.regularStyle(),
+              decoration: const InputDecoration(
+                  hintText: 'Subject', border: InputBorder.none),
+              textInputAction: TextInputAction.next,
+              maxLines: 1,
+            ),
+          ),
+          const SectionHeaderWidget(title: 'Message'),
+          Container(
+            color: AppPallete.white,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+            child: TextField(
+              controller: messageController,
+              style: AppFonts.regularStyle(),
+              decoration: const InputDecoration(
+                  hintText: 'Message', border: InputBorder.none),
+              textInputAction: TextInputAction.newline,
+              maxLines: 10,
+              minLines: 10,
+            ),
+          ),
+          AppConstants.sizeBoxHeight10,
+          InPutSwitchWidget(
+              title: 'Attach PDF copy',
+              context: context,
+              isRecurringOn: isAttachPDF,
+              onChanged: (val) {
+                isAttachPDF = val;
+                setState(() {});
+              },
+              showDivider: false),
+        ],
+      ),
+    );
   }
 
   @override
@@ -169,7 +371,7 @@ class _SendInvoiceEstimatePageState extends State<SendInvoiceEstimatePage> {
               onPressed: () {
                 _sendDocument();
               },
-              child: Text("Send",
+              child: Text(_getPrimaryActionTitle(),
                   style: AppFonts.regularStyle(
                     color: AppPallete.blueColor,
                   ))),
@@ -183,6 +385,7 @@ class _SendInvoiceEstimatePageState extends State<SendInvoiceEstimatePage> {
                 state.sendDocumentMainResEntity.data?.message ??
                     "Successfully sent.",
                 ToastificationType.success);
+            AutoRouter.of(context).maybePop();
           }
           if (state is SendDocumentErrorState) {
             showToastification(
@@ -206,93 +409,7 @@ class _SendInvoiceEstimatePageState extends State<SendInvoiceEstimatePage> {
           if (state is SendDocumentLoadingState) {
             return const LoadingPage(title: "Loading...");
           }
-          return SingleChildScrollView(
-            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-            child: Column(
-              children: [
-                AppConstants.sizeBoxHeight10,
-                InputDropdownView(
-                    title: "From",
-                    dropDownImageName: Icons.arrow_drop_down,
-                    isRequired: true,
-                    defaultText: "Tap to Select",
-                    value: selectedFrom?.name ?? "",
-                    onPress: () {
-                      _showContactPopup();
-                    }),
-                InputDropdownView(
-                    title: "Send To",
-                    isRequired: true,
-                    defaultText: "",
-                    value: _getSendToMailsValue(),
-                    dropDownImageName: Icons.chevron_right,
-                    onPress: () {
-                      AutoRouter.of(context).push(SendtoBccPageRoute(
-                          onpressDone: (list) {
-                            selectedSendTo = list;
-                            setState(() {});
-                          },
-                          list: documentData?.sendtoContacts ?? [],
-                          selectedList: selectedSendTo));
-                    }),
-                InputDropdownView(
-                    title: "Bcc",
-                    isRequired: false,
-                    defaultText: "",
-                    showDivider: false,
-                    value: _getBccMailsValue(),
-                    dropDownImageName: Icons.chevron_right,
-                    onPress: () {
-                      AutoRouter.of(context).push(SendtoBccPageRoute(
-                          onpressDone: (list) {
-                            selectedBccMails = list;
-                            setState(() {});
-                          },
-                          list: documentData?.bccContacts ?? [],
-                          selectedList: selectedBccMails));
-                    }),
-                const SectionHeaderWidget(title: "Subject"),
-                Container(
-                  color: AppPallete.white,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
-                  child: TextField(
-                    controller: subjectController,
-                    style: AppFonts.regularStyle(),
-                    decoration: const InputDecoration(
-                        hintText: "Subject", border: InputBorder.none),
-                    textInputAction: TextInputAction.next,
-                    maxLines: 1,
-                  ),
-                ),
-                const SectionHeaderWidget(title: "Message"),
-                Container(
-                  color: AppPallete.white,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
-                  child: TextField(
-                    controller: messageController,
-                    style: AppFonts.regularStyle(),
-                    decoration: const InputDecoration(
-                        hintText: "Message", border: InputBorder.none),
-                    textInputAction: TextInputAction.newline,
-                    maxLines: 10,
-                    minLines: 10,
-                  ),
-                ),
-                AppConstants.sizeBoxHeight10,
-                InPutSwitchWidget(
-                    title: "Attach PDF copy",
-                    context: context,
-                    isRecurringOn: isAttachPDF,
-                    onChanged: (val) {
-                      isAttachPDF = val;
-                      setState(() {});
-                    },
-                    showDivider: false),
-              ],
-            ),
-          );
+          return isForwardPage ? _buildForwardBody() : _buildSendBody();
         },
       ),
     );

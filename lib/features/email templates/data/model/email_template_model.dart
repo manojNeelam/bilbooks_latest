@@ -67,6 +67,12 @@ class Emailtemplates extends EmailtemplatesEntity {
     String? emailMessagePaymentreminder,
     String? emailSubjectPaymentthankyou,
     String? emailMessagePaymentthankyou,
+    String? emailSubjectFollowupestimate1,
+    String? emailMessageFollowupestimate1,
+    String? emailSubjectFollowupestimate2,
+    String? emailMessageFollowupestimate2,
+    String? emailSubjectFollowupestimate3,
+    String? emailMessageFollowupestimate3,
   }) : super(
             emailMessagePaymentreminder: emailMessagePaymentreminder,
             emailMessageSendinvoice: emailMessageSendinvoice,
@@ -75,7 +81,13 @@ class Emailtemplates extends EmailtemplatesEntity {
             emailSubjectPaymentreminder: emailSubjectPaymentreminder,
             emailMessagePaymentthankyou: emailMessagePaymentthankyou,
             emailSubjectPaymentthankyou: emailSubjectPaymentthankyou,
-            emailSubjectSendinvoice: emailSubjectSendinvoice);
+            emailSubjectSendinvoice: emailSubjectSendinvoice,
+            emailSubjectFollowupestimate1: emailSubjectFollowupestimate1,
+            emailMessageFollowupestimate1: emailMessageFollowupestimate1,
+            emailSubjectFollowupestimate2: emailSubjectFollowupestimate2,
+            emailMessageFollowupestimate2: emailMessageFollowupestimate2,
+            emailSubjectFollowupestimate3: emailSubjectFollowupestimate3,
+            emailMessageFollowupestimate3: emailMessageFollowupestimate3);
 
   factory Emailtemplates.fromJson(Map<String, dynamic> json) => Emailtemplates(
         emailSubjectSendinvoice: json["email_subject_sendinvoice"],
@@ -86,6 +98,30 @@ class Emailtemplates extends EmailtemplatesEntity {
         emailMessagePaymentreminder: json["email_message_paymentreminder"],
         emailSubjectPaymentthankyou: json["email_subject_paymentthankyou"],
         emailMessagePaymentthankyou: json["email_message_paymentthankyou"],
+        emailSubjectFollowupestimate1:
+            json["email_subject_followupestimate1"] ??
+                json["email_subject_follow_up_estimate1"] ??
+                json["email_subject_followUpEstimate1"],
+        emailMessageFollowupestimate1:
+            json["email_message_followupestimate1"] ??
+                json["email_message_follow_up_estimate1"] ??
+                json["email_message_followUpEstimate1"],
+        emailSubjectFollowupestimate2:
+            json["email_subject_followupestimate2"] ??
+                json["email_subject_follow_up_estimate2"] ??
+                json["email_subject_followUpEstimate2"],
+        emailMessageFollowupestimate2:
+            json["email_message_followupestimate2"] ??
+                json["email_message_follow_up_estimate2"] ??
+                json["email_message_followUpEstimate2"],
+        emailSubjectFollowupestimate3:
+            json["email_subject_followupestimate3"] ??
+                json["email_subject_follow_up_estimate3"] ??
+                json["email_subject_followUpEstimate3"],
+        emailMessageFollowupestimate3:
+            json["email_message_followupestimate3"] ??
+                json["email_message_follow_up_estimate3"] ??
+                json["email_message_followUpEstimate3"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -97,5 +133,11 @@ class Emailtemplates extends EmailtemplatesEntity {
         "email_message_paymentreminder": emailMessagePaymentreminder,
         "email_subject_paymentthankyou": emailSubjectPaymentthankyou,
         "email_message_paymentthankyou": emailMessagePaymentthankyou,
+        "email_subject_followupestimate1": emailSubjectFollowupestimate1,
+        "email_message_followupestimate1": emailMessageFollowupestimate1,
+        "email_subject_followupestimate2": emailSubjectFollowupestimate2,
+        "email_message_followupestimate2": emailMessageFollowupestimate2,
+        "email_subject_followupestimate3": emailSubjectFollowupestimate3,
+        "email_message_followupestimate3": emailMessageFollowupestimate3,
       };
 }

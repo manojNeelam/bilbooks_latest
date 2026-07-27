@@ -22,4 +22,9 @@ class HiveFunctions {
     final billbooksDatabaseBox = await Hive.openBox(bbDBNameKey);
     return billbooksDatabaseBox.get(userSessionDataKey);
   }
+
+  static Future<void> clearUserSessionData() async {
+    final billbooksDatabaseBox = await Hive.openBox(bbDBNameKey);
+    await billbooksDatabaseBox.delete(userSessionDataKey);
+  }
 }

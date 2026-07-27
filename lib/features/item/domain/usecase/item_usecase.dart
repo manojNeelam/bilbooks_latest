@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:billbooks_app/core/usecase/usecase.dart';
 import 'package:billbooks_app/features/item/data/models/add_item_data_model.dart';
 import 'package:billbooks_app/features/item/data/models/delete_item_data_model.dart';
@@ -51,6 +53,8 @@ class AddIemReqModel {
   String? type;
   String? name, sku, description, rate, unit, trackInventory, stock;
   String? taxes;
+  File? image;
+  bool removeImage;
   AddIemReqModel(
       {this.id,
       this.type,
@@ -61,7 +65,9 @@ class AddIemReqModel {
       this.unit,
       this.trackInventory,
       this.stock,
-      this.taxes});
+      this.taxes,
+      this.image,
+      this.removeImage = false});
 }
 
 class DeleteItemUseCase

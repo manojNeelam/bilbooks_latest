@@ -3,10 +3,11 @@ import 'package:billbooks_app/core/app_constants.dart';
 import 'package:billbooks_app/core/constants/assets.dart';
 import 'package:billbooks_app/core/theme/app_fonts.dart';
 import 'package:billbooks_app/core/theme/app_pallete.dart';
-import 'package:billbooks_app/core/utils/alert_utility.dart';
 import 'package:billbooks_app/core/widgets/item_separator.dart';
+import 'package:billbooks_app/features/more/settings/subscription/presentation/bloc/revenuecat_cubit.dart';
 import 'package:billbooks_app/router/app_router.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_section_list/flutter_section_list.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -26,6 +27,10 @@ class MorePage extends StatelessWidget with SectionAdapterMixin {
           name: "Expenses",
           imageName: Assets.assetsImagesIcExpenses,
           enumMoreScreen: EnumMoreScreen.expenses),
+      MoreItemModel(
+          name: "Proformas",
+          imageName: Assets.assetsImagesIcReportsInvoice,
+          enumMoreScreen: EnumMoreScreen.proformas),
       MoreItemModel(
           name: "Items",
           imageName: Assets.assetsImagesIcItem,
@@ -136,6 +141,7 @@ class MorePage extends StatelessWidget with SectionAdapterMixin {
             message: "Please confirm if you want to logout.",
             onTapDelete: () async {
               AutoRouter.of(context).maybePop();
+              await context.read<RevenueCatCubit>().logOut();
               await Utils.clearAll();
               AutoRouter.of(context).pushAndPopUntil(const LoginPageRoute(),
                   predicate: (_) => false);
@@ -162,6 +168,11 @@ class MorePage extends StatelessWidget with SectionAdapterMixin {
           case EnumMoreScreen.expenses:
             debugPrint("Tapped Expenses");
             AutoRouter.of(context).push(const ExpensesListPageRoute());
+          case EnumMoreScreen.proformas:
+            debugPrint("Tapped Proformas");
+            AutoRouter.of(context).push(ProformaListPageRoute(
+              builder: (context, refreshList) {},
+            ));
           case EnumMoreScreen.items:
             debugPrint("Tapped items");
             AutoRouter.of(context).push(const ItemListRoute());
@@ -299,6 +310,7 @@ class MoreItemModel {
 
 enum EnumMoreScreen {
   expenses,
+  proformas,
   items,
   projects,
   creditnotes,
@@ -319,6 +331,7 @@ extension EnumMoreScreenExtension on EnumMoreScreen {
     const defaultUrl = "https://www.google.com";
     switch (this) {
       case EnumMoreScreen.expenses ||
+            EnumMoreScreen.proformas ||
             EnumMoreScreen.items ||
             EnumMoreScreen.projects ||
             EnumMoreScreen.creditnotes ||

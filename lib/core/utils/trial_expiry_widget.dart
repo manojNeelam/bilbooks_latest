@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../features/dashboard/presentation/widgets/trial_expired_popup.dart';
+import 'utils.dart';
 
 class TrialService {
   static Future<void> checkTrialStatus({
@@ -27,20 +28,11 @@ class TrialService {
           return TrialExpiredPopup(
             onOpenUrl: (url) {
               if (router.canPop()) router.canPop();
-              openLink(url);
+              Utils.openLink(url);
             },
           );
         },
       );
     });
-  }
-
-  static Future<void> openLink(String urlString) async {
-    final Uri callLaunchUri = Uri.parse(urlString);
-    if (await canLaunchUrl(callLaunchUri)) {
-      launchUrl(callLaunchUri);
-    } else {
-      debugPrint("Unable to launch sms");
-    }
   }
 }

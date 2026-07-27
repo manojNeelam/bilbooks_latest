@@ -5,6 +5,7 @@ import 'package:billbooks_app/core/widgets/item_separator.dart';
 import 'package:billbooks_app/features/clients/domain/entities/client_list_entity.dart';
 import 'package:billbooks_app/features/clients/presentation/widgets/client_item_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class InvoiceClientDetailsWidget extends StatelessWidget {
   final String emailToVlaue;
@@ -13,6 +14,11 @@ class InvoiceClientDetailsWidget extends StatelessWidget {
   final Function()? onTapOpenEmailTo;
   final Function()? onTapOpenSelectClient;
   final Function()? onTapOpenProjects;
+  final bool showExchangeRate;
+  final String? baseCurrencyCode;
+  final String? clientCurrencyCode;
+  final TextEditingController? exchangeRateController;
+  final ValueChanged<String>? onExchangeRateChanged;
   const InvoiceClientDetailsWidget(
       {super.key,
       this.clientEntity,
@@ -20,7 +26,12 @@ class InvoiceClientDetailsWidget extends StatelessWidget {
       required this.onTapOpenProjects,
       required this.onTapOpenSelectClient,
       required this.emailToVlaue,
-      this.projectValue});
+      this.projectValue,
+      this.showExchangeRate = false,
+      this.baseCurrencyCode,
+      this.clientCurrencyCode,
+      this.exchangeRateController,
+      this.onExchangeRateChanged});
 
   @override
   Widget build(BuildContext context) {
@@ -69,6 +80,80 @@ class InvoiceClientDetailsWidget extends StatelessWidget {
             ),
           ),
           const ItemSeparator(),
+          if (showExchangeRate) ...[
+            Padding(
+              padding: AppConstants.verticalPadding13,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    'Exchange Rate',
+                    style: AppFonts.regularStyle(),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Flexible(
+                          child: Text(
+                            '1 ${clientCurrencyCode ?? ''} =',
+                            textAlign: TextAlign.right,
+                            overflow: TextOverflow.ellipsis,
+                            style: AppFonts.regularStyle(
+                                color: AppPallete.k666666),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        SizedBox(
+                          width: 72,
+                          child: TextFormField(
+                            controller: exchangeRateController,
+                            onChanged: onExchangeRateChanged,
+                            textAlign: TextAlign.center,
+                            keyboardType: const TextInputType.numberWithOptions(
+                                decimal: true),
+                            inputFormatters: [
+                              FilteringTextInputFormatter.allow(
+                                  RegExp(r'^\d*\.?\d*')),
+                            ],
+                            style: AppFonts.mediumStyle(size: 15),
+                            decoration: InputDecoration(
+                              isDense: true,
+                              contentPadding:
+                                  const EdgeInsets.symmetric(vertical: 8),
+                              hintText: '1',
+                              hintStyle: AppFonts.hintStyle(),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: const BorderSide(
+                                    color: AppPallete.borderColor),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: const BorderSide(
+                                    color: AppPallete.blueColor),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Flexible(
+                          child: Text(
+                            baseCurrencyCode ?? '',
+                            overflow: TextOverflow.ellipsis,
+                            style: AppFonts.regularStyle(
+                                color: AppPallete.k666666),
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                ],
+              ),
+            ),
+            const ItemSeparator(),
+          ],
           Padding(
             padding: AppConstants.verticalPadding13,
             child: GestureDetector(

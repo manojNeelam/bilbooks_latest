@@ -14,9 +14,10 @@ import '../domain/entity/email_template_entity.dart';
 enum EnumEmailTemplate {
   invoice,
   estimate,
+  proforma,
   remainder,
   thankyou,
-  followUpEstimate
+  followUpEstimate,
 }
 
 extension EnumEmailTemplateExtension on EnumEmailTemplate {
@@ -35,9 +36,14 @@ extension EnumEmailTemplateExtension on EnumEmailTemplate {
   bool get isPaymentThankyou {
     return this == EnumEmailTemplate.thankyou;
   }
-  // bool get is {
-  //   return this == EnumEmailTemplate.thankyou;
-  // }
+
+  bool get isProforma {
+    return this == EnumEmailTemplate.proforma;
+  }
+
+  bool get isfollowUpEstimate {
+    return this == EnumEmailTemplate.followUpEstimate;
+  }
 
   List<String> get emailTemplateList {
     switch (this) {
@@ -52,8 +58,10 @@ extension EnumEmailTemplateExtension on EnumEmailTemplate {
 
       case EnumEmailTemplate.thankyou:
         return paymentThankYouList;
+      case EnumEmailTemplate.proforma:
+        return sendproformaList;
       case EnumEmailTemplate.followUpEstimate:
-        return sendFollowUpEstimateList;
+        return followUpEstimateList;
     }
   }
 
@@ -71,8 +79,10 @@ extension EnumEmailTemplateExtension on EnumEmailTemplate {
 
       case EnumEmailTemplate.thankyou:
         return "paymentthankyou";
+      case EnumEmailTemplate.proforma:
+        return "sendproforma";
       case EnumEmailTemplate.followUpEstimate:
-        return "sendfollowupestimate";
+        return "followUpEstimate";
     }
   }
 
@@ -98,11 +108,10 @@ extension EnumEmailTemplateExtension on EnumEmailTemplate {
           "Payment Thank-you",
           "Message sent upon receiving a successful payment"
         );
+      case EnumEmailTemplate.proforma:
+        return ("Send Proforma", "");
       case EnumEmailTemplate.followUpEstimate:
-        return (
-          "Send Follow-Up Estimate",
-          "Message sent upon receiving a successful payment"
-        );
+        return ("Send Follow-Up Estimate", "");
     }
   }
 }
@@ -180,7 +189,25 @@ final List<String> paymentThankYouList = [
   'organization-name',
   'user-name',
 ];
-final List<String> sendFollowUpEstimateList = [
+final List<String> sendproformaList = [
+  'proforma-date',
+  'proforma-number',
+  'po-number',
+  'due-date',
+  'total-amount',
+  'shipping-charge',
+  'overdue-days',
+  'proforma-title',
+  'proforma-notes',
+  'proforma-url',
+  'project-name',
+  'client-name',
+  'client-contact-name',
+  'organization-name',
+  'user-name',
+];
+final List<String> followUpEstimateList = [
+  'estimate-date',
   'estimate-number',
   'po-number',
   'due-date',
@@ -189,7 +216,6 @@ final List<String> sendFollowUpEstimateList = [
   'balance-due',
   'overdue-days',
   'estimate-title',
-  'estimate-date',
   'estimate-notes',
   'estimate-url',
   'project-name',
@@ -310,22 +336,31 @@ class _EmailTemplatePageState extends State<EmailTemplatePage> {
                                     refreshPage: () {
                                       _getEmailTemplates();
                                     }));
-                          case EnumEmailTemplate.followUpEstimate:
+                          case EnumEmailTemplate.proforma:
                             AutoRouter.of(context)
-                                .push(SendFollowUpEstimatePageRoute());
-                          // AutoRouter.of(context).push(
-                          //     UpdateEmailTemplatePageRoute(
-                          //         title: "Payment Thank-you",
-                          //         message: emailtemplatesEntity
-                          //                 ?.emailMessagePaymentthankyou ??
-                          //             "",
-                          //         subject: emailtemplatesEntity
-                          //                 ?.emailSubjectPaymentthankyou ??
-                          //             "",
-                          //         type: EnumEmailTemplate.thankyou,
-                          //         refreshPage: () {
-                          //           _getEmailTemplates();
-                          //         }));
+                                .push(UpdateEmailTemplatePageRoute(
+                                    title: 'Send Proforma',
+                                    message: '',
+                                    subject: '',
+                                    type: EnumEmailTemplate.proforma,
+                                    refreshPage: () {
+                                      _getEmailTemplates();
+                                    }));
+
+                          case EnumEmailTemplate.followUpEstimate:
+                            AutoRouter.of(context).push(
+                                UpdateEmailTemplatePageRoute(
+                                    title: 'Send Follow-Up Estimate',
+                                    message: emailtemplatesEntity
+                                            ?.emailMessageFollowupestimate1 ??
+                                        '',
+                                    subject: emailtemplatesEntity
+                                            ?.emailSubjectFollowupestimate1 ??
+                                        '',
+                                    type: EnumEmailTemplate.followUpEstimate,
+                                    refreshPage: () {
+                                      _getEmailTemplates();
+                                    }));
                         }
                       },
                       child: EmailTemplateWidget(title: title, desc: desc));

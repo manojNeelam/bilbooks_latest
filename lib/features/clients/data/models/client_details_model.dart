@@ -86,10 +86,42 @@ class ClientEstimateModel extends ClientEstimateEntity {
 }
 
 class ClientInvoiceModel extends ClientInvoiceEntity {
-  ClientInvoiceModel({String? id}) : super(id: id);
+  ClientInvoiceModel({
+    String? id,
+    String? netTotal,
+    String? paid,
+    String? balance,
+    String? formatedTotal,
+    String? formatedPaid,
+    String? formatedBalance,
+    String? status,
+    String? no,
+    String? date,
+  }) : super(
+          id: id,
+          netTotal: netTotal,
+          paid: paid,
+          balance: balance,
+          formatedTotal: formatedTotal,
+          formatedPaid: formatedPaid,
+          formatedBalance: formatedBalance,
+          status: status,
+          no: no,
+          date: date,
+        );
+
   factory ClientInvoiceModel.fromJson(Map<String, dynamic> json) =>
       ClientInvoiceModel(
         id: json["id"],
+        netTotal: json["nettotal"],
+        paid: json["paid"],
+        balance: json["balance"],
+        formatedTotal: json["formated_total"],
+        formatedPaid: json["formated_paid"],
+        formatedBalance: json["formated_balance"],
+        status: json["status"],
+        no: json["no"],
+        date: json["date"],
       );
 }
 

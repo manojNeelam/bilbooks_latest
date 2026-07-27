@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:billbooks_app/core/api/api_constants.dart';
 import 'package:billbooks_app/core/app_constants.dart';
 import 'package:billbooks_app/features/invoice/data/models/add_invoice_model.dart';
 import 'package:billbooks_app/features/invoice/data/models/client_staff_model.dart';
@@ -23,12 +24,11 @@ import 'package:billbooks_app/features/invoice/presentation/add_new_invoice_page
 import 'package:billbooks_app/features/invoice/presentation/send_invoice_estimate_page.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import '../../../../../core/api/api_client.dart';
 import '../../../../../core/api/api_endpoint_urls.dart';
 import '../../../../../core/api/api_exception.dart';
 import '../../../domain/entities/client_staff_entity.dart';
-import '../../../domain/entities/send_document_entity.dart';
+import '../../../domain/entities/invoice_details_entity.dart';
 import '../../../domain/usecase/invoice_unvoid_usecase.dart';
 import '../../../domain/usecase/send_document_usecase.dart';
 import '../../models/add_payment_model.dart';
@@ -72,6 +72,68 @@ abstract interface class InvoiceRemoteDatasource {
 class InvoiceRemoteDatasourceImpl implements InvoiceRemoteDatasource {
   final APIClient apiClient;
   InvoiceRemoteDatasourceImpl({required this.apiClient});
+
+  bool _isInvoiceType(EnumNewInvoiceEstimateType type) {
+    return type == EnumNewInvoiceEstimateType.invoice ||
+        type == EnumNewInvoiceEstimateType.editInvoice ||
+        type == EnumNewInvoiceEstimateType.duplicateInvoice ||
+        type == EnumNewInvoiceEstimateType.convertEstimateToInvoice ||
+        type == EnumNewInvoiceEstimateType.convertProformaToInvoice;
+  }
+
+  String _formatPayloadDate(DateTime? date) {
+    if (date == null) {
+      return "";
+    }
+    return date.getDateString(format: 'yyyy-MM-dd');
+  }
+
+  dynamic _resolveRequestId(AddInvoiceReqParms params) {
+    final id = (params.id ?? '').trim();
+    final shouldSendCurrentId =
+        params.type == EnumNewInvoiceEstimateType.editInvoice ||
+            params.type == EnumNewInvoiceEstimateType.editEstimate;
+    if (shouldSendCurrentId && id.isNotEmpty) {
+      return int.tryParse(id) ?? id;
+    }
+    return 0;
+  }
+
+  dynamic _resolveEstimateReference(AddInvoiceReqParms params) {
+    if (params.type != EnumNewInvoiceEstimateType.convertEstimateToInvoice) {
+      return "";
+    }
+    final id = (params.id ?? '').trim();
+    return int.tryParse(id) ?? id;
+  }
+
+  String _resolveHowMany(InvoiceRequestModel req) {
+    if (req.isRecurring != true) {
+      return '-1';
+    }
+    if (req.isInfinite == true) {
+      return '-1';
+    }
+    final remaining = (req.remaining ?? '').trim();
+    return remaining.isNotEmpty ? remaining : '-1';
+  }
+
+  String _resolveRepeat(InvoiceRequestModel req) {
+    if (req.isRecurring != true) {
+      return '';
+    }
+    return req.selectedRepeatEvery?.value ?? '';
+  }
+
+  List<Map<String, dynamic>> _serializeStaff(
+      List<EmailtoMystaffEntity> staffList) {
+    return staffList.map((returnedStaff) {
+      return InvoiceStaffModel(
+        id: returnedStaff.id ?? '',
+        name: returnedStaff.name ?? '',
+      ).toJson();
+    }).toList();
+  }
 
   @override
   Future<InvoiceDetailsResponseModel> getInvoiceDetails(
@@ -119,29 +181,15 @@ class InvoiceRemoteDatasourceImpl implements InvoiceRemoteDatasource {
   Future<InvoiceListMainResModel> getInvoices(
       InvoiceListReqParams params) async {
     try {
-      //"status": "sent"
       Map<String, dynamic> queryParameters = {
+        "status": params.status,
+        "page": params.page,
         "q": params.query,
+        "date_start": params.startDate ?? "",
+        "date_end": params.endDate ?? "",
         "sort_column": params.columnName,
         "sort_order": params.sortOrder,
-        "page": params.page,
       };
-
-      if (params.startDate != null) {
-        queryParameters.addAll({"date_start": params.startDate ?? ""});
-      }
-      if (params.endDate != null) {
-        queryParameters.addAll({"date_end": params.endDate ?? ""});
-      }
-      if (params.status.isNotEmpty) {
-        queryParameters.addAll({
-          "status": params.status,
-        });
-      } else {
-        queryParameters.addAll({
-          "status": "",
-        });
-      }
       debugPrint(queryParameters.toString());
 
       final response = await apiClient.getRequest(ApiEndPoints.invoices,
@@ -222,217 +270,113 @@ let payment_reminders: String
     let emailto_clientstaff: String
 */
 
-  String getDateString(DateTime date, {String format = "dd MMM yyyy"}) {
-    debugPrint("Date :$date");
-    final dateFormat = DateFormat(format);
-    String formatted = dateFormat.format(date);
-    return formatted;
-  }
-
   @override
   Future<AddInvoiceMainResModel> addInvoices(AddInvoiceReqParms params) async {
     try {
-      Map<String, String> map = {};
+      Map<String, dynamic> map = {};
 
       if (params.invoiceRequestModel != null) {
         final req = params.invoiceRequestModel!;
-/*
-//id:97501
-recurring:true
-//estimate:
-client:21702
-project:1667
-date:2022-11-10
-no:200
-pono:8934
-summary:test test updated
-exchange_rate:40
-payment_reminders:0
-subtotal:40
-discount_type:amount
-discount_value:2
-discount:2
-taxtotal:44
-shipping:1
-nettotal:43
-notes:test update
-terms:1
-//dueterms:
-//dueterms_custom:
-heading:test test update
-repeat:0
-howmany:1
-delivery_options:
-timezone:3
-items:[{"item":"200048","desc":"Backend application development using PHP, AJAX, MySQL","date":"2023-03-03","time":"24:45:45","custom":"","qty":1,"rate":55,"amount":55,"disc":0,"disctype":"0","discApplied":false,"unit":"1","taxes":[{"id":"882","name":"Vat","rate":10},{"id":"45","name":"GST","rate":4}]},{"item":"203711","desc":"PHP, AJAX, MySQL","date":"2023-04-03","time":"24:45:45","custom":"Custome fields","qty":12,"rate":56.3,"amount":56.3,"disc":0,"disctype":"0","discApplied":false,"unit":"1","taxes":[{"id":"882","name":"Vat","rate":10},{"id":"7","name":"GST","rate":4}]}]
-emailto_clientstaff:[{"id":"2468","email":"abc@exaple.com"},{"id":"2469","email":"pqr@exaple.com"}]
-emailto_mystaff:[{"id":"2468","email":"abc@exaple.com"},{"id":"2469","email":"pqr@exaple.com"}]
-late_fee_type:1
-late_fee_value:2
-late_fee:90
-*/
-        if (params.type == EnumNewInvoiceEstimateType.invoice ||
-            params.type == EnumNewInvoiceEstimateType.editInvoice ||
-            params.type == EnumNewInvoiceEstimateType.duplicateInvoice ||
-            params.type ==
-                EnumNewInvoiceEstimateType.convertEstimateToInvoice) {
-          debugPrint("Inside invoice");
-          map.addAll({
-            "dueterms": req.selectedPaymentTerms?.value ?? "",
-            "delivery_options": req.selectedDeliveryOption?.value ?? "",
-            "timezone": req.selectedTimezones?.timezoneId ?? "",
-            "howmany": req.remaining ?? "",
-            "repeat": req.selectedRepeatEvery?.value ?? "",
-            "payment_reminders": req.selectedPaymentReminder?.value ?? "",
-            "recurring": req.isRecurring == true ? "true" : "false",
-            "currency": "",
-            "exchange_rate": "",
-            "subtotal": params.subTotal ?? "",
-            "discount_type": params.discountType ?? "",
-            "discount_value": params.discountValue ?? "",
-            "discount": params.discount ?? "",
-            "taxtotal": params.taxTotal ?? "",
-            "shipping": params.shipping ?? "",
-            "nettotal": params.netTotal ?? "",
-            "notes": params.notes ?? "",
-            //"expiry_date": req.expiryDate?.getDateString() ?? "",
-            "no": req.no ?? "",
-            "date": req.date?.getDateString() ?? "",
-            "pono": req.poNumber ?? "",
-            "summary": req.title ?? "",
-            "terms": params.terms ?? "",
-          });
-        } else {
-          debugPrint("Inside estimate");
+        final isProformaPayload = params.isProforma;
 
+        map.addAll({
+          "id": _resolveRequestId(params),
+          "estimate": _resolveEstimateReference(params),
+          if (!isProformaPayload)
+            "recurring": req.isRecurring == true ? "true" : "false",
+
+          // keep these as plain scalar form fields
+          "client": params.selectedClient?.clientId ?? "",
+          "project": params.selectedProject?.id ?? "",
+
+          "date": _formatPayloadDate(req.date),
+          "expiry_date": _formatPayloadDate(req.expiryDate ?? req.date),
+          "dueterms": isProformaPayload
+              ? (params.dueTerms ?? "0")
+              : (req.selectedPaymentTerms?.value ?? "0"),
+          "payment_reminders": req.selectedPaymentReminder?.value ?? "0",
+          "heading": req.heading ?? "",
+          if (!isProformaPayload) "repeat": _resolveRepeat(req),
+          if (!isProformaPayload) "howmany": _resolveHowMany(req),
+          "no": req.no ?? "",
+          "pono": req.poNumber ?? "",
+          "summary": req.title ?? "",
+          "exchange_rate": params.exchangeRate ?? "1",
+          if (!isProformaPayload)
+            "timezone": req.selectedTimezones?.timezoneId ?? "",
+          "delivery_options": req.selectedDeliveryOption?.value ?? "0",
+          "subtotal": params.subTotal ?? "",
+          "discount_type": params.discountType ?? "0",
+          "discount": params.discount ?? "0",
+          "taxtotal": params.taxTotal ?? "",
+          "shipping": params.shipping ?? "",
+          "nettotal": params.netTotal ?? "",
+          "notes": params.notes ?? "",
+          "terms": params.terms ?? "",
+          "attachments": "",
+          "currency": params.currency ?? "",
+
+          // JSON encode complex payloads for multipart form-data
+          "items": jsonEncode(
+            params.selectedLineItems.map((x) => x.toJson()).toList(),
+          ),
+
+          "emailto_clientstaff": jsonEncode(
+            _serializeStaff(params.selectedClientStaff),
+          ),
+
+          "emailto_mystaff": jsonEncode(
+            _serializeStaff(params.selectedMyStaffList),
+          ),
+          if (!isProformaPayload)
+            "creditnotes": jsonEncode(params.creditNotes ?? []),
+        });
+
+        if (params.type ==
+            EnumNewInvoiceEstimateType.convertProformaToInvoice) {
+          final id = (params.id ?? '').trim();
           map.addAll({
-            "currency": "",
-            "exchange_rate": "",
-            "subtotal": params.subTotal ?? "",
-            "discount_type": params.discountType ?? "",
-            "discount_value": params.discountValue ?? "",
-            "discount": params.discount ?? "",
-            "taxtotal": params.taxTotal ?? "",
-            "shipping": params.shipping ?? "",
-            "nettotal": params.netTotal ?? "",
-            "notes": params.notes ?? "",
-            "expiry_date": req.expiryDate?.getDateString() ?? "",
-            "no": req.no ?? "",
-            "date": req.date?.getDateString() ?? "",
-            "pono": req.poNumber ?? "",
-            "summary": req.title ?? "",
-            "terms": params.terms ?? "",
+            "proforma": int.tryParse(id) ?? id,
           });
         }
       } else {
         debugPrint("EMPTY REQ");
       }
 
-      debugPrint("before EnumNewInvoiceEstimateType");
-
-      if (params.type == EnumNewInvoiceEstimateType.convertEstimateToInvoice) {
-        map.addAll({
-          "estimate": params.id ?? "",
-        });
-      } else if (params.id != null && params.id!.isNotEmpty) {
-        map.addAll({
-          "id": params.id ?? "",
-        });
-      }
-
-      debugPrint("after EnumNewInvoiceEstimateType");
-
-      // if (params.type == EnumNewInvoiceEstimateType.editEstimate) {
-      // map.addAll({
-      //   "id": params.id ?? "",
-      // });
-      // }
-
-      if (params.selectedClient != null) {
-        map.addAll({
-          "client": params.selectedClient?.clientId ?? "",
-        });
-      }
-
-      debugPrint("after client");
-
-      if (params.selectedProject != null) {
-        map.addAll({
-          "project": params.selectedProject?.id ?? "",
-        });
-      }
-      debugPrint("after project");
-
-      if (params.selectedMyStaffList.isNotEmpty) {
-        final myStaffIds = params.selectedMyStaffList.map((returnedMystaff) {
-          return InvoiceStaffModel(
-              id: returnedMystaff.id ?? "", email: returnedMystaff.email ?? "");
-        });
-
-        final myStaffJSON =
-            List<dynamic>.from(myStaffIds.map((x) => x.toJson()));
-        final convertedJSON = jsonEncode(myStaffJSON);
-        Map<String, String> myStaffMap = {"emailto_mystaff": convertedJSON};
-        map.addAll(myStaffMap);
-      }
-
-      debugPrint("after staff");
-
-      if (params.selectedLineItems.isNotEmpty) {
-        final lineItemsJSON =
-            List<dynamic>.from(params.selectedLineItems.map((x) => x.toJson()));
-        final convertedJSON = jsonEncode(lineItemsJSON);
-        Map<String, String> myItemsmAP = {"items": convertedJSON};
-        map.addAll(myItemsmAP);
-      }
-
-      debugPrint("after line items");
-
-      if (params.selectedClientStaff.isNotEmpty) {
-        final clientStaff =
-            params.selectedClientStaff.map((returnedClientstaff) {
-          return InvoiceStaffModel(
-              id: returnedClientstaff.id ?? "",
-              email: returnedClientstaff.email ?? "");
-        });
-
-        final clientStaffJSON =
-            List<dynamic>.from(clientStaff.map((x) => x.toJson()));
-        debugPrint("CLIENT STAFF: $clientStaffJSON");
-        final convertedJSON = jsonEncode(clientStaffJSON);
-        Map<String, String> clientStaffMap = {
-          "emailto_clientstaff": convertedJSON
-        };
-        map.addAll(clientStaffMap);
-      }
-
       debugPrint("Map: $map");
 
-      FormData body = FormData.fromMap(map);
-
-      final path =
-          (params.type == EnumNewInvoiceEstimateType.duplicateInvoice ||
-                  params.type == EnumNewInvoiceEstimateType.invoice ||
-                  params.type == EnumNewInvoiceEstimateType.editInvoice ||
-                  params.type ==
-                      EnumNewInvoiceEstimateType.convertEstimateToInvoice)
+      final path = params.isProforma
+          ? ApiEndPoints.addProforma
+          : _isInvoiceType(params.type)
               ? ApiEndPoints.addinvoice
               : ApiEndPoints.addEstimate;
+
       debugPrint("Path: $path");
 
-      final response = await apiClient.postRequest(path: path, body: body);
+      final body = FormData.fromMap(map);
+
+      final response = await apiClient.postRequest(
+        path: path,
+        body: body,
+      );
+
       debugPrint("Response came");
+
       if (response.statusCode == 200) {
         final resModel = AddInvoiceMainResModel.fromJson(response.data);
+
         if (resModel.data?.success != true) {
           throw ApiException(
-              message:
-                  resModel.data?.message ?? "Request failed please try again!");
+            message:
+                resModel.data?.message ?? "Request failed please try again!",
+          );
         }
+
         return resModel;
       } else {
         throw ApiException(
-            message: 'Invalid status code : ${response.statusCode}');
+          message: 'Invalid status code : ${response.statusCode}',
+        );
       }
     } catch (e) {
       throw ApiException(message: e.toString());
@@ -543,11 +487,11 @@ late_fee:90
     try {
       Map<String, String> map = {"id": params.id};
       FormData body = FormData.fromMap(map);
-      final path = (params.type == EnumNewInvoiceEstimateType.invoice ||
-              params.type ==
-                  EnumNewInvoiceEstimateType.convertEstimateToInvoice)
-          ? ApiEndPoints.invoiceMarkAsSend
-          : ApiEndPoints.estimateMarkAsSent;
+      final path = switch (params.type) {
+        EnumDocumentType.invoice => ApiEndPoints.invoiceMarkAsSend,
+        EnumDocumentType.estimate => ApiEndPoints.estimateMarkAsSent,
+        EnumDocumentType.proforma => ApiEndPoints.proformaMarkAsSent,
+      };
       final response = await apiClient.postRequest(path: path, body: body);
       if (response.statusCode == 200) {
         final resModel = InvoiceMarksendMainResModel.fromJson(response.data);
@@ -568,9 +512,11 @@ late_fee:90
       Map<String, String> reqPrams = {
         "id": params.id,
       };
-      final path = params.type == EnumDocumentType.estimate
-          ? "estimates/delete"
-          : "invoices/delete";
+      final path = switch (params.type) {
+        EnumDocumentType.invoice => ApiEndPoints.invoiceDelete,
+        EnumDocumentType.estimate => ApiEndPoints.estimateDelete,
+        EnumDocumentType.proforma => ApiEndPoints.proformaDelete,
+      };
       final response =
           await apiClient.deleteRequest(path: path, queryParameters: reqPrams);
       if (response.statusCode == 200) {
@@ -769,13 +715,13 @@ subject:Payment received - Thanks
 
 class InvoiceStaffModel {
   final String id;
-  final String email;
+  final String name;
   InvoiceStaffModel({
-    required this.email,
+    required this.name,
     required this.id,
   });
   Map<String, dynamic> toJson() => {
         "id": id,
-        "email": email,
+        "name": name,
       };
 }

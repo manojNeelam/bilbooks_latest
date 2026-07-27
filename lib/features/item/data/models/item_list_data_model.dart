@@ -111,6 +111,8 @@ class ItemDataModel extends ItemListEntity {
     String? description,
     String? rate,
     String? unit,
+    String? image,
+    String? thumbnail,
     List<TaxData>? taxes,
     bool? trackInventory,
     int? stock,
@@ -127,6 +129,8 @@ class ItemDataModel extends ItemListEntity {
           description: description,
           rate: rate,
           unit: unit,
+          image: image,
+          thumbnail: thumbnail,
           taxes: taxes,
           trackInventory: trackInventory,
           stock: stock,
@@ -147,6 +151,8 @@ class ItemDataModel extends ItemListEntity {
       description: json["description"],
       rate: json["rate"],
       unit: json["unit"],
+      image: json["image"],
+      thumbnail: json["thumbnail"],
       taxes: json["taxes"] == null
           ? []
           : List<TaxData>.from(json["taxes"]!.map((x) => TaxData.fromJson(x))),

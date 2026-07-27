@@ -158,7 +158,7 @@ class _ItemsPopupState extends State<ItemsPopup> with SectionAdapterMixin {
         children: [
           SearchBarWidget(
             searchController: searchController,
-            hintText: "Search Clients",
+            hintText: "Search Items",
             onSubmitted: (searchText) {
               _getItemList();
             },

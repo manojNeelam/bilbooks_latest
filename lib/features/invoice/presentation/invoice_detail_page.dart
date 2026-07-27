@@ -1302,7 +1302,9 @@ class _InvoiceDetailPageState extends State<InvoiceDetailPage>
       context.read<InvoiceBloc>().add(InvoiceMarkAsSendEvent(
               params: InvoiceMarkassendReqParms(
             id: invoiceEntity?.id ?? "",
-            type: widget.type,
+            type: isInvoice()
+                ? EnumDocumentType.invoice
+                : EnumDocumentType.estimate,
           )));
     }
   }

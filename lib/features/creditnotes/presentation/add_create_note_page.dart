@@ -37,12 +37,14 @@ class AddCreateNotePage extends StatefulWidget {
   final CreditNoteScreenType screenType;
   final String creditNoteId;
   final Function()? onrefreshPage;
+  final ClientEntity? selectedClient;
 
   const AddCreateNotePage(
       {super.key,
       required this.screenType,
       this.creditNoteId = "0",
-      this.onrefreshPage});
+      this.onrefreshPage,
+      this.selectedClient});
 
   @override
   State<AddCreateNotePage> createState() => _AddCreateNotePageState();
@@ -62,6 +64,7 @@ class _AddCreateNotePageState extends State<AddCreateNotePage> {
 
   @override
   void initState() {
+    selectedClient = widget.selectedClient;
     _loadNoteNumber();
 
     // if (widget.screenType == CreditNoteScreenType.create) {
@@ -148,14 +151,21 @@ class _AddCreateNotePageState extends State<AddCreateNotePage> {
                   creditNoteController.text = detail?.noteNo ?? "";
                   descriptionController.text = detail?.description ?? "";
                   amountController.text = detail?.amount ?? "";
-                  selectedClient = ClientEntity(
-                    clientId: detail?.clientId,
-                    name: detail?.clientName,
-                  );
-                  selectedProject = ProjectEntity(
-                    id: detail?.projectId,
-                    name: detail?.projectName,
-                  );
+                  if (detail?.clientId != null &&
+                      (detail?.clientId?.isNotEmpty ?? false)) {
+                    selectedClient = ClientEntity(
+                      clientId: detail!.clientId,
+                      name: detail.clientName,
+                    );
+                  }
+
+                  if (detail?.projectId != null &&
+                      (detail?.projectId?.isNotEmpty ?? false)) {
+                    selectedProject = ProjectEntity(
+                      id: detail!.projectId,
+                      name: detail.projectName,
+                    );
+                  }
                   isSetExpiry = detail?.expiryDate != null;
                   selectedExpiry = creditExpiryList.firstWhere(
                     (element) => element.value == detail?.days,
@@ -163,7 +173,7 @@ class _AddCreateNotePageState extends State<AddCreateNotePage> {
                         label: "Custom Date", value: "-1"),
                   );
                   if (selectedExpiry?.value == "-1") {
-                    selectedDate = detail?.expiryDate ?? DateTime.now();
+                    selectedDate = detail?.expiryDate;
                   } else {
                     // If expiry is set to a specific number of days, calculate the date
                     selectedDate = DateTime.now().add(
@@ -180,8 +190,8 @@ class _AddCreateNotePageState extends State<AddCreateNotePage> {
                   selectedProject = null;
                   isSetExpiry = false;
                   selectedExpiry = null;
-                  selectedDate = DateTime.now();
-                  dateAsString = getSelectedDateAsString();
+                  selectedDate = null;
+                  dateAsString = "";
                 }
 
                 rerenderUI();
@@ -250,6 +260,7 @@ class _AddCreateNotePageState extends State<AddCreateNotePage> {
                           ),
                           NewInputViewWidget(
                               isRequired: true,
+                              currencyLabel: selectedClient?.currency ?? "",
                               title: "Amount",
                               hintText: "0.00",
                               inputType: const TextInputType.numberWithOptions(

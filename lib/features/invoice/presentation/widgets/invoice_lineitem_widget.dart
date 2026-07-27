@@ -10,7 +10,9 @@ import '../../../../core/widgets/item_separator.dart';
 
 class InvoiceLineitemWidget extends StatelessWidget {
   final InvoiceItemEntity itemListEntity;
-  const InvoiceLineitemWidget({super.key, required this.itemListEntity});
+  final String currencyPrefix;
+  const InvoiceLineitemWidget(
+      {super.key, required this.itemListEntity, this.currencyPrefix = r'$'});
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +31,7 @@ class InvoiceLineitemWidget extends StatelessWidget {
                 style: AppFonts.mediumStyle(size: 16),
               ),
               Text(
-                "\$${itemListEntity.amount}",
+                "$currencyPrefix${itemListEntity.amount}",
                 style: AppFonts.mediumStyle(size: 16),
               )
             ],
@@ -48,7 +50,7 @@ class InvoiceLineitemWidget extends StatelessWidget {
                   textColor: AppPallete.k666666),
               AppConstants.sizeBoxWidth5,
               Text(
-                "x  \$${itemListEntity.rate}",
+                "x  $currencyPrefix${itemListEntity.rate}",
                 style:
                     AppFonts.regularStyle(color: AppPallete.k666666, size: 14),
               ),

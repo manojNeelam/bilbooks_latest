@@ -9,14 +9,18 @@ import '../../../../core/widgets/item_separator.dart';
 class ItemTypeHeaderWidget extends StatelessWidget {
   final EnumItemType selectedType;
   final Function(EnumItemType) callBack;
+  final Map<EnumItemType, int> counts;
   const ItemTypeHeaderWidget(
-      {super.key, required this.selectedType, required this.callBack});
+      {super.key,
+      required this.selectedType,
+      required this.callBack,
+      required this.counts});
 
   @override
   Widget build(BuildContext context) {
     const EnumItemType all = EnumItemType.all;
-    const EnumItemType services = EnumItemType.services;
-    const EnumItemType goods = EnumItemType.goods;
+    const EnumItemType services = EnumItemType.active;
+    const EnumItemType goods = EnumItemType.inActive;
 
     Color getColorFor(EnumItemType type) {
       return type == selectedType ? AppPallete.blueColor : AppPallete.clear;
@@ -26,6 +30,11 @@ class ItemTypeHeaderWidget extends StatelessWidget {
       return type == selectedType
           ? AppFonts.mediumStyle(color: AppPallete.blueColor, size: 16)
           : AppFonts.regularStyle(color: AppPallete.textColor, size: 16);
+    }
+
+    String getTitleFor(EnumItemType type) {
+      final count = counts[type];
+      return count == null ? type.title : "${type.title} ($count)";
     }
 
     return Column(
@@ -44,7 +53,7 @@ class ItemTypeHeaderWidget extends StatelessWidget {
                           callBack(all);
                         },
                         child: Text(
-                          all.title,
+                          getTitleFor(all),
                           style: getStyleFor(all),
                         )),
                     Container(
@@ -63,7 +72,8 @@ class ItemTypeHeaderWidget extends StatelessWidget {
                       onPressed: () {
                         callBack(services);
                       },
-                      child: Text(services.title, style: getStyleFor(services)),
+                      child: Text(getTitleFor(services),
+                          style: getStyleFor(services)),
                     ),
                     Container(
                       height: 2,
@@ -81,7 +91,8 @@ class ItemTypeHeaderWidget extends StatelessWidget {
                         onPressed: () {
                           callBack(goods);
                         },
-                        child: Text(goods.title, style: getStyleFor(goods))),
+                        child: Text(getTitleFor(goods),
+                            style: getStyleFor(goods))),
                     Container(
                       height: 2,
                       color: getColorFor(goods),

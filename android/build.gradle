@@ -1,5 +1,5 @@
 buildscript {
-    ext.kotlin_version = '1.9.22'  // ✅ Use compatible Kotlin version
+    ext.kotlin_version = '2.1.20'  // ✅ Align with Kotlin metadata 2.1 dependencies
 
     repositories {
         google()
@@ -7,7 +7,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.2.1'  // ✅ AGP version for Gradle 8.3+
+        classpath 'com.android.tools.build:gradle:8.9.1'  // ✅ AGP version aligned with settings.gradle
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }

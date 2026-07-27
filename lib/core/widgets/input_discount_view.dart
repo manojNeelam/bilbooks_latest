@@ -11,6 +11,7 @@ class InputDiscountWidget extends StatelessWidget {
   final bool isPercentage;
   final showDivider;
   final Function(String?)? onChanged;
+  final String amountSymbol;
 
   const InputDiscountWidget({
     Key? key,
@@ -19,6 +20,7 @@ class InputDiscountWidget extends StatelessWidget {
     required this.isPercentage,
     this.showDivider = false,
     this.onChanged,
+    this.amountSymbol = r'$',
   }) : super(key: key);
 
   @override
@@ -63,7 +65,7 @@ class InputDiscountWidget extends StatelessWidget {
                         shape: BoxShape.rectangle),
                     child: Center(
                       child: Text(
-                        isPercentage ? "%" : "\$",
+                        isPercentage ? "%" : amountSymbol,
                         style: AppFonts.regularStyle(
                             color: AppPallete.blueColor, size: 14),
                       ),

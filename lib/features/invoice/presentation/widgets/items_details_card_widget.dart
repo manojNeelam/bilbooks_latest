@@ -44,15 +44,35 @@ class ItemDetailsCardWidget extends StatelessWidget {
                   style: AppFonts.regularStyle(
                       size: 14, color: AppPallete.k666666),
                 ),
-                Text(
-                  "Date: ${invoiceItemEntity.date}",
-                  style: AppFonts.regularStyle(
-                      size: 14, color: AppPallete.k666666),
-                ),
+                Text("SKU: ${invoiceItemEntity.sku}"),
+                RichText(
+                    text: TextSpan(children: [
+                  TextSpan(
+                      text: "Date:",
+                      style: AppFonts.mediumStyle(
+                        size: 14,
+                      ).copyWith(decoration: TextDecoration.underline)),
+                  TextSpan(
+                    text: " ${invoiceItemEntity.formateDate}  ",
+                    style: AppFonts.regularStyle(
+                      size: 14,
+                      color: AppPallete.k666666,
+                    ),
+                  ),
+                  TextSpan(
+                      text: "Time:",
+                      style: AppFonts.mediumStyle(size: 14)
+                          .copyWith(decoration: TextDecoration.underline)),
+                  TextSpan(
+                    text: " ${invoiceItemEntity.time}",
+                    style: AppFonts.regularStyle(
+                        size: 14, color: AppPallete.k666666),
+                  )
+                ])),
                 Row(
                   children: [
                     CapsuleStatusWidget(
-                        title: "${invoiceItemEntity.unit}",
+                        title: "${invoiceItemEntity.qty}",
                         backgroundColor: AppPallete.kF2F2F2,
                         textColor: AppPallete.k666666),
                     AppConstants.sizeBoxWidth10,

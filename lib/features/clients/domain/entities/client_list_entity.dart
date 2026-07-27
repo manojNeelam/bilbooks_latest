@@ -62,6 +62,7 @@ class ClientEntity {
   String? shippingCountryName;
   List<PersonEntity>? persons;
   String? currencyCode;
+  List<ClientCreditnoteEntity>? creditnotes;
 
   ClientEntity({
     this.id,
@@ -101,6 +102,31 @@ class ClientEntity {
     this.shippingCountryName,
     this.persons,
     this.currencyCode,
+    this.creditnotes,
+  });
+}
+
+class ClientCreditnoteEntity {
+  String? id;
+  String? noteNo;
+  String? clientId;
+  String? projectId;
+  String? description;
+  String? amount;
+  String? status;
+  String? expiryDate;
+  String? organizationId;
+
+  ClientCreditnoteEntity({
+    this.id,
+    this.noteNo,
+    this.clientId,
+    this.projectId,
+    this.description,
+    this.amount,
+    this.status,
+    this.expiryDate,
+    this.organizationId,
   });
 }
 

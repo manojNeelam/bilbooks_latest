@@ -31,6 +31,12 @@ class EmailtemplatesEntity {
   String? emailMessagePaymentreminder;
   String? emailSubjectPaymentthankyou;
   String? emailMessagePaymentthankyou;
+  String? emailSubjectFollowupestimate1;
+  String? emailMessageFollowupestimate1;
+  String? emailSubjectFollowupestimate2;
+  String? emailMessageFollowupestimate2;
+  String? emailSubjectFollowupestimate3;
+  String? emailMessageFollowupestimate3;
 
   EmailtemplatesEntity({
     this.emailSubjectSendinvoice,
@@ -41,5 +47,11 @@ class EmailtemplatesEntity {
     this.emailMessagePaymentreminder,
     this.emailSubjectPaymentthankyou,
     this.emailMessagePaymentthankyou,
+    this.emailSubjectFollowupestimate1,
+    this.emailMessageFollowupestimate1,
+    this.emailSubjectFollowupestimate2,
+    this.emailMessageFollowupestimate2,
+    this.emailSubjectFollowupestimate3,
+    this.emailMessageFollowupestimate3,
   });
 }

@@ -9,6 +9,7 @@ import 'package:billbooks_app/features/invoice/domain/entities/invoice_list_enti
 import 'package:flutter/material.dart';
 
 import '../../../../core/utils/escape_html_code.dart';
+import '../../../../core/widgets/build_if_exist_widget.dart';
 import '../add_new_invoice_page.dart';
 
 class ItemsTaxAmountDetailsWidget extends StatelessWidget {
@@ -173,15 +174,28 @@ class ItemsTaxAmountDetailsWidget extends StatelessWidget {
                 )
             ],
           ),
-          AppConstants.sizeBoxHeight15,
-          Text(
-            "Notes:",
-            style: AppFonts.regularStyle(color: AppPallete.k666666),
-          ),
-          Text(
-            invoiceEntity.notes ?? "-",
-            style: AppFonts.regularStyle(),
-          )
+          if (invoiceEntity.notes != null && invoiceEntity.notes!.isNotEmpty)
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                AppConstants.sizeBoxHeight15,
+                buildTextIfNotEmpty("Notes:",
+                    style: AppFonts.mediumStyle(size: 16)),
+                buildTextIfNotEmpty(invoiceEntity.notes,
+                    style: AppFonts.regularStyle(size: 14)),
+              ],
+            ),
+          if (invoiceEntity.terms != null && invoiceEntity.terms!.isNotEmpty)
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                AppConstants.sizeBoxHeight15,
+                buildTextIfNotEmpty("Terms & Conditions:",
+                    style: AppFonts.mediumStyle(size: 16)),
+                buildTextIfNotEmpty(invoiceEntity.terms,
+                    style: AppFonts.regularStyle(size: 14)),
+              ],
+            ),
         ],
       ),
     );

@@ -211,9 +211,15 @@ class _InvoiceSortPageState extends State<InvoiceSortPage>
 
     List<InvoiceSortByModel> sortByItems =
         sortBySectionList.first.invoiceSortByModel!;
-    InvoiceSortByModel sortByItem = sortByItems.firstWhere((item) {
+    final selectedSortIndex = sortByItems.indexWhere((item) {
       return item.isSelected == true;
     });
+    final sortByItem = selectedSortIndex >= 0
+        ? sortByItems[selectedSortIndex]
+        : InvoiceSortByModel(
+            isSelected: false,
+            type: EnumInvoiceSortBy.none,
+          );
 
     List<OrderByModel> orderByItems = sortBySectionList.last.orderByList!;
     OrderByModel orderByItem = orderByItems.firstWhere((item) {
@@ -368,11 +374,13 @@ class _InvoiceSortPageState extends State<InvoiceSortPage>
   }
 }
 
-enum EnumInvoiceSortBy { date, number, name, amount }
+enum EnumInvoiceSortBy { none, date, number, name, amount }
 
 extension EnumInvoiceSortByExtension on EnumInvoiceSortBy {
   String get apiParams {
     switch (this) {
+      case EnumInvoiceSortBy.none:
+        return "";
       case EnumInvoiceSortBy.date:
         return "date";
       case EnumInvoiceSortBy.number:
@@ -386,6 +394,8 @@ extension EnumInvoiceSortByExtension on EnumInvoiceSortBy {
 
   String get title {
     switch (this) {
+      case EnumInvoiceSortBy.none:
+        return "";
       case EnumInvoiceSortBy.date:
         return "Date";
       case EnumInvoiceSortBy.number:

@@ -36,6 +36,8 @@ class ItemListEntity {
   String? description;
   String? rate;
   String? unit;
+  String? image;
+  String? thumbnail;
   List<TaxEntity>? taxes;
   bool? trackInventory;
   int? stock;
@@ -53,6 +55,8 @@ class ItemListEntity {
     this.description,
     this.rate,
     this.unit,
+    this.image,
+    this.thumbnail,
     this.taxes,
     this.trackInventory,
     this.stock,

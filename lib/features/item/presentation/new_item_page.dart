@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:billbooks_app/core/app_constants.dart';
 import 'package:billbooks_app/core/theme/app_fonts.dart';
@@ -5,6 +7,7 @@ import 'package:billbooks_app/core/theme/app_pallete.dart';
 import 'package:billbooks_app/core/utils/show_toast.dart';
 import 'package:billbooks_app/core/utils/utils.dart';
 import 'package:billbooks_app/core/widgets/input_switch_widget.dart';
+import 'package:billbooks_app/core/widgets/app_image_picker_field.dart';
 import 'package:billbooks_app/core/widgets/loading_page.dart';
 import 'package:billbooks_app/core/widgets/new_inputview_widget.dart';
 import 'package:billbooks_app/core/widgets/tax_list_popup.dart';
@@ -46,12 +49,14 @@ class _NewItemPageState extends State<NewItemPage> {
   TextEditingController rateController = TextEditingController();
   TextEditingController unitController = TextEditingController();
   TextEditingController currentStockController = TextEditingController();
+  File? selectedImage;
 
   bool isSeletedRadio1 = true;
   bool trackInventory = false;
   List<TaxEntity> taxes = [];
   List<TaxEntity>? selectedTaxes = [];
   bool isFormValid = false;
+  bool shouldRemoveImage = false;
 
   void reRenderUI() {
     setState(() {});
@@ -119,6 +124,21 @@ class _NewItemPageState extends State<NewItemPage> {
       return taxes?.join(", ") ?? "Select taxes";
     }
     return "Select taxes";
+  }
+
+  String? get existingImageUrl {
+    final item = widget.itemListEntity;
+    final image = item?.image;
+    if (image != null && image.isNotEmpty) {
+      return image;
+    }
+
+    final thumbnail = item?.thumbnail;
+    if (thumbnail != null && thumbnail.isNotEmpty) {
+      return thumbnail;
+    }
+
+    return null;
   }
 
   @override
@@ -282,6 +302,18 @@ class _NewItemPageState extends State<NewItemPage> {
                               showTaxPopup();
                             }),
                       ),
+                      AppImagePickerField(
+                        title: 'Image',
+                        showDivider: false,
+                        initialImage: selectedImage,
+                        initialImageUrl: existingImageUrl,
+                        onChanged: (image) {
+                          selectedImage = image;
+                          shouldRemoveImage = isEdit &&
+                              image == null &&
+                              existingImageUrl != null;
+                        },
+                      ),
                       if (isSeletedRadio1 == false)
                         Column(
                           children: [
@@ -378,6 +410,8 @@ class _NewItemPageState extends State<NewItemPage> {
     model.taxes = "[${selectedTaxes?.map((element) {
       return element.id;
     }).join(",")}]";
+    model.image = selectedImage;
+    model.removeImage = shouldRemoveImage;
     return model;
   }
 }

@@ -8,11 +8,28 @@ import '../../../core/theme/app_fonts.dart';
 import '../../../core/theme/app_pallete.dart';
 import '../../../core/widgets/item_separator.dart';
 
-enum EnumEstimateSortBy { date, number, name, amount }
+enum EnumEstimateSortBy { none, date, number, name, amount }
 
 extension EnumInvoiceSortByExtension on EnumEstimateSortBy {
+  String get apiParams {
+    switch (this) {
+      case EnumEstimateSortBy.none:
+        return "";
+      case EnumEstimateSortBy.date:
+        return "date";
+      case EnumEstimateSortBy.number:
+        return "number";
+      case EnumEstimateSortBy.name:
+        return "name";
+      case EnumEstimateSortBy.amount:
+        return "amount";
+    }
+  }
+
   String get title {
     switch (this) {
+      case EnumEstimateSortBy.none:
+        return "";
       case EnumEstimateSortBy.date:
         return "Date";
       case EnumEstimateSortBy.number:
@@ -143,9 +160,15 @@ class _EstimateSortPageState extends State<EstimateSortPage>
 
     List<EstimateSortByModel> sortByItems =
         sortBySectionList.first.estimateSortByModel!;
-    EstimateSortByModel sortByItem = sortByItems.firstWhere((item) {
+    final selectedSortIndex = sortByItems.indexWhere((item) {
       return item.isSelected == true;
     });
+    final sortByItem = selectedSortIndex >= 0
+        ? sortByItems[selectedSortIndex]
+        : EstimateSortByModel(
+            isSelected: false,
+            type: EnumEstimateSortBy.none,
+          );
 
     List<OrderByModel> orderByItems = sortBySectionList.last.orderByList!;
     OrderByModel orderByItem = orderByItems.firstWhere((item) {

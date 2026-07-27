@@ -48,25 +48,25 @@ extension EnumInvoiceTypeExtension on EnumInvoiceType {
   String get apiParams {
     switch (this) {
       case EnumInvoiceType.all:
-        return "";
+        return "All Invoices";
 
       case EnumInvoiceType.draft:
-        return "draft";
+        return "Draft";
 
       case EnumInvoiceType.unpaid:
-        return "unpaid";
+        return "Unpaid";
 
       case EnumInvoiceType.paid:
-        return "paid";
+        return "Paid";
 
       case EnumInvoiceType.partiallyPaid:
-        return "partial";
+        return "Partially Paid";
 
       case EnumInvoiceType.voidType:
-        return "void";
+        return "Void";
 
       case EnumInvoiceType.recurring:
-        return "recurring";
+        return "Recurring";
     }
   }
 
@@ -114,7 +114,7 @@ class _InvoiceListPageState extends State<InvoiceListPage>
   TextEditingController searchController = TextEditingController();
 
   EnumInvoiceType selectedType = EnumInvoiceType.all;
-  EnumInvoiceSortBy selectedInvoiceSortBy = EnumInvoiceSortBy.date;
+  EnumInvoiceSortBy selectedInvoiceSortBy = EnumInvoiceSortBy.none;
   EnumOrderBy selectedOrderBy = EnumOrderBy.ascending;
   List<InvoiceEntity> invoices = [];
   EnumAllTimes selectedAllTimes = EnumAllTimes.all;
@@ -128,6 +128,8 @@ class _InvoiceListPageState extends State<InvoiceListPage>
   String? startDateReqParams;
   String? endDateReqParams;
   bool isFromAddNewInvoice = false;
+  InvoiceListMainResEntity? invoiceListMainResEntity;
+  Map<EnumInvoiceType, int> counts = {};
 
   @override
   void initState() {
@@ -156,12 +158,13 @@ class _InvoiceListPageState extends State<InvoiceListPage>
   }
 
   void _getInvoiceList() {
+    final hasExplicitSorting = selectedInvoiceSortBy != EnumInvoiceSortBy.none;
     context.read<InvoiceBloc>().add(GetInvoiceListEvent(
             params: InvoiceListReqParams(
           status: selectedType.apiParams,
           query: searchController.text,
-          sortOrder: selectedOrderBy.apiParamsValue,
-          columnName: selectedInvoiceSortBy.apiParams,
+          sortOrder: hasExplicitSorting ? selectedOrderBy.apiParamsValue : "",
+          columnName: hasExplicitSorting ? selectedInvoiceSortBy.apiParams : "",
           page: currentPage.toString(),
           startDate: startDateReqParams,
           endDate: endDateReqParams,
@@ -253,6 +256,20 @@ class _InvoiceListPageState extends State<InvoiceListPage>
         // }));
       },
     );
+  }
+
+  Map<EnumInvoiceType, int> getInvoiceCounts() {
+    InvoiceListStatusCountEntity? statusCountEntity =
+        invoiceListMainResEntity?.data?.statusCount?.firstOrNull;
+    if (statusCountEntity == null) {
+      return {};
+    }
+    return {
+      EnumInvoiceType.all: int.tryParse(statusCountEntity.allcount ?? "") ?? 0,
+      EnumInvoiceType.draft: int.tryParse(statusCountEntity.draft ?? "") ?? 0,
+      EnumInvoiceType.unpaid: int.tryParse(statusCountEntity.unpaid ?? "") ?? 0,
+      EnumInvoiceType.paid: int.tryParse(statusCountEntity.paid ?? "") ?? 0,
+    };
   }
 
   void _onTapSendDoc(String id) {
@@ -369,6 +386,7 @@ class _InvoiceListPageState extends State<InvoiceListPage>
             preferredSize: const Size.fromHeight(45),
             child: InvoiceTypeHeaderWidget(
               selectedType: selectedType,
+              counts: counts,
               callBack: (type) {
                 selectedType = type;
                 setState(() {});
@@ -410,6 +428,13 @@ class _InvoiceListPageState extends State<InvoiceListPage>
         listener: (context, state) {
           if (isIgnoreBlocStates) {
             return;
+          }
+
+          if (state is InvoiceListSuccessState) {
+            setState(() {
+              invoiceListMainResEntity = state.invoiceListMainResEntity;
+              counts = getInvoiceCounts();
+            });
           }
 
           if (state is InvoiceDetailSuccessState) {

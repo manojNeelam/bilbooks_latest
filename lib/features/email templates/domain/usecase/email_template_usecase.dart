@@ -38,11 +38,17 @@ class UpDateEmailTemplateUsecase
 class UpdateEmailTemplateReqParams {
   String? message, subject;
   final EnumEmailTemplate type;
+  final String? templateKey;
+  final String? subjectFieldKey;
+  final String? messageFieldKey;
 
   UpdateEmailTemplateReqParams({
     required this.type,
     required this.message,
     required this.subject,
+    this.templateKey,
+    this.subjectFieldKey,
+    this.messageFieldKey,
   });
 }
 

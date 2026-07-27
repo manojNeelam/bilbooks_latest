@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:billbooks_app/core/utils/hive_functions.dart';
 import 'package:billbooks_app/core/utils/utils.dart';
 import 'package:billbooks_app/features/dashboard/presentation/bloc/authinfo_bloc.dart';
+import 'package:billbooks_app/features/more/settings/subscription/presentation/bloc/revenuecat_cubit.dart';
 import 'package:billbooks_app/router/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -29,8 +30,13 @@ class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
     splashContext = context;
+    _initializeRevenueCatAtStartup();
     _callApi();
     super.initState();
+  }
+
+  void _initializeRevenueCatAtStartup() {
+    context.read<RevenueCatCubit>().initialize();
   }
 
   Future<void> saveEstimateTitle(title) async {
@@ -59,6 +65,7 @@ class _SplashPageState extends State<SplashPage> {
   Future<void> _callApi() async {
     var token = await Utils.getToken();
     if (token == null) {
+      await context.read<RevenueCatCubit>().logOut();
       AutoRouter.of(splashContext!)
           .pushAndPopUntil(const LoginPageRoute(), predicate: (_) => false);
     } else {
@@ -97,6 +104,8 @@ class _SplashPageState extends State<SplashPage> {
               isUserPremium = !(plan?.isExpired ?? true);
               Utils.setIsPremiumUser(isPremiumUser: isUserPremium);
               saveUserSessionData(authInfoMainDataEntity!.sessionData!);
+              context.read<RevenueCatCubit>().initialize(
+                  appUserId: authInfoMainDataEntity?.sessionData?.user?.id);
             }
 
             saveEstimateTitle(estimateTitle);
@@ -105,6 +114,7 @@ class _SplashPageState extends State<SplashPage> {
                 predicate: (_) => false);
           }
         } else if (state is AuthInfoErrorState) {
+          context.read<RevenueCatCubit>().logOut();
           AutoRouter.of(context)
               .pushAndPopUntil(const LoginPageRoute(), predicate: (_) => false);
         }
